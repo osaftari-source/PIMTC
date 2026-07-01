@@ -76,6 +76,20 @@ rankings and tournament info editable from a spreadsheet:
    | category | round | summary |
    |---|---|---|
 
+   **Live** (single data row — the current ongoing/most recent tournament)
+   | id | name | status | venue | startDate | teams | sets | games | tiebreak | description |
+   |---|---|---|---|---|---|---|---|---|---|
+   `status` is `ongoing` or `completed` — this controls the red "LIVE" badge and
+   whether the Home page teaser and nav dot show up.
+
+   **Updates** (one row per match update)
+   | date | order | round | caption | type | url |
+   |---|---|---|---|---|---|
+   `type` is `instagram`, `youtube`, `photo`, or `text`. For Instagram/YouTube,
+   just paste the post/video URL — the site embeds it automatically. `order` is
+   a plain number (1, 2, 3...) to break ties when you post more than one update
+   on the same day; newest date+order shows first.
+
 2. Populate the sheet from your current roster (the `data/*.json`
    files in this project already contain everything currently on the
    Google Site, so you can copy those values in as a starting point).
@@ -100,13 +114,32 @@ Whenever you edit `Code.gs` later, you must **Deploy → Manage
 deployments → Edit → New version** — saving the script alone doesn't
 update the live `/exec` URL.
 
-## 3. Editing the design
+## 3. Posting a live update (once you're set up)
+
+This is the day-to-day workflow once the Sheet is connected:
+
+1. Post the photo/clip to Instagram or YouTube as you normally would.
+2. Copy that post's URL.
+3. Add one row to the **Updates** tab: today's date, a short round/match
+   label, a one-line caption, `type` = `instagram` or `youtube`, and paste
+   the URL.
+4. That's it — no re-upload to me, no file editing. The Live page picks it
+   up within a few minutes of you editing the sheet (or instantly on refresh).
+
+For a text-only update (no media yet), leave `type` as `text` and the `url`
+column blank — it'll show as a caption-only card.
+
+When the tournament wraps up, flip `status` in the **Live** tab from
+`ongoing` to `completed` — the LIVE badge, Home page teaser, and nav dot
+all turn off automatically.
+
+## 4. Editing the design
 
 All colors, type, and layout live in `css/style.css` under `:root` at
 the top (`--navy`, `--gold`, `--court`, fonts, etc.) — change values
 there rather than hunting through individual rules.
 
-## 4. Wiring up the Inquiry form
+## 5. Wiring up the Inquiry form
 
 The Inquiry page currently just shows a confirmation alert. To
 actually collect submissions, the simplest option is to point the
@@ -114,7 +147,7 @@ form at a Google Form (Form → Get pre-filled link, or embed the Form
 directly) or extend `apps-script/Code.gs` with a `doPost` handler that
 appends rows to an "Inquiries" tab.
 
-## 5. Local preview
+## 6. Local preview
 
 Any static file server works, e.g. from this folder:
 

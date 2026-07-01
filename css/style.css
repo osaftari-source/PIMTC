@@ -255,6 +255,54 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .champion-panel .trophy{ font-size: 30px; margin-bottom: 4px; }
 
 
+/* ---------- Live badge ---------- */
+.live-dot{
+  display:inline-block; width:8px; height:8px; border-radius:50%; background:#e14b3f;
+  margin-right: 6px; animation: livePulse 1.6s ease-in-out infinite;
+}
+@keyframes livePulse{ 0%,100%{ opacity:1; box-shadow:0 0 0 0 rgba(225,75,63,0.5); } 50%{ opacity:0.6; box-shadow:0 0 0 6px rgba(225,75,63,0); } }
+.live-badge{
+  display:inline-flex; align-items:center; font-family: var(--font-mono); font-size:11px; letter-spacing:1.5px;
+  text-transform:uppercase; font-weight:700; color: #e14b3f; background: rgba(225,75,63,0.1);
+  border: 1px solid rgba(225,75,63,0.3); padding: 4px 10px; border-radius: 20px;
+}
+.nav-live-dot{ display:none; }
+.main-nav a[data-route="live"].has-live .nav-live-dot{ display:inline-block; }
+
+/* ---------- Home "Live Now" teaser ---------- */
+.live-teaser{
+  background: var(--chalk); border: 1px solid rgba(225,75,63,0.25); border-radius: 10px;
+  padding: 26px 28px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  box-shadow: 0 10px 30px rgba(10,31,61,0.08);
+}
+.live-teaser .lt-info h3{ font-size: 26px; margin: 6px 0 4px; }
+.live-teaser .lt-info p{ margin:0; font-size:14px; color: rgba(18,24,31,0.6); }
+.live-teaser .lt-latest{ font-family: var(--font-mono); font-size:12px; color: rgba(18,24,31,0.5); margin-top:8px; }
+
+/* ---------- Live page ---------- */
+.live-header{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.live-header h2{ margin:0; }
+.live-meta{ display:flex; gap:22px; flex-wrap:wrap; margin-top:16px; font-family: var(--font-mono); font-size:13px; color: rgba(244,240,230,0.65); }
+.live-meta b{ color: var(--gold); }
+
+/* ---------- Update feed ---------- */
+.update-feed{ position:relative; padding-left: 26px; }
+.update-feed::before{ content:""; position:absolute; left: 5px; top:6px; bottom:6px; width:2px; background: rgba(18,24,31,0.1); }
+.update-card{ position:relative; margin-bottom: 34px; }
+.update-card::before{
+  content:""; position:absolute; left: -26px; top: 4px; width:12px; height:12px; border-radius:50%;
+  background: var(--gold); border: 3px solid var(--cream);
+}
+.update-card:first-child::before{ background: #e14b3f; }
+.update-date{ font-family: var(--font-mono); font-size:12px; letter-spacing:1px; color: rgba(18,24,31,0.5); text-transform:uppercase; }
+.update-round{ font-family: var(--font-display); font-size:21px; font-weight:700; margin: 2px 0 8px; }
+.update-caption{ font-size:15px; color: rgba(18,24,31,0.75); margin-bottom: 14px; max-width:640px; }
+.embed-wrap{ max-width: 480px; border-radius:8px; overflow:hidden; }
+.embed-wrap.yt{ position:relative; aspect-ratio:16/9; box-shadow: var(--shadow); }
+.embed-wrap.yt iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+.embed-wrap.photo img{ width:100%; border-radius:8px; box-shadow: var(--shadow); }
+.embed-wrap.ig blockquote.instagram-media{ margin:0 !important; }
+
 .result-list{ display:flex; flex-direction:column; gap:12px; }
 .result-row{
   display:flex; align-items:center; justify-content:space-between; gap:16px;

@@ -20,6 +20,17 @@
  *                     (stage = "Semifinal 1", "Semifinal 2", "Final", in that order)
  *    Results        | category | round | summary |
  *                     (category = "men" or "women")
+ *    Live           | id | name | status | venue | startDate | teams | sets | games | tiebreak | description |
+ *                     (single data row for the current ongoing/most-recent live tournament;
+ *                      status = "ongoing" or "completed")
+ *    Updates        | date | order | round | caption | type | url |
+ *                     (one row per match update; newest shows first automatically.
+ *                      type = "instagram", "youtube", "photo", or "text";
+ *                      order is a plain number to break ties when several updates share a date —
+ *                      just count up 1, 2, 3... for that day)
+ *    LiveStandings  | round | group | ranking | pair | mp | w | l | gw | gl | diff | points |
+ *                     (one row per pair per round; group is required here — e.g. "Group A" —
+ *                      since the live doubles format is always grouped. gw/gl = games won/lost.)
  *
  * 2. Extensions > Apps Script, paste this file in as Code.gs.
  * 3. Deploy > New deployment > Web app.
@@ -56,8 +67,17 @@ function doGet(e) {
     case "playoffs":
       payload = getPlayoffs_();
       break;
+    case "live":
+      payload = getLive_();
+      break;
+    case "updates":
+      payload = getUpdates_();
+      break;
+    case "livestandings":
+      payload = getLiveStandings_();
+      break;
     default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs." };
+      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings." };
   }
 
   return ContentService
@@ -201,6 +221,62 @@ function getPlayoffs_() {
     }
   });
 
+  return out;
+}
+
+function getLive_() {
+  const rows = sheetRows_("Live");
+  const r = rows[0] || {};
+  return {
+    id: String(r.id || ""),
+    name: String(r.name || ""),
+    status: String(r.status || "completed").toLowerCase(),
+    venue: String(r.venue || ""),
+    startDate: String(r.startDate || ""),
+    format: {
+      teams: r.teams === "" || r.teams == null ? null : Number(r.teams),
+      sets: r.sets === "" || r.sets == null ? null : Number(r.sets),
+      games: r.games === "" || r.games == null ? null : Number(r.games),
+      tiebreak: r.tiebreak ? String(r.tiebreak) : null
+    },
+    description: String(r.description || "")
+  };
+}
+
+function getUpdates_() {
+  return sheetRows_("Updates")
+    .map((r) => ({
+      date: String(r.date || ""),
+      order: Number(r.order) || 0,
+      round: String(r.round || ""),
+      caption: String(r.caption || ""),
+      type: String(r.type || "text").toLowerCase(),
+      url: String(r.url || "")
+    }))
+    .filter((u) => u.date || u.caption);
+}
+
+function getLiveStandings_() {
+  const rows = sheetRows_("LiveStandings");
+  const out = {};
+  rows.forEach((r) => {
+    const round = String(r.round || "");
+    const group = String(r.group || "");
+    const entry = {
+      ranking: Number(r.ranking) || null,
+      pair: String(r.pair || ""),
+      mp: Number(r.mp) || 0,
+      w: Number(r.w) || 0,
+      l: Number(r.l) || 0,
+      gw: Number(r.gw) || 0,
+      gl: Number(r.gl) || 0,
+      diff: Number(r.diff) || 0,
+      points: Number(r.points) || 0
+    };
+    if (!out[round]) out[round] = {};
+    if (!out[round][group]) out[round][group] = [];
+    out[round][group].push(entry);
+  });
   return out;
 }
 

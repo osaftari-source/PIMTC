@@ -49,6 +49,9 @@ const getTournaments = () => fetchJSON("data/tournaments.json", "tournaments");
 const getResults = () => fetchJSON("data/results.json", "results");
 const getStandings = () => fetchJSON("data/standings.json", "standings");
 const getPlayoffs = () => fetchJSON("data/playoffs.json", "playoffs");
+const getLive = () => fetchJSON("data/live.json", "live");
+const getUpdates = () => fetchJSON("data/updates.json", "updates");
+const getLiveStandings = () => fetchJSON("data/live-standings.json", "liveStandings");
 
 /* --------- Helpers --------- */
 function esc(str) {
@@ -63,6 +66,56 @@ function seamSVG() {
 
 function skeletonRows(n) {
   return Array.from({ length: n }).map(() => `<div class="skeleton"></div>`).join("");
+}
+
+/* --------- Media embeds for the Live update feed --------- */
+function youtubeId(url) {
+  const m = String(url || "").match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/);
+  return m ? m[1] : null;
+}
+
+let igScriptLoaded = false;
+function ensureInstagramEmbedScript() {
+  if (igScriptLoaded) {
+    if (window.instgrm) window.instgrm.Embeds.process();
+    return;
+  }
+  igScriptLoaded = true;
+  const s = document.createElement("script");
+  s.src = "https://www.instagram.com/embed.js";
+  s.async = true;
+  s.onload = () => window.instgrm && window.instgrm.Embeds.process();
+  document.body.appendChild(s);
+}
+
+function embedBlock(update) {
+  const type = (update.type || "text").toLowerCase();
+  const url = update.url || "";
+
+  if (type === "youtube" && url) {
+    const id = youtubeId(url);
+    if (id) return `<div class="embed-wrap yt"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="Video update" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  }
+  if (type === "instagram" && url) {
+    return `<div class="embed-wrap ig"><blockquote class="instagram-media" data-instgrm-permalink="${esc(url)}" data-instgrm-version="14" style="width:100%;"></blockquote></div>`;
+  }
+  if (type === "photo" && url) {
+    return `<div class="embed-wrap photo"><img src="${esc(url)}" alt="${esc(update.caption || "Update photo")}" loading="lazy"></div>`;
+  }
+  if (url) {
+    return `<a class="btn btn-outline" href="${esc(url)}" target="_blank" rel="noopener">View link &rarr;</a>`;
+  }
+  return "";
+}
+
+function updateCard(u) {
+  return `
+    <div class="update-card">
+      <div class="update-date">${esc(u.date || "")}</div>
+      <div class="update-round">${esc(u.round || "")}</div>
+      ${u.caption ? `<p class="update-caption">${esc(u.caption)}</p>` : ""}
+      ${embedBlock(u)}
+    </div>`;
 }
 
 /* --------- Rank row renderer --------- */
@@ -108,6 +161,7 @@ async function renderHome() {
       </div>
     </section>
     <div class="seam-divider">${seamSVG()}</div>
+    <section class="section" style="padding-bottom:0;" id="liveTeaserSection"></section>
     <section class="section">
       <div class="wrap about-grid">
         <div>
@@ -124,7 +178,7 @@ async function renderHome() {
     </section>
   `;
 
-  const [home, men, women] = await Promise.all([getHome(), getMen(), getWomen()]);
+  const [home, men, women, live, updates] = await Promise.all([getHome(), getMen(), getWomen(), getLive(), getUpdates()]);
   document.getElementById("homeTitle").textContent = home.name || "Who We Are";
   document.getElementById("homeAbout").textContent = home.about || "";
   const ig = document.getElementById("homeIg");
@@ -137,6 +191,26 @@ async function renderHome() {
     <div class="hero-stat"><div class="num">${women.length}</div><div class="lab">Women Ranked</div></div>
     <div class="hero-stat"><div class="num">2025</div><div class="lab">Season</div></div>
   `;
+
+  const teaserSection = document.getElementById("liveTeaserSection");
+  if ((live.status || "").toLowerCase() === "ongoing") {
+    const latest = [...updates].sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))
+      || (Number(b.order) || 0) - (Number(a.order) || 0))[0];
+    teaserSection.innerHTML = `
+      <div class="wrap">
+        <div class="live-teaser">
+          <div class="lt-info">
+            <span class="live-badge"><span class="live-dot"></span>Live Now</span>
+            <h3>${esc(live.name || "Ongoing Tournament")}</h3>
+            <p>${esc(live.venue || "")}${live.startDate ? ` &middot; since ${esc(live.startDate)}` : ""}</p>
+            ${latest ? `<div class="lt-latest">Latest: ${esc(latest.round || "")} &mdash; ${esc(latest.date || "")}</div>` : ""}
+          </div>
+          <a href="#/live" class="btn btn-gold">Follow Live &rarr;</a>
+        </div>
+      </div>`;
+  } else {
+    teaserSection.remove();
+  }
 }
 
 function playersSection(title, eyebrow) {
@@ -228,6 +302,35 @@ function standingsBlock(roundName, roundData) {
           <div class="standings-note"><span class="q">Advanced</span><span class="e">Eliminated</span></div>`
         : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData)}</div>`
       }
+    </div>`;
+}
+
+function pairTable(rows) {
+  return `<table class="standings-table">
+    <thead><tr><th>#</th><th>Pair</th><th>MP</th><th>W</th><th>L</th><th>GW</th><th>GL</th><th>+/-</th><th>Pts</th></tr></thead>
+    <tbody>
+      ${rows.map((r) => `
+        <tr>
+          <td>${r.ranking}</td>
+          <td class="p-name">${esc(r.pair)}</td>
+          <td>${r.mp}</td><td>${r.w}</td><td>${r.l}</td><td>${r.gw}</td><td>${r.gl}</td>
+          <td>${r.diff > 0 ? "+" : ""}${r.diff}</td><td>${r.points}</td>
+        </tr>`).join("")}
+    </tbody>
+  </table>`;
+}
+
+function pairStandingsBlock(roundName, groups) {
+  return `
+    <div class="round-block">
+      <div class="round-title">${esc(roundName)}</div>
+      <div class="standings-grid">
+        ${Object.entries(groups).map(([group, rows]) => `
+          <div class="standings-group">
+            <h4>${esc(group)}</h4>
+            ${pairTable(rows)}
+          </div>`).join("")}
+      </div>
     </div>`;
 }
 
@@ -357,6 +460,81 @@ async function renderResults() {
   });
 }
 
+async function renderLive() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <section class="section-dark section" style="padding-bottom:44px;">
+      <div class="wrap">
+        <div class="live-header">
+          <span class="live-badge" id="liveStatusBadge"><span class="live-dot"></span>Live</span>
+        </div>
+        <h2 id="liveTitle" style="margin-top:12px;">Loading&hellip;</h2>
+        <p id="liveDesc" style="max-width:600px; margin-top:10px;"></p>
+        <div class="live-meta" id="liveMeta"></div>
+      </div>
+    </section>
+    <section class="section" style="padding-bottom:20px;">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Group Stage</span>
+          <h2>Standings</h2>
+        </div>
+        <div id="liveStandingsBody"><div class="skeleton" style="height:200px"></div></div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Match Updates</span>
+          <h2>Latest From The Court</h2>
+        </div>
+        <div class="update-feed" id="updateFeed"><div class="skeleton" style="height:120px; margin-bottom:20px;"></div></div>
+      </div>
+    </section>`;
+
+  const [live, updates, liveStandings] = await Promise.all([getLive(), getUpdates(), getLiveStandings()]);
+
+  document.getElementById("liveTitle").textContent = live.name || "Live Tournament";
+  document.getElementById("liveDesc").textContent = live.description || "";
+  const badge = document.getElementById("liveStatusBadge");
+  if ((live.status || "").toLowerCase() !== "ongoing") {
+    badge.innerHTML = `Completed`;
+    badge.style.color = "var(--gold)";
+    badge.style.borderColor = "rgba(201,162,75,0.35)";
+    badge.style.background = "rgba(201,162,75,0.1)";
+  }
+
+  const fmt = live.format || {};
+  const metaParts = [];
+  if (live.venue) metaParts.push(`<span>@ <b>${esc(live.venue)}</b></span>`);
+  if (live.startDate) metaParts.push(`<span>Started <b>${esc(live.startDate)}</b></span>`);
+  if (fmt.teams) metaParts.push(`<span><b>${esc(fmt.teams)}</b> Pairs</span>`);
+  if (fmt.sets) metaParts.push(`<span><b>${esc(fmt.sets)}</b> Set</span>`);
+  if (fmt.games) metaParts.push(`<span><b>${esc(fmt.games)}</b> Games</span>`);
+  if (fmt.tiebreak) metaParts.push(`<span><b>${esc(fmt.tiebreak)}</b> Tiebreak</span>`);
+  document.getElementById("liveMeta").innerHTML = metaParts.join("");
+
+  const standingsBody = document.getElementById("liveStandingsBody");
+  const roundNames = Object.keys(liveStandings || {});
+  standingsBody.innerHTML = roundNames.length
+    ? roundNames.map((name) => pairStandingsBlock(name, liveStandings[name])).join("")
+    : `<div class="state-msg">Standings haven't been posted yet.</div>`;
+
+  const sorted = [...updates].sort((a, b) => {
+    const d = String(b.date || "").localeCompare(String(a.date || ""));
+    return d !== 0 ? d : (Number(b.order) || 0) - (Number(a.order) || 0);
+  });
+
+  const feed = document.getElementById("updateFeed");
+  feed.innerHTML = sorted.length
+    ? sorted.map(updateCard).join("")
+    : `<div class="state-msg">No updates posted yet — check back soon.</div>`;
+
+  if (sorted.some((u) => (u.type || "").toLowerCase() === "instagram")) {
+    ensureInstagramEmbedScript();
+  }
+}
+
 function renderInquiry() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -397,6 +575,7 @@ function renderInquiry() {
 /* --------- Router --------- */
 const routes = {
   home: renderHome,
+  live: renderLive,
   tournaments: renderTournaments,
   results: renderResults,
   men: renderMen,
@@ -434,6 +613,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const loader = document.getElementById("seamLoader");
   setTimeout(() => loader.classList.add("hide"), 350);
+
+  getLive().then((live) => {
+    const navLink = document.querySelector('.main-nav a[data-route="live"]');
+    if (navLink && (live.status || "").toLowerCase() === "ongoing") navLink.classList.add("has-live");
+  }).catch(() => {});
 });
 
 /* --------- PWA: service worker + install prompt --------- */

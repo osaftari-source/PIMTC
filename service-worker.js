@@ -1,4 +1,4 @@
-const CACHE_NAME = "pimtc-v2";
+const CACHE_NAME = "pimtc-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,6 +12,9 @@ const APP_SHELL = [
   "./data/results.json",
   "./data/standings.json",
   "./data/playoffs.json",
+  "./data/live.json",
+  "./data/updates.json",
+  "./data/live-standings.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
 ];
