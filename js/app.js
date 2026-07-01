@@ -11,7 +11,7 @@
    and README.md for setup steps.
 */
 const CONFIG = {
-  SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec", // e.g. "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec"
+  SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000
 };
 
@@ -624,6 +624,15 @@ window.addEventListener("DOMContentLoaded", () => {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("service-worker.js").catch((e) => console.warn("SW registration failed", e));
+  });
+
+  // Auto-reload once when a new version of the app takes over, so a normal
+  // refresh (not just a hard refresh) is enough to see a fresh deploy.
+  let refreshedOnce = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshedOnce) return;
+    refreshedOnce = true;
+    window.location.reload();
   });
 }
 
