@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /PIMTC/
+Sitemap: https://osaftari-source.github.io/PIMTC/sitemap.xml

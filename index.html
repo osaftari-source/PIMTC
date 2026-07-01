@@ -3,8 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PIM Tennis Club</title>
-<meta name="description" content="Pupuk Iskandar Muda Tennis Club — rankings, tournaments, and results.">
+<title>PIM Tennis Club | Rankings, Live Tournament & Results</title>
+<meta name="description" content="Official PIM Tennis Club PWA for player rankings, live tournament updates, schedules, gallery, and results at PT Pupuk Iskandar Muda.">
+<meta name="keywords" content="PIM Tennis Club, PIMTC, Pupuk Iskandar Muda Tennis, tennis tournament, tennis rankings, Lhokseumawe tennis">
+<link rel="canonical" href="https://osaftari-source.github.io/PIMTC/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PIM Tennis Club">
+<meta property="og:description" content="Rankings, live tournament updates, schedules, gallery, and results for PIM Tennis Club.">
+<meta property="og:url" content="https://osaftari-source.github.io/PIMTC/">
+<meta property="og:image" content="https://osaftari-source.github.io/PIMTC/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PIM Tennis Club">
+<meta name="twitter:description" content="Rankings, live tournament updates, schedules, gallery, and results for PIM Tennis Club.">
+<meta name="twitter:image" content="https://osaftari-source.github.io/PIMTC/icons/icon-512.png">
 <meta name="theme-color" content="#0A1F3D">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/favicon-48.png">
@@ -38,13 +49,23 @@
       <a href="#/women" data-route="women">Women</a>
       <a href="#/inquiry" data-route="inquiry" class="nav-cta">Inquiry</a>
     </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
 
-<main id="app" role="main"></main>
+<main id="app" role="main">
+  <section class="section static-fallback" aria-label="PIM Tennis Club overview">
+    <div class="wrap">
+      <span class="eyebrow">Pupuk Iskandar Muda</span>
+      <h1>PIM Tennis Club</h1>
+      <p>PIM Tennis Club publishes player rankings, live tournament standings, match schedules, tournament results, and club gallery updates for the Pupuk Iskandar Muda tennis community.</p>
+      <p><a href="#/live">Live tournament</a> &middot; <a href="#/men">Men's rankings</a> &middot; <a href="#/women">Women's rankings</a> &middot; <a href="#/results">Results</a></p>
+      <noscript><p>This site works best with JavaScript enabled. Basic links are still available above.</p></noscript>
+    </div>
+  </section>
+</main>
 
 <footer class="site-footer">
   <div class="footer-inner">
@@ -61,7 +82,7 @@
     </div>
     <a class="footer-ig" id="footerIg" href="https://www.instagram.com/pimtennisclub/" target="_blank" rel="noopener">Follow @pimtennisclub</a>
   </div>
-  <div class="footer-bottom">Created and edited by Osman Saftari &middot; <span id="footYear"></span></div>
+  <div class="footer-bottom">Created and edited by Osman Saftari &middot; <span id="footYear"></span><span class="footer-version" id="appVersion"></span></div>
 </footer>
 
 <div class="install-toast" id="installToast">

@@ -77,7 +77,8 @@ const ACTIONS_ = {
   livestandings: getLiveStandings_,
   schedule: getSchedule_,
   gallery: getGallery_,
-  homegallery: getHomeGallery_
+  homegallery: getHomeGallery_,
+  health: getHealth_
 };
 
 function doGet(e) {
@@ -141,15 +142,15 @@ function sheetRows_(name) {
 
 function getPlayers_(tabName) {
   return sheetRows_(tabName).map((r) => ({
-    rank: Number(r.rank) || null,
-    name: String(r.name || ""),
-    age: r.age === "" ? null : Number(r.age),
-    plays: String(r.plays || ""),
-    wins: Number(r.wins) || 0,
-    losses: Number(r.losses) || 0,
-    racket: String(r.racket || ""),
-    dept: String(r.dept || ""),
-    photo: String(r.photo || "")
+    rank: number_(r.rank, null),
+    name: text_(r.name),
+    age: r.age === "" ? null : number_(r.age, null),
+    plays: text_(r.plays),
+    wins: number_(r.wins, 0),
+    losses: number_(r.losses, 0),
+    racket: text_(r.racket),
+    dept: text_(r.dept),
+    photo: text_(r.photo)
   }));
 }
 
@@ -157,30 +158,74 @@ function getHome_() {
   const rows = sheetRows_("Home");
   const r = rows[0] || {};
   return {
-    name: String(r.name || "Pupuk Iskandar Muda Tennis Club"),
-    tagline: String(r.tagline || "Serve, Rally, Win!"),
-    about: String(r.about || ""),
-    photo: String(r.photo || ""),
-    mediaType: String(r.mediaType || "photo").toLowerCase(),
-    instagram: String(r.instagram || ""),
-    mapEmbed: String(r.mapEmbed || ""),
-    lat: Number(r.lat) || null,
-    lng: Number(r.lng) || null
+    name: text_(r.name, "Pupuk Iskandar Muda Tennis Club"),
+    tagline: text_(r.tagline, "Serve, Rally, Win!"),
+    about: text_(r.about),
+    photo: text_(r.photo),
+    mediaType: oneOf_(r.mediaType, ["photo", "instagram", "youtube", "text"], "photo"),
+    instagram: text_(r.instagram),
+    mapEmbed: text_(r.mapEmbed),
+    lat: number_(r.lat, null),
+    lng: number_(r.lng, null)
   };
 }
 
+
+function text_(value, fallback) {
+  const out = String(value == null ? "" : value).trim();
+  return out || (fallback || "");
+}
+
+function lowerText_(value, fallback) {
+  return text_(value, fallback).toLowerCase();
+}
+
+function number_(value, fallback) {
+  if (value === "" || value == null) return fallback == null ? 0 : fallback;
+  const n = Number(value);
+  return isNaN(n) ? (fallback == null ? 0 : fallback) : n;
+}
+
+function boolOrBlank_(value) {
+  if (value === true || String(value).trim().toUpperCase() === "TRUE") return true;
+  if (value === false || String(value).trim().toUpperCase() === "FALSE") return false;
+  return null;
+}
+
+function oneOf_(value, allowed, fallback) {
+  const v = lowerText_(value, fallback);
+  return allowed.indexOf(v) >= 0 ? v : fallback;
+}
+
+function normalizeDate_(value) {
+  const v = text_(value);
+  if (!v) return "";
+  const m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return v;
+  return m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+}
+
+function isValidDateText_(value) {
+  const v = text_(value);
+  return !v || /^\d{4}-\d{2}-\d{2}$/.test(v);
+}
+
+function isDirectPhotoUrl_(url) {
+  const u = text_(url).toLowerCase();
+  return !u || /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/.test(u);
+}
 function catOf_(r) {
-  return String(r.category || "men").toLowerCase().trim() || "men";
+  return lowerText_(r.category, "men") || "men";
 }
 
 function getFormats_() {
   const out = {};
   sheetRows_("Format").forEach((r) => {
     out[catOf_(r)] = {
-      players: Number(r.players) || null,
-      sets: Number(r.sets) || null,
-      games: Number(r.games) || null,
-      tiebreak: r.tiebreak ? String(r.tiebreak) : null
+      players: number_(r.players, null),
+      sets: number_(r.sets, null),
+      games: number_(r.games, null),
+      tiebreak: r.tiebreak ? text_(r.tiebreak) : null
     };
   });
   return out;
@@ -219,18 +264,18 @@ function getStandings_() {
 
   rows.forEach((r) => {
     const cat = catOf_(r);
-    const round = String(r.round || "");
-    const group = String(r.group || "").trim();
+    const round = text_(r.round);
+    const group = text_(r.group);
     const entry = {
-      ranking: Number(r.ranking) || null,
-      player: String(r.player || ""),
-      mp: Number(r.mp) || 0,
-      w: Number(r.w) || 0,
-      points: Number(r.points) || 0
+      ranking: number_(r.ranking, null),
+      player: text_(r.player),
+      mp: number_(r.mp, 0),
+      w: number_(r.w, 0),
+      points: number_(r.points, 0)
     };
-    if (r.nickname) entry.nickname = String(r.nickname);
-    if (r.qualified === true || String(r.qualified).toUpperCase() === "TRUE") entry.qualified = true;
-    else if (r.qualified === false || String(r.qualified).toUpperCase() === "FALSE") entry.qualified = false;
+    if (r.nickname) entry.nickname = text_(r.nickname);
+    const q = boolOrBlank_(r.qualified);
+    if (q !== null) entry.qualified = q;
 
     if (!out[cat]) out[cat] = {};
     if (!out[cat][round]) out[cat][round] = group ? {} : [];
@@ -273,30 +318,30 @@ function getLive_() {
   const rows = sheetRows_("Live");
   const r = rows[0] || {};
   return {
-    id: String(r.id || ""),
-    name: String(r.name || ""),
-    status: String(r.status || "completed").toLowerCase(),
-    venue: String(r.venue || ""),
-    startDate: String(r.startDate || ""),
+    id: text_(r.id),
+    name: text_(r.name),
+    status: oneOf_(r.status, ["ongoing", "completed"], "completed"),
+    venue: text_(r.venue),
+    startDate: normalizeDate_(r.startDate),
     format: {
-      teams: r.teams === "" || r.teams == null ? null : Number(r.teams),
-      sets: r.sets === "" || r.sets == null ? null : Number(r.sets),
-      games: r.games === "" || r.games == null ? null : Number(r.games),
-      tiebreak: r.tiebreak ? String(r.tiebreak) : null
+      teams: r.teams === "" || r.teams == null ? null : number_(r.teams, null),
+      sets: r.sets === "" || r.sets == null ? null : number_(r.sets, null),
+      games: r.games === "" || r.games == null ? null : number_(r.games, null),
+      tiebreak: r.tiebreak ? text_(r.tiebreak) : null
     },
-    description: String(r.description || "")
+    description: text_(r.description)
   };
 }
 
 function getUpdates_() {
   return sheetRows_("Updates")
     .map((r) => ({
-      date: String(r.date || ""),
-      order: Number(r.order) || 0,
-      round: String(r.round || ""),
-      caption: String(r.caption || ""),
-      type: String(r.type || "text").toLowerCase(),
-      url: String(r.url || "")
+      date: normalizeDate_(r.date),
+      order: number_(r.order, 0),
+      round: text_(r.round),
+      caption: text_(r.caption),
+      type: oneOf_(r.type, ["text", "photo", "instagram", "youtube"], "text"),
+      url: text_(r.url)
     }))
     .filter((u) => u.date || u.caption);
 }
@@ -305,18 +350,18 @@ function getLiveStandings_() {
   const rows = sheetRows_("LiveStandings");
   const out = {};
   rows.forEach((r) => {
-    const round = String(r.round || "");
-    const group = String(r.group || "");
+    const round = text_(r.round);
+    const group = text_(r.group);
     const entry = {
-      ranking: Number(r.ranking) || null,
-      pair: String(r.pair || ""),
-      mp: Number(r.mp) || 0,
-      w: Number(r.w) || 0,
-      l: Number(r.l) || 0,
-      gw: Number(r.gw) || 0,
-      gl: Number(r.gl) || 0,
-      diff: Number(r.diff) || 0,
-      points: Number(r.points) || 0
+      ranking: number_(r.ranking, null),
+      pair: text_(r.pair),
+      mp: number_(r.mp, 0),
+      w: number_(r.w, 0),
+      l: number_(r.l, 0),
+      gw: number_(r.gw, 0),
+      gl: number_(r.gl, 0),
+      diff: number_(r.diff, 0),
+      points: number_(r.points, 0)
     };
     if (!out[round]) out[round] = {};
     if (!out[round][group]) out[round][group] = [];
@@ -327,30 +372,30 @@ function getLiveStandings_() {
 
 function getSchedule_() {
   return sheetRows_("Schedule").map((r) => ({
-    date: String(r.date || ""),
-    day: String(r.day || ""),
-    time: String(r.time || ""),
-    court: String(r.court || ""),
-    team1: String(r.team1 || ""),
-    team2: String(r.team2 || "")
+    date: normalizeDate_(r.date),
+    day: text_(r.day),
+    time: text_(r.time),
+    court: text_(r.court),
+    team1: text_(r.team1),
+    team2: text_(r.team2)
   }));
 }
 
 function getGallery_() {
   return sheetRows_("Gallery").map((r) => ({
-    event: String(r.event || ""),
-    date: String(r.date || ""),
-    caption: String(r.caption || ""),
-    type: String(r.type || "photo").toLowerCase(),
-    url: String(r.url || "")
+    event: text_(r.event),
+    date: normalizeDate_(r.date),
+    caption: text_(r.caption),
+    type: oneOf_(r.type, ["photo", "instagram", "youtube"], "photo"),
+    url: text_(r.url)
   }));
 }
 
 function getHomeGallery_() {
   return sheetRows_("HomeGallery").map((r) => ({
-    order: Number(r.order) || 0,
-    url: String(r.url || ""),
-    caption: String(r.caption || "")
+    order: number_(r.order, 0),
+    url: text_(r.url),
+    caption: text_(r.caption)
   })).filter((s) => s.url);
 }
 
@@ -360,7 +405,60 @@ function getResults_() {
   rows.forEach((r) => {
     const cat = catOf_(r);
     if (!out[cat]) out[cat] = [];
-    out[cat].push({ round: String(r.round || ""), summary: String(r.summary || "") });
+    out[cat].push({ round: text_(r.round), summary: text_(r.summary) });
   });
   return out;
+}
+
+
+function getHealth_() {
+  const expected = {
+    Men:["rank","name","age","plays","wins","losses","racket","dept","photo"],
+    Women:["rank","name","age","plays","wins","losses","racket","dept","photo"],
+    Home:["name","tagline","about","photo","mediaType","instagram","mapEmbed","lat","lng"],
+    TournamentRounds:["category","roundOrder","roundName","point"],
+    Format:["category","players","sets","games","tiebreak"],
+    Standings:["category","round","group","ranking","player","nickname","mp","w","points","qualified"],
+    Playoffs:["category","stage","p1","p2","score","winner"],
+    Results:["category","round","summary"],
+    Live:["id","name","status","venue","startDate","teams","sets","games","tiebreak","description"],
+    Updates:["date","order","round","caption","type","url"],
+    LiveStandings:["round","group","ranking","pair","mp","w","l","gw","gl","diff","points"],
+    Schedule:["date","day","time","court","team1","team2"],
+    Gallery:["event","date","caption","type","url"],
+    HomeGallery:["order","url","caption"]
+  };
+  const issues = [];
+  const stats = {};
+  Object.keys(expected).forEach(function(name) {
+    const sheet = getSheet_(name);
+    if (!sheet) { issues.push({ sheet:name, severity:"error", message:"Missing sheet" }); return; }
+    const values = sheet.getDataRange().getValues();
+    const headers = values.length ? values[0].map(function(h){ return String(h).trim(); }) : [];
+    stats[name] = Math.max(values.length - 1, 0);
+    expected[name].forEach(function(h) {
+      if (headers.indexOf(h) < 0) issues.push({ sheet:name, severity:"error", message:"Missing header: " + h });
+    });
+  });
+
+  sheetRows_("Live").forEach(function(r, i) {
+    if (["ongoing", "completed"].indexOf(lowerText_(r.status, "completed")) < 0) issues.push({ sheet:"Live", row:i+2, severity:"warning", message:"Unknown status: " + r.status });
+    if (!isValidDateText_(normalizeDate_(r.startDate))) issues.push({ sheet:"Live", row:i+2, severity:"warning", message:"Date should use YYYY-MM-DD" });
+  });
+  sheetRows_("Updates").forEach(function(r, i) {
+    const t = lowerText_(r.type, "text");
+    if (["text", "photo", "instagram", "youtube"].indexOf(t) < 0) issues.push({ sheet:"Updates", row:i+2, severity:"warning", message:"Unknown media type: " + r.type });
+    if (!isValidDateText_(normalizeDate_(r.date))) issues.push({ sheet:"Updates", row:i+2, severity:"warning", message:"Date should use YYYY-MM-DD" });
+    if (t === "photo" && !isDirectPhotoUrl_(r.url)) issues.push({ sheet:"Updates", row:i+2, severity:"warning", message:"Photo URL should be a direct image file link" });
+  });
+  sheetRows_("Gallery").forEach(function(r, i) {
+    const t = lowerText_(r.type, "photo");
+    if (["photo", "instagram", "youtube"].indexOf(t) < 0) issues.push({ sheet:"Gallery", row:i+2, severity:"warning", message:"Unknown media type: " + r.type });
+    if (t === "photo" && !isDirectPhotoUrl_(r.url)) issues.push({ sheet:"Gallery", row:i+2, severity:"warning", message:"Photo URL should be a direct image file link" });
+  });
+  sheetRows_("HomeGallery").forEach(function(r, i) {
+    if (!isDirectPhotoUrl_(r.url)) issues.push({ sheet:"HomeGallery", row:i+2, severity:"warning", message:"URL should be a direct image file link" });
+  });
+
+  return { ok: issues.filter(function(i){ return i.severity === "error"; }).length === 0, generatedAt: new Date().toISOString(), rowCounts: stats, issues: issues };
 }

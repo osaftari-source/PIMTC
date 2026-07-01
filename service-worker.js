@@ -1,8 +1,10 @@
-const CACHE_NAME = "pimtc-v14";
+const CACHE_NAME = "pimtc-v15";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./robots.txt",
+  "./sitemap.xml",
   "./css/style.css",
   "./js/app.js",
   "./data/home.json",
@@ -45,6 +47,7 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   const isApi = url.hostname.includes("script.google.com");
+  const isMedia = url.pathname.includes("/media/") || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(url.pathname);
 
   if (isApi) {
     event.respondWith(
@@ -55,6 +58,20 @@ self.addEventListener("fetch", (event) => {
           return res;
         })
         .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  if (isMedia) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const fetchPromise = fetch(request).then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          return res;
+        }).catch(() => cached);
+        return cached || fetchPromise;
+      })
     );
     return;
   }

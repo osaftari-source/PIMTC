@@ -449,3 +449,42 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .rank-record{ grid-column: 1 / -1; text-align:left; margin-top:6px; }
   .wl-bar{ margin-left:0; }
 }
+
+/* ---------- v15 accessibility / mobile robustness ---------- */
+.table-scroll{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.table-scroll::after{ content:"Swipe table horizontally on small screens"; display:none; font-family:var(--font-mono); font-size:10px; letter-spacing:.5px; color:rgba(18,24,31,.42); margin-top:6px; }
+.standings-table caption,
+.schedule-table caption{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.live-section-nav{ position:sticky; top:71px; z-index:420; display:flex; gap:8px; justify-content:center; padding:10px 16px; background:rgba(244,240,230,.92); border-bottom:1px solid rgba(18,24,31,.08); backdrop-filter: blur(10px); }
+.live-section-nav a{ font-family:var(--font-display); text-transform:uppercase; letter-spacing:.5px; font-weight:700; font-size:14px; color:var(--navy); border:1px solid rgba(18,24,31,.12); border-radius:999px; padding:8px 14px; background:var(--chalk); }
+.live-section-nav a:hover,
+.live-section-nav a:focus-visible{ border-color:var(--gold); color:var(--court-bright); }
+.live-compact-section{ padding-top:34px; padding-bottom:18px; scroll-margin-top:130px; }
+.live-details{ background:transparent; }
+.live-details summary{ list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+.live-details summary::-webkit-details-marker{ display:none; }
+.live-details summary strong{ display:block; font-family:var(--font-display); font-size:clamp(30px,4.5vw,46px); line-height:1.04; }
+.live-details summary::after{ content:"Collapse"; font-family:var(--font-mono); font-size:11px; color:rgba(18,24,31,.45); border:1px solid rgba(18,24,31,.14); border-radius:999px; padding:6px 10px; }
+.live-details:not([open]) summary::after{ content:"Expand"; }
+.inline-warning{ text-align:left; padding:18px 20px; margin:20px 0; border-left:4px solid var(--gold); background:rgba(201,162,75,.1); border-radius:4px; }
+.footer-version{ margin-left:8px; color:rgba(244,240,230,.28); }
+@media (max-width: 860px){
+  .main-nav{ visibility:hidden; }
+  .main-nav.open{ visibility:visible; }
+  .live-section-nav{ top:62px; justify-content:flex-start; overflow-x:auto; }
+  .live-section-nav a{ white-space:nowrap; }
+  .table-scroll::after{ display:block; }
+  .schedule-table thead{ display:none; }
+  .schedule-table,
+  .schedule-table tbody,
+  .schedule-table tr,
+  .schedule-table td{ display:block; width:100%; }
+  .schedule-table tr{ background:var(--chalk); border:1px solid rgba(18,24,31,.08); border-left:4px solid var(--gold); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+  .schedule-table td{ border-bottom:0; padding:6px 0 6px 92px; position:relative; min-height:28px; }
+  .schedule-table td::before{ content:attr(data-label); position:absolute; left:0; top:8px; width:78px; font-family:var(--font-mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:rgba(18,24,31,.42); }
+  .schedule-match{ display:block; }
+  .standings-table{ min-width:560px; }
+  .pair-table{ min-width:760px; }
+  .result-row{ display:block; }
+  .result-row .summary{ margin-top:4px; }
+}

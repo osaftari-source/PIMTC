@@ -12,16 +12,59 @@
 */
 const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
-  CACHE_TTL_MS: 5 * 60 * 1000
+  CACHE_TTL_MS: 5 * 60 * 1000,
+  VERSION: "pimtc-v15"
 };
 
 const state = { cache: {} };
+const PERSIST_PREFIX = "pimtc_cache_";
+
+function cacheFresh(entry) {
+  return entry && Date.now() - entry.time < CONFIG.CACHE_TTL_MS;
+}
+
+function readPersistentCache(key) {
+  try {
+    const raw = localStorage.getItem(PERSIST_PREFIX + key);
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    if (!cacheFresh(entry)) return null;
+    return entry;
+  } catch (e) {
+    return null;
+  }
+}
+
+function rememberData(key, data, source = "network") {
+  const entry = { data, time: Date.now(), source };
+  state.cache[key] = entry;
+  try { localStorage.setItem(PERSIST_PREFIX + key, JSON.stringify(entry)); } catch (e) {}
+  return data;
+}
+
+function getCacheEntry(key) {
+  const memory = state.cache[key];
+  if (cacheFresh(memory)) return memory;
+  const persistent = readPersistentCache(key);
+  if (persistent) {
+    state.cache[key] = persistent;
+    return persistent;
+  }
+  return null;
+}
+
+function lastUpdatedLabel(keys) {
+  const times = keys.map((key) => state.cache[key]?.time).filter(Boolean);
+  if (!times.length) return "";
+  const latest = Math.max(...times);
+  return new Date(latest).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
 
 /* --------- Data layer --------- */
 async function fetchJSON(localPath, sheetAction) {
   const cacheKey = sheetAction || localPath;
-  const cached = state.cache[cacheKey];
-  if (cached && Date.now() - cached.time < CONFIG.CACHE_TTL_MS) return cached.data;
+  const cached = getCacheEntry(cacheKey);
+  if (cached) return cached.data;
 
   if (CONFIG.SHEETS_API_URL) {
     try {
@@ -29,8 +72,7 @@ async function fetchJSON(localPath, sheetAction) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("bad response");
       const data = await res.json();
-      state.cache[cacheKey] = { data, time: Date.now() };
-      return data;
+      return rememberData(cacheKey, data, "network");
     } catch (e) {
       console.warn(`Sheets fetch failed for ${sheetAction}, falling back to local data.`, e);
     }
@@ -38,8 +80,7 @@ async function fetchJSON(localPath, sheetAction) {
 
   const res = await fetch(localPath);
   const data = await res.json();
-  state.cache[cacheKey] = { data, time: Date.now() };
-  return data;
+  return rememberData(cacheKey, data, "local");
 }
 
 /* Fetches several sheetAction keys in a single Apps Script round-trip instead
@@ -48,11 +89,7 @@ async function fetchJSON(localPath, sheetAction) {
    Shares the same in-memory cache as fetchJSON, so a key fetched here is
    also a cache hit later if some other page calls its individual getX(). */
 async function fetchBundle(items) {
-  const now = Date.now();
-  const stale = items.filter(({ key }) => {
-    const cached = state.cache[key];
-    return !(cached && now - cached.time < CONFIG.CACHE_TTL_MS);
-  });
+  const stale = items.filter(({ key }) => !getCacheEntry(key));
 
   if (stale.length && CONFIG.SHEETS_API_URL) {
     try {
@@ -61,18 +98,18 @@ async function fetchBundle(items) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("bad response");
       const data = await res.json();
-      stale.forEach(({ key }) => { state.cache[key] = { data: data[key], time: now }; });
+      stale.forEach(({ key }) => { rememberData(key, data[key], "network"); });
     } catch (e) {
       console.warn("Bundle fetch failed, falling back to local data.", e);
       await Promise.all(stale.map(async ({ key, local }) => {
         const res = await fetch(local);
-        state.cache[key] = { data: await res.json(), time: now };
+        rememberData(key, await res.json(), "local");
       }));
     }
   } else if (stale.length) {
     await Promise.all(stale.map(async ({ key, local }) => {
       const res = await fetch(local);
-      state.cache[key] = { data: await res.json(), time: now };
+      rememberData(key, await res.json(), "local");
     }));
   }
 
@@ -379,18 +416,19 @@ function formatStats(fmt) {
   </div>`;
 }
 
-function standingsTable(rows) {
-  return `<table class="standings-table">
-    <thead><tr><th>#</th><th>Player</th><th>MP</th><th>W</th><th>Pts</th></tr></thead>
+function standingsTable(rows, caption = "Tournament standings") {
+  return `<div class="table-scroll"><table class="standings-table">
+    <caption>${esc(caption)}</caption>
+    <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">MP</th><th scope="col">W</th><th scope="col">Pts</th></tr></thead>
     <tbody>
       ${rows.map((r) => `
         <tr class="${r.qualified ? "qualified" : r.qualified === false ? "eliminated" : ""}">
-          <td>${r.ranking}</td>
-          <td class="p-name">${esc(r.player)}${r.nickname ? ` <span style="color:rgba(18,24,31,0.4); font-weight:400;">(${esc(r.nickname)})</span>` : ""}</td>
-          <td>${r.mp}</td><td>${r.w}</td><td>${r.points}</td>
+          <td data-label="#">${r.ranking}</td>
+          <td data-label="Player" class="p-name">${esc(r.player)}${r.nickname ? ` <span style="color:rgba(18,24,31,0.4); font-weight:400;">(${esc(r.nickname)})</span>` : ""}</td>
+          <td data-label="MP">${r.mp}</td><td data-label="W">${r.w}</td><td data-label="Pts">${r.points}</td>
         </tr>`).join("")}
     </tbody>
-  </table>`;
+  </table></div>`;
 }
 
 function standingsBlock(roundName, roundData) {
@@ -403,28 +441,29 @@ function standingsBlock(roundName, roundData) {
             ${Object.entries(roundData).map(([group, rows]) => `
               <div class="standings-group">
                 <h4>${esc(group)}</h4>
-                ${standingsTable(rows)}
+                ${standingsTable(rows, `${group} standings`)}
               </div>`).join("")}
           </div>
           <div class="standings-note"><span class="q">Advanced</span><span class="e">Eliminated</span></div>`
-        : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData)}</div>`
+        : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData, `${roundName} standings`)}</div>`
       }
     </div>`;
 }
 
-function pairTable(rows) {
-  return `<table class="standings-table">
-    <thead><tr><th>#</th><th>Pair</th><th>MP</th><th>W</th><th>L</th><th>GW</th><th>GL</th><th>+/-</th><th>Pts</th></tr></thead>
+function pairTable(rows, caption = "Live pair standings") {
+  return `<div class="table-scroll"><table class="standings-table pair-table">
+    <caption>${esc(caption)}</caption>
+    <thead><tr><th scope="col">#</th><th scope="col">Pair</th><th scope="col">MP</th><th scope="col">W</th><th scope="col">L</th><th scope="col">GW</th><th scope="col">GL</th><th scope="col">+/-</th><th scope="col">Pts</th></tr></thead>
     <tbody>
       ${rows.map((r) => `
         <tr>
-          <td>${r.ranking}</td>
-          <td class="p-name">${esc(r.pair)}</td>
-          <td>${r.mp}</td><td>${r.w}</td><td>${r.l}</td><td>${r.gw}</td><td>${r.gl}</td>
-          <td>${r.diff > 0 ? "+" : ""}${r.diff}</td><td>${r.points}</td>
+          <td data-label="#">${r.ranking}</td>
+          <td data-label="Pair" class="p-name">${esc(r.pair)}</td>
+          <td data-label="MP">${r.mp}</td><td data-label="W">${r.w}</td><td data-label="L">${r.l}</td><td data-label="GW">${r.gw}</td><td data-label="GL">${r.gl}</td>
+          <td data-label="+/-">${r.diff > 0 ? "+" : ""}${r.diff}</td><td data-label="Pts">${r.points}</td>
         </tr>`).join("")}
     </tbody>
-  </table>`;
+  </table></div>`;
 }
 
 function pairStandingsBlock(roundName, groups) {
@@ -435,7 +474,7 @@ function pairStandingsBlock(roundName, groups) {
         ${Object.entries(groups).map(([group, rows]) => `
           <div class="standings-group">
             <h4>${esc(group)}</h4>
-            ${pairTable(rows)}
+            ${pairTable(rows, `${roundName} ${group} pair standings`)}
           </div>`).join("")}
       </div>
     </div>`;
@@ -454,18 +493,19 @@ function scheduleTable(matches) {
 
   const row = (m) => `
     <tr>
-      <td>${m.date
+      <td data-label="Date">${m.date
         ? `<span class="schedule-date">${esc(m.date)}${m.day ? `<span class="day">${esc(m.day)}</span>` : ""}</span>`
         : `<span class="schedule-tbc-label">Date TBC</span>`}</td>
-      <td>${m.time ? `<span class="schedule-time">${esc(m.time)}</span>` : ""}</td>
-      <td>${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : ""}</td>
-      <td>${matchCell(m)}</td>
+      <td data-label="Time">${m.time ? `<span class="schedule-time">${esc(m.time)}</span>` : ""}</td>
+      <td data-label="Court">${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : ""}</td>
+      <td data-label="Match">${matchCell(m)}</td>
     </tr>`;
 
-  return `<table class="schedule-table">
-    <thead><tr><th>Date</th><th>Time</th><th>Court</th><th>Match</th></tr></thead>
+  return `<div class="table-scroll"><table class="schedule-table">
+    <caption>Upcoming match schedule</caption>
+    <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Court</th><th scope="col">Match</th></tr></thead>
     <tbody>${dated.map(row).join("")}${tbc.map(row).join("")}</tbody>
-  </table>`;
+  </table></div>`;
 }
 
 function catLabel(cat) {
@@ -480,9 +520,36 @@ function orderCats(cats) {
 }
 
 function tabBar(cats) {
-  return `<div class="tab-bar">
-    ${cats.map((c, i) => `<button class="tab-btn ${i === 0 ? "active" : ""}" data-cat="${esc(c)}">${esc(catLabel(c))}</button>`).join("")}
+  return `<div class="tab-bar" role="tablist" aria-label="Tournament category">
+    ${cats.map((c, i) => `<button class="tab-btn ${i === 0 ? "active" : ""}" role="tab" aria-selected="${i === 0 ? "true" : "false"}" tabindex="${i === 0 ? "0" : "-1"}" data-cat="${esc(c)}">${esc(catLabel(c))}</button>`).join("")}
   </div>`;
+}
+
+function bindTabButtons(draw) {
+  const buttons = Array.from(document.querySelectorAll(".tab-btn"));
+  function activate(btn) {
+    buttons.forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle("active", active);
+      b.setAttribute("aria-selected", String(active));
+      b.tabIndex = active ? 0 : -1;
+    });
+    draw(btn.dataset.cat);
+  }
+  buttons.forEach((btn, index) => {
+    btn.addEventListener("click", () => activate(btn));
+    btn.addEventListener("keydown", (e) => {
+      if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(e.key)) return;
+      e.preventDefault();
+      let nextIndex = index;
+      if (e.key === "ArrowRight") nextIndex = (index + 1) % buttons.length;
+      if (e.key === "ArrowLeft") nextIndex = (index - 1 + buttons.length) % buttons.length;
+      if (e.key === "Home") nextIndex = 0;
+      if (e.key === "End") nextIndex = buttons.length - 1;
+      buttons[nextIndex].focus();
+      activate(buttons[nextIndex]);
+    });
+  });
 }
 
 async function renderTournaments() {
@@ -535,13 +602,7 @@ async function renderTournaments() {
   if (cats.length) draw(cats[0]);
   else body.innerHTML = `<div class="state-msg">No tournaments published yet.</div>`;
 
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      draw(btn.dataset.cat);
-    });
-  });
+  bindTabButtons(draw);
 }
 
 function bracketHTML(playoffs) {
@@ -610,13 +671,7 @@ async function renderResults() {
   if (cats.length) draw(cats[0]);
   else body.innerHTML = `<div class="state-msg">No results published yet.</div>`;
 
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      draw(btn.dataset.cat);
-    });
-  });
+  bindTabButtons(draw);
 }
 
 async function renderLive() {
@@ -632,31 +687,33 @@ async function renderLive() {
         <div class="live-meta" id="liveMeta"></div>
       </div>
     </section>
-    <section class="section" style="padding-bottom:20px;">
+    <nav class="live-section-nav" aria-label="Live tournament sections">
+      <a href="#/live" data-live-target="live-standings">Standings</a>
+      <a href="#/live" data-live-target="live-schedule">Schedule</a>
+      <a href="#/live" data-live-target="live-updates">Updates</a>
+    </nav>
+    <section class="section live-compact-section" id="live-standings">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Group Stage</span>
-          <h2>Standings</h2>
-        </div>
-        <div id="liveStandingsBody"><div class="skeleton" style="height:200px"></div></div>
+        <details class="live-details" open>
+          <summary><span><span class="eyebrow">Group Stage</span><strong>Standings</strong></span></summary>
+          <div id="liveStandingsBody"><div class="skeleton" style="height:200px"></div></div>
+        </details>
       </div>
     </section>
-    <section class="section" style="padding-bottom:20px; padding-top:0;">
+    <section class="section live-compact-section" id="live-schedule">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Match Schedule</span>
-          <h2>Upcoming Matches</h2>
-        </div>
-        <div id="scheduleBody"><div class="skeleton" style="height:160px"></div></div>
+        <details class="live-details" open>
+          <summary><span><span class="eyebrow">Match Schedule</span><strong>Upcoming Matches</strong></span></summary>
+          <div id="scheduleBody"><div class="skeleton" style="height:160px"></div></div>
+        </details>
       </div>
     </section>
-    <section class="section">
+    <section class="section live-compact-section" id="live-updates">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Match Updates</span>
-          <h2>Latest From The Court</h2>
-        </div>
-        <div class="update-feed" id="updateFeed"><div class="skeleton" style="height:120px; margin-bottom:20px;"></div></div>
+        <details class="live-details" open>
+          <summary><span><span class="eyebrow">Match Updates</span><strong>Latest From The Court</strong></span></summary>
+          <div class="update-feed" id="updateFeed"><div class="skeleton" style="height:120px; margin-bottom:20px;"></div></div>
+        </details>
       </div>
     </section>`;
 
@@ -685,6 +742,8 @@ async function renderLive() {
   if (fmt.sets) metaParts.push(`<span><b>${esc(fmt.sets)}</b> Set</span>`);
   if (fmt.games) metaParts.push(`<span><b>${esc(fmt.games)}</b> Games</span>`);
   if (fmt.tiebreak) metaParts.push(`<span><b>${esc(fmt.tiebreak)}</b> Tiebreak</span>`);
+  const updated = lastUpdatedLabel(["live", "updates", "liveStandings", "schedule"]);
+  if (updated) metaParts.push(`<span>Data refreshed <b>${esc(updated)}</b></span>`);
   document.getElementById("liveMeta").innerHTML = metaParts.join("");
 
   const standingsBody = document.getElementById("liveStandingsBody");
@@ -729,6 +788,14 @@ async function renderLive() {
       feed.appendChild(moreBtn);
     }
   }
+
+  document.querySelectorAll("[data-live-target]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const target = document.getElementById(link.dataset.liveTarget);
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 }
 
 function galleryCard(item) {
@@ -797,17 +864,9 @@ function renderInquiry() {
         <div>
           <span class="eyebrow">Get In Touch</span>
           <h2>Inquiry</h2>
-          <p style="margin-top:14px;">Want to join a session, register for the next tournament, or ask about the club? Send us a message and we'll get back to you.</p>
-          <form id="inquiryForm" style="margin-top:26px;">
-            <div class="field"><label for="fName">Name</label><input id="fName" required></div>
-            <div class="field"><label for="fDept">Department</label><input id="fDept"></div>
-            <div class="field"><label for="fCategory">Category</label>
-              <select id="fCategory"><option>Men's Ranking</option><option>Women's Ranking</option><option>Tournament Registration</option><option>General</option></select>
-            </div>
-            <div class="field"><label for="fMsg">Message</label><textarea id="fMsg" required></textarea></div>
-            <p class="form-note">This demo form doesn't send yet &mdash; wire it to Google Forms or the Apps Script backend (see README) to start collecting entries.</p>
-            <button type="submit" class="btn btn-gold">Send Inquiry</button>
-          </form>
+          <p style="margin-top:14px;">Want to join a session, register for the next tournament, or ask about the club? Please contact the club directly through Instagram for now.</p>
+          <div class="state-msg inline-warning">The inquiry form is intentionally disabled until it is connected to Google Forms or the Apps Script backend, so no message is accidentally lost.</div>
+          <a class="btn btn-gold" href="https://www.instagram.com/pimtennisclub/" target="_blank" rel="noopener">Message @pimtennisclub</a>
         </div>
         <div class="contact-card">
           <h3>PIM Tennis Club</h3>
@@ -818,12 +877,6 @@ function renderInquiry() {
         </div>
       </div>
     </section>`;
-
-  document.getElementById("inquiryForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    alert("Thanks! (Demo form — connect this to Google Sheets/Forms to actually receive inquiries.)");
-    e.target.reset();
-  });
 }
 
 /* --------- Router --------- */
@@ -847,10 +900,26 @@ async function router() {
   const route = currentRoute();
   if (route !== "home" && carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
   document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("active", a.dataset.route === route));
-  document.getElementById("mainNav").classList.remove("open");
-  document.getElementById("navToggle").setAttribute("aria-expanded", "false");
+  closeMenu();
   window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   await routes[route]();
+  focusPageHeading();
+}
+
+function focusPageHeading() {
+  const app = document.getElementById("app");
+  const heading = app.querySelector("h1, h2");
+  if (!heading) return;
+  heading.setAttribute("tabindex", "-1");
+  heading.focus({ preventScroll: true });
+}
+
+function closeMenu() {
+  const nav = document.getElementById("mainNav");
+  const toggle = document.getElementById("navToggle");
+  nav.classList.remove("open");
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Open menu");
 }
 
 window.addEventListener("hashchange", router);
@@ -859,12 +928,22 @@ window.addEventListener("DOMContentLoaded", () => {
   router();
 
   document.getElementById("footYear").textContent = new Date().getFullYear();
+  document.getElementById("appVersion")?.append(CONFIG.VERSION);
 
   const toggle = document.getElementById("navToggle");
   const nav = document.getElementById("mainNav");
   toggle.addEventListener("click", () => {
     const open = nav.classList.toggle("open");
     toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    if (open) nav.querySelector("a")?.focus();
+  });
+  nav.addEventListener("click", (e) => { if (e.target.closest("a")) closeMenu(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav.classList.contains("open")) {
+      closeMenu();
+      toggle.focus();
+    }
   });
 
   const loader = document.getElementById("seamLoader");
