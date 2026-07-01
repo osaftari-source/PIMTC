@@ -42,6 +42,11 @@
  *                      "PIMTC 500 Doubles 2026" — photos with the same event text are
  *                      grouped together on the Gallery page, most recent event first.
  *                      type = "instagram", "youtube", or "photo".)
+ *    HomeGallery    | order | url | caption |
+ *                     (one row per photo for the auto-rotating carousel on the Home page.
+ *                      url must be a direct image link, same rule as any type="photo" field.
+ *                      order controls the sequence; caption is optional. If this tab has
+ *                      any rows, it takes priority over the Home tab's single photo/mediaType.)
  *
  * 2. Extensions > Apps Script, paste this file in as Code.gs.
  * 3. Deploy > New deployment > Web app.
@@ -93,8 +98,11 @@ function doGet(e) {
     case "gallery":
       payload = getGallery_();
       break;
+    case "homegallery":
+      payload = getHomeGallery_();
+      break;
     default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule, gallery." };
+      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule, gallery, homeGallery." };
   }
 
   return ContentService
@@ -324,6 +332,14 @@ function getGallery_() {
     type: String(r.type || "photo").toLowerCase(),
     url: String(r.url || "")
   }));
+}
+
+function getHomeGallery_() {
+  return sheetRows_("HomeGallery").map((r) => ({
+    order: Number(r.order) || 0,
+    url: String(r.url || ""),
+    caption: String(r.caption || "")
+  })).filter((s) => s.url);
 }
 
 function getResults_() {

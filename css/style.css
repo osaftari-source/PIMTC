@@ -146,6 +146,27 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .about-photo img{ width:100%; height:100%; object-fit:cover; }
 .about-photo.is-embed{ aspect-ratio: auto; background: none; box-shadow: none; }
 .about-photo.is-embed .embed-wrap{ max-width: none; }
+
+/* ---------- Home photo carousel ---------- */
+.photo-carousel{ position:relative; width:100%; height:100%; }
+.carousel-slide{
+  position:absolute; inset:0; opacity:0; transition: opacity 0.8s ease;
+  pointer-events:none;
+}
+.carousel-slide.active{ opacity:1; pointer-events:auto; }
+.carousel-slide img{ width:100%; height:100%; object-fit:cover; display:block; }
+.carousel-dots{
+  position:absolute; bottom:14px; left:0; right:0; display:flex; justify-content:center; gap:8px; z-index:2;
+}
+.carousel-dot{
+  width:8px; height:8px; border-radius:50%; background: rgba(255,255,255,0.45); border:none; cursor:pointer; padding:0;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.carousel-dot.active{ background: var(--gold); transform: scale(1.25); }
+.carousel-caption{
+  position:absolute; left:14px; bottom:14px; right:60px; color: var(--chalk); font-size:13px;
+  font-family: var(--font-body); text-shadow: 0 1px 6px rgba(0,0,0,0.6); z-index:1;
+}
 .about-photo-fallback{
   width:100%; height:100%; display:flex; align-items:center; justify-content:center;
   background: radial-gradient(120% 140% at 20% 0%, var(--navy-soft) 0%, var(--navy) 60%, var(--navy-deep) 100%);

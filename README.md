@@ -119,6 +119,17 @@ rankings and tournament info editable from a spreadsheet:
    `photo` (same embedding rules as Updates — see the posting workflow below
    for where to host photos so they have a real, direct link).
 
+   **HomeGallery** (one row per photo — auto-rotating carousel on the Home page)
+   | order | url | caption |
+   |---|---|---|
+   Photos only (no Instagram/YouTube — a carousel needs to auto-advance
+   cleanly, which doesn't work well with embedded posts). `url` must be a
+   direct image link (see "Hosting photos" below). `order` controls the
+   sequence, `caption` is optional overlay text. **If this tab has any rows
+   at all, it takes over the Home page photo spot completely** — the single
+   `photo`/`mediaType` fields on the `Home` tab are ignored while HomeGallery
+   has content. Delete all rows here to go back to a single Home photo/embed.
+
 2. Populate the sheet from your current roster (the `data/*.json`
    files in this project already contain everything currently on the
    Google Site, so you can copy those values in as a starting point).

@@ -54,6 +54,7 @@ const getUpdates = () => fetchJSON("data/updates.json", "updates");
 const getLiveStandings = () => fetchJSON("data/live-standings.json", "liveStandings");
 const getSchedule = () => fetchJSON("data/schedule.json", "schedule");
 const getGallery = () => fetchJSON("data/gallery.json", "gallery");
+const getHomeGallery = () => fetchJSON("data/home-gallery.json", "homeGallery");
 
 /* --------- Helpers --------- */
 function esc(str) {
@@ -146,6 +147,51 @@ function rankRow(p) {
 }
 
 /* --------- Page renderers --------- */
+let carouselTimer = null;
+
+function initCarousel(container, items, altBase) {
+  if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+  const sorted = [...items].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+  let idx = 0;
+
+  container.classList.remove("is-embed");
+  container.innerHTML = `
+    <div class="photo-carousel">
+      ${sorted.map((s, i) => `
+        <div class="carousel-slide ${i === 0 ? "active" : ""}">
+          <img src="${esc(s.url)}" alt="${esc(s.caption || altBase)}" loading="${i === 0 ? "eager" : "lazy"}">
+          ${s.caption ? `<div class="carousel-caption">${esc(s.caption)}</div>` : ""}
+        </div>`).join("")}
+      ${sorted.length > 1 ? `
+        <div class="carousel-dots">
+          ${sorted.map((_, i) => `<button class="carousel-dot ${i === 0 ? "active" : ""}" data-idx="${i}" aria-label="Show photo ${i + 1}"></button>`).join("")}
+        </div>` : ""}
+    </div>`;
+
+  if (sorted.length <= 1) return;
+
+  const slides = container.querySelectorAll(".carousel-slide");
+  const dots = container.querySelectorAll(".carousel-dot");
+
+  function show(i) {
+    idx = i;
+    slides.forEach((s, n) => s.classList.toggle("active", n === i));
+    dots.forEach((d, n) => d.classList.toggle("active", n === i));
+  }
+  function start() {
+    carouselTimer = setInterval(() => show((idx + 1) % sorted.length), 4500);
+  }
+  function stop() {
+    if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+  }
+
+  dots.forEach((d) => d.addEventListener("click", () => { show(Number(d.dataset.idx)); stop(); start(); }));
+  container.addEventListener("mouseenter", stop);
+  container.addEventListener("mouseleave", start);
+
+  start();
+}
+
 async function renderHome() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -180,14 +226,16 @@ async function renderHome() {
     </section>
   `;
 
-  const [home, men, women, live, updates] = await Promise.all([getHome(), getMen(), getWomen(), getLive(), getUpdates()]);
+  const [home, men, women, live, updates, homeGallery] = await Promise.all([getHome(), getMen(), getWomen(), getLive(), getUpdates(), getHomeGallery()]);
   document.getElementById("homeTitle").textContent = home.name || "Who We Are";
   document.getElementById("homeAbout").textContent = home.about || "";
   const ig = document.getElementById("homeIg");
   if (home.instagram) ig.href = home.instagram;
   const aboutPhoto = document.getElementById("aboutPhoto");
   const mediaType = (home.mediaType || "photo").toLowerCase();
-  if (home.photo && mediaType !== "photo") {
+  if (homeGallery.length) {
+    initCarousel(aboutPhoto, homeGallery, home.name || "PIM Tennis Club");
+  } else if (home.photo && mediaType !== "photo") {
     aboutPhoto.classList.add("is-embed");
     aboutPhoto.innerHTML = embedBlock({ type: mediaType, url: home.photo });
     if (mediaType === "instagram") ensureInstagramEmbedScript();
@@ -714,6 +762,7 @@ function currentRoute() {
 
 async function router() {
   const route = currentRoute();
+  if (route !== "home" && carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
   document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("active", a.dataset.route === route));
   document.getElementById("mainNav").classList.remove("open");
   document.getElementById("navToggle").setAttribute("aria-expanded", "false");
