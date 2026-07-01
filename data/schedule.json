@@ -1,0 +1,12 @@
+[
+  { "date": "2026-07-02", "day": "Kamis", "court": "Lapangan 1", "team1": "Fariz/Dian", "team2": "Akbar/Syahrul" },
+  { "date": "2026-07-06", "day": "Senin", "court": "Lapangan 1", "team1": "Gipa/Mursal", "team2": "Dian/Fatur" },
+  { "date": "2026-07-06", "day": "Senin", "court": "Lapangan 2", "team1": "Arief/Moeda", "team2": "Osman/Ferdy" },
+  { "date": "2026-07-07", "day": "Selasa", "court": "Lapangan 1", "team1": "Arief/Moeda", "team2": "Dian/Fatur" },
+  { "date": "2026-07-07", "day": "Selasa", "court": "Lapangan 2", "team1": "Gipa/Mursal", "team2": "Osman/Ferdy" },
+  { "date": "2026-07-08", "day": "Rabu", "court": "Lapangan 1", "team1": "Gipa/Mursal", "team2": "Arief/Moeda" },
+  { "date": "2026-07-08", "day": "Rabu", "court": "Lapangan 2", "team1": "Heri/Memed", "team2": "Akbar/Syahrul" },
+  { "date": "", "day": "", "court": "", "team1": "Zes/Rahmat", "team2": "Fariz/Dian" },
+  { "date": "", "day": "", "court": "", "team1": "Zes/Rahmat", "team2": "Syahrul/Akbar" },
+  { "date": "", "day": "", "court": "", "team1": "Zes/Rahmat", "team2": "Heri/Memed" }
+]

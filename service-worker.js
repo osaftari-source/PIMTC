@@ -1,4 +1,4 @@
-const CACHE_NAME = "pimtc-v5";
+const CACHE_NAME = "pimtc-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -15,8 +15,11 @@ const APP_SHELL = [
   "./data/live.json",
   "./data/updates.json",
   "./data/live-standings.json",
+  "./data/schedule.json",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
+  "./icons/logo.png",
+  "./icons/favicon-48.png"
 ];
 
 self.addEventListener("install", (event) => {

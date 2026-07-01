@@ -52,6 +52,7 @@ const getPlayoffs = () => fetchJSON("data/playoffs.json", "playoffs");
 const getLive = () => fetchJSON("data/live.json", "live");
 const getUpdates = () => fetchJSON("data/updates.json", "updates");
 const getLiveStandings = () => fetchJSON("data/live-standings.json", "liveStandings");
+const getSchedule = () => fetchJSON("data/schedule.json", "schedule");
 
 /* --------- Helpers --------- */
 function esc(str) {
@@ -171,7 +172,7 @@ async function renderHome() {
           <a class="ig-cta" id="homeIg" href="#" target="_blank" rel="noopener">Follow us on Instagram &rarr;</a>
         </div>
         <div>
-          <div class="about-photo"><div class="skeleton" style="height:100%"></div></div>
+          <div class="about-photo" id="aboutPhoto"><div class="skeleton" style="height:100%"></div></div>
           <div class="map-frame" id="mapFrame"></div>
         </div>
       </div>
@@ -183,6 +184,9 @@ async function renderHome() {
   document.getElementById("homeAbout").textContent = home.about || "";
   const ig = document.getElementById("homeIg");
   if (home.instagram) ig.href = home.instagram;
+  document.getElementById("aboutPhoto").innerHTML = home.photo
+    ? `<img src="${esc(home.photo)}" alt="${esc(home.name || "PIM Tennis Club")}" loading="lazy">`
+    : `<div class="about-photo-fallback"><img src="icons/logo.png" alt="PIMTC crest" width="140" height="140"></div>`;
   if (home.mapEmbed) {
     document.getElementById("mapFrame").innerHTML = `<iframe src="${esc(home.mapEmbed)}" loading="lazy" title="Club location"></iframe>`;
   }
@@ -334,8 +338,47 @@ function pairStandingsBlock(roundName, groups) {
     </div>`;
 }
 
+function scheduleTable(matches) {
+  const dated = matches.filter((m) => m.date).sort((a, b) => a.date.localeCompare(b.date));
+  const tbc = matches.filter((m) => !m.date);
+
+  const row = (m) => `
+    <tr>
+      <td>${m.date
+        ? `<span class="schedule-date">${esc(m.date)}${m.day ? `<span class="day">${esc(m.day)}</span>` : ""}</span>`
+        : `<span class="schedule-tbc-label">Date TBC</span>`}</td>
+      <td>${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : ""}</td>
+      <td><span class="schedule-match">${esc(m.team1)}<span class="vs">vs</span>${esc(m.team2)}</span></td>
+    </tr>`;
+
+  return `<table class="schedule-table">
+    <thead><tr><th>Date</th><th>Court</th><th>Match</th></tr></thead>
+    <tbody>${dated.map(row).join("")}${tbc.map(row).join("")}</tbody>
+  </table>`;
+}
+
+function catLabel(cat) {
+  if (cat === "men") return "Men's Tournament";
+  if (cat === "women") return "Women's Tournament";
+  return cat.charAt(0).toUpperCase() + cat.slice(1) + " Tournament";
+}
+
+function orderCats(cats) {
+  const priority = { men: 0, women: 1 };
+  return [...cats].sort((a, b) => (priority[a] ?? 2) - (priority[b] ?? 2) || a.localeCompare(b));
+}
+
+function tabBar(cats) {
+  return `<div class="tab-bar">
+    ${cats.map((c, i) => `<button class="tab-btn ${i === 0 ? "active" : ""}" data-cat="${esc(c)}">${esc(catLabel(c))}</button>`).join("")}
+  </div>`;
+}
+
 async function renderTournaments() {
   const app = document.getElementById("app");
+  const [data, standings] = await Promise.all([getTournaments(), getStandings()]);
+  const cats = orderCats(new Set([...Object.keys(data), ...Object.keys(standings)]));
+
   app.innerHTML = `
     <section class="section-dark section" style="padding-bottom:40px;">
       <div class="wrap">
@@ -345,15 +388,11 @@ async function renderTournaments() {
     </section>
     <section class="section">
       <div class="wrap">
-        <div class="tab-bar">
-          <button class="tab-btn active" data-cat="men">Men's Tournament</button>
-          <button class="tab-btn" data-cat="women">Women's Tournament</button>
-        </div>
+        ${tabBar(cats)}
         <div id="tournBody"><div class="skeleton" style="height:200px"></div></div>
       </div>
     </section>`;
 
-  const [data, standings] = await Promise.all([getTournaments(), getStandings()]);
   const body = document.getElementById("tournBody");
 
   function draw(cat) {
@@ -379,7 +418,9 @@ async function renderTournaments() {
     body.innerHTML = formatStats(fmt) + rulesHtml + standingsHtml;
   }
 
-  draw("men");
+  if (cats.length) draw(cats[0]);
+  else body.innerHTML = `<div class="state-msg">No tournaments published yet.</div>`;
+
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
@@ -418,6 +459,9 @@ function bracketHTML(playoffs) {
 
 async function renderResults() {
   const app = document.getElementById("app");
+  const [data, playoffs] = await Promise.all([getResults(), getPlayoffs()]);
+  const cats = orderCats(new Set([...Object.keys(data), ...Object.keys(playoffs)]));
+
   app.innerHTML = `
     <section class="section">
       <div class="wrap">
@@ -425,15 +469,11 @@ async function renderResults() {
           <span class="eyebrow">Season Wrap</span>
           <h2>Tournament Results</h2>
         </div>
-        <div class="tab-bar">
-          <button class="tab-btn active" data-cat="men">Men's Tournament</button>
-          <button class="tab-btn" data-cat="women">Women's Tournament</button>
-        </div>
+        ${tabBar(cats)}
         <div id="resultsBody"><div class="skeleton" style="height:140px"></div></div>
       </div>
     </section>`;
 
-  const [data, playoffs] = await Promise.all([getResults(), getPlayoffs()]);
   const body = document.getElementById("resultsBody");
 
   function draw(cat) {
@@ -450,7 +490,9 @@ async function renderResults() {
     body.innerHTML = listHtml + (bracket ? `<div style="margin-top:36px;">${bracket}</div>` : "");
   }
 
-  draw("men");
+  if (cats.length) draw(cats[0]);
+  else body.innerHTML = `<div class="state-msg">No results published yet.</div>`;
+
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
@@ -482,6 +524,15 @@ async function renderLive() {
         <div id="liveStandingsBody"><div class="skeleton" style="height:200px"></div></div>
       </div>
     </section>
+    <section class="section" style="padding-bottom:20px; padding-top:0;">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Match Schedule</span>
+          <h2>Upcoming Matches</h2>
+        </div>
+        <div id="scheduleBody"><div class="skeleton" style="height:160px"></div></div>
+      </div>
+    </section>
     <section class="section">
       <div class="wrap">
         <div class="section-head">
@@ -492,7 +543,7 @@ async function renderLive() {
       </div>
     </section>`;
 
-  const [live, updates, liveStandings] = await Promise.all([getLive(), getUpdates(), getLiveStandings()]);
+  const [live, updates, liveStandings, schedule] = await Promise.all([getLive(), getUpdates(), getLiveStandings(), getSchedule()]);
 
   document.getElementById("liveTitle").textContent = live.name || "Live Tournament";
   document.getElementById("liveDesc").textContent = live.description || "";
@@ -519,6 +570,11 @@ async function renderLive() {
   standingsBody.innerHTML = roundNames.length
     ? roundNames.map((name) => pairStandingsBlock(name, liveStandings[name])).join("")
     : `<div class="state-msg">Standings haven't been posted yet.</div>`;
+
+  const scheduleBody = document.getElementById("scheduleBody");
+  scheduleBody.innerHTML = schedule.length
+    ? scheduleTable(schedule)
+    : `<div class="state-msg">No matches scheduled yet.</div>`;
 
   const sorted = [...updates].sort((a, b) => {
     const d = String(b.date || "").localeCompare(String(a.date || ""));

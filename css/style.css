@@ -144,6 +144,11 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .about-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items:start; }
 .about-photo{ border-radius: 6px; overflow:hidden; box-shadow: var(--shadow); aspect-ratio: 4/3; background: var(--navy-soft); }
 .about-photo img{ width:100%; height:100%; object-fit:cover; }
+.about-photo-fallback{
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(120% 140% at 20% 0%, var(--navy-soft) 0%, var(--navy) 60%, var(--navy-deep) 100%);
+  color: var(--gold); opacity: 0.5;
+}
 .map-frame{ border-radius:6px; overflow:hidden; border:1px solid var(--line); margin-top:20px; }
 .map-frame iframe{ width:100%; height:260px; border:0; display:block; }
 
@@ -302,6 +307,20 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .embed-wrap.yt iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
 .embed-wrap.photo img{ width:100%; border-radius:8px; box-shadow: var(--shadow); }
 .embed-wrap.ig blockquote.instagram-media{ margin:0 !important; }
+
+/* ---------- Match schedule ---------- */
+.schedule-table{ width:100%; border-collapse:collapse; }
+.schedule-table th{
+  text-align:left; font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px;
+  color: rgba(18,24,31,0.45); padding: 8px 10px; border-bottom:1px solid rgba(18,24,31,0.1);
+}
+.schedule-table td{ padding: 11px 10px; font-size:14px; border-bottom:1px solid rgba(18,24,31,0.06); vertical-align:middle; }
+.schedule-date{ font-family: var(--font-display); font-weight:700; font-size:15px; white-space:nowrap; }
+.schedule-date .day{ display:block; font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color: rgba(18,24,31,0.45); font-weight:400; }
+.schedule-court{ font-family: var(--font-mono); font-size:11px; color: var(--court-bright); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+.schedule-match{ font-family: var(--font-display); font-weight:600; font-size:16px; }
+.schedule-match .vs{ color: rgba(18,24,31,0.35); font-weight:400; margin: 0 6px; font-family: var(--font-mono); font-size:11px; text-transform:uppercase; }
+.schedule-tbc-label{ font-family: var(--font-mono); font-size:11px; color: rgba(18,24,31,0.4); text-transform:uppercase; letter-spacing:1px; }
 
 .result-list{ display:flex; flex-direction:column; gap:12px; }
 .result-row{

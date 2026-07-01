@@ -48,13 +48,18 @@ rankings and tournament info editable from a spreadsheet:
    |---|---|---|---|---|---|---|---|---|
 
    **Home** (one data row)
-   | name | tagline | about | instagram | mapEmbed | lat | lng |
-   |---|---|---|---|---|---|---|
+   | name | tagline | about | photo | instagram | mapEmbed | lat | lng |
+   |---|---|---|---|---|---|---|---|
+   `photo` is a public image URL for the picture on the Home page. Leave blank
+   and the site shows a designed placeholder instead of a broken image.
 
    **TournamentRounds** (one row per bullet point)
    | category | roundOrder | roundName | point |
    |---|---|---|---|
-   category is `men` or `women`; roundOrder controls display order.
+   `category` isn't limited to `men`/`women` — any word works (e.g. `doubles`).
+   Whatever categories appear across TournamentRounds/Format/Standings/Playoffs/
+   Results automatically get their own tab on the Tournaments and Results pages,
+   no code changes needed. roundOrder controls display order.
 
    **Format** (one row per category)
    | category | players | sets | games | tiebreak |
@@ -89,6 +94,18 @@ rankings and tournament info editable from a spreadsheet:
    just paste the post/video URL — the site embeds it automatically. `order` is
    a plain number (1, 2, 3...) to break ties when you post more than one update
    on the same day; newest date+order shows first.
+
+   **LiveStandings** (one row per pair per round)
+   | round | group | ranking | pair | mp | w | l | gw | gl | diff | points |
+   |---|---|---|---|---|---|---|---|---|---|---|
+   `gw`/`gl` are games won/lost. `group` is required here since the live
+   doubles format is always grouped.
+
+   **Schedule** (one row per match)
+   | date | day | court | team1 | team2 |
+   |---|---|---|---|---|
+   `date` format is `YYYY-MM-DD`. Leave `date`/`day` blank for matches that
+   aren't scheduled yet — they'll show under "Date TBC" at the bottom of the list.
 
 2. Populate the sheet from your current roster (the `data/*.json`
    files in this project already contain everything currently on the
@@ -129,17 +146,43 @@ This is the day-to-day workflow once the Sheet is connected:
 For a text-only update (no media yet), leave `type` as `text` and the `url`
 column blank — it'll show as a caption-only card.
 
-When the tournament wraps up, flip `status` in the **Live** tab from
-`ongoing` to `completed` — the LIVE badge, Home page teaser, and nav dot
-all turn off automatically.
+When the tournament wraps up, see the migration steps below before flipping
+`status` to `completed` — the Live tab is a working/staging area, not the
+permanent archive.
 
-## 4. Editing the design
+## 4. When a Live tournament finishes: moving it into Tournaments/Results
+
+The **Live**/**Updates**/**LiveStandings**/**Schedule** tabs are built for
+exactly one *current* tournament at a time — they're a staging area, not a
+permanent record. The **Tournaments** and **Results** pages are the permanent
+archive, and they support any number of categories side by side (that's what
+the `category` column across TournamentRounds/Format/Standings/Playoffs/Results
+is for — it's plain text, not restricted to `men`/`women`).
+
+So once a live tournament (e.g. the doubles competition) is over:
+
+1. Add its final numbers as new rows in the permanent tabs, using a category
+   name for it (e.g. `doubles`):
+   - **Format**: one row, `category = doubles`, with its player/set/game/tiebreak info.
+   - **Standings**: copy the final rows from LiveStandings, with `category = doubles`.
+   - **Playoffs**: add the bracket if it had one, `category = doubles`.
+   - **Results**: a short summary per round, `category = doubles`.
+   - **TournamentRounds**: optional — only needed if you want the round-by-round
+     rules written out like the Singles tournament has.
+2. A new "Doubles Tournament" tab appears automatically on the Tournaments and
+   Results pages — no code changes, since those pages build their tabs from
+   whatever categories exist in the data.
+3. Either flip the **Live** tab's `status` to `completed` (keeps it visible on
+   the Live page, just without the LIVE badge/teaser), or overwrite the Live/
+   Updates/LiveStandings/Schedule tabs with the *next* live event when one starts.
+
+## 5. Editing the design
 
 All colors, type, and layout live in `css/style.css` under `:root` at
 the top (`--navy`, `--gold`, `--court`, fonts, etc.) — change values
 there rather than hunting through individual rules.
 
-## 5. Wiring up the Inquiry form
+## 6. Wiring up the Inquiry form
 
 The Inquiry page currently just shows a confirmation alert. To
 actually collect submissions, the simplest option is to point the
@@ -147,7 +190,7 @@ form at a Google Form (Form → Get pre-filled link, or embed the Form
 directly) or extend `apps-script/Code.gs` with a `doPost` handler that
 appends rows to an "Inquiries" tab.
 
-## 6. Local preview
+## 7. Local preview
 
 Any static file server works, e.g. from this folder:
 

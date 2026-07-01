@@ -6,8 +6,8 @@
  *
  *    Men            | rank | name | age | plays | wins | losses | racket | dept | photo |
  *    Women          | rank | name | age | plays | wins | losses | racket | dept | photo |
- *    Home           | name | tagline | about | instagram | mapEmbed | lat | lng |
- *                     (single data row)
+ *    Home           | name | tagline | about | photo | instagram | mapEmbed | lat | lng |
+ *                     (single data row; photo is a public image URL for the Home page)
  *    TournamentRounds | category | roundOrder | roundName | point |
  *                     (one row per bullet point; category = "men" or "women")
  *    Format         | category | players | sets | games | tiebreak |
@@ -31,6 +31,9 @@
  *    LiveStandings  | round | group | ranking | pair | mp | w | l | gw | gl | diff | points |
  *                     (one row per pair per round; group is required here — e.g. "Group A" —
  *                      since the live doubles format is always grouped. gw/gl = games won/lost.)
+ *    Schedule       | date | day | court | team1 | team2 |
+ *                     (one row per match; leave date and day blank for matches without a
+ *                      confirmed date yet — they'll show under "Date TBC". date format YYYY-MM-DD.)
  *
  * 2. Extensions > Apps Script, paste this file in as Code.gs.
  * 3. Deploy > New deployment > Web app.
@@ -76,8 +79,11 @@ function doGet(e) {
     case "livestandings":
       payload = getLiveStandings_();
       break;
+    case "schedule":
+      payload = getSchedule_();
+      break;
     default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings." };
+      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule." };
   }
 
   return ContentService
@@ -124,6 +130,7 @@ function getHome_() {
     name: String(r.name || "Pupuk Iskandar Muda Tennis Club"),
     tagline: String(r.tagline || "Serve, Rally, Win!"),
     about: String(r.about || ""),
+    photo: String(r.photo || ""),
     instagram: String(r.instagram || ""),
     mapEmbed: String(r.mapEmbed || ""),
     lat: Number(r.lat) || null,
@@ -131,11 +138,14 @@ function getHome_() {
   };
 }
 
+function catOf_(r) {
+  return String(r.category || "men").toLowerCase().trim() || "men";
+}
+
 function getFormats_() {
   const out = {};
   sheetRows_("Format").forEach((r) => {
-    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
-    out[cat] = {
+    out[catOf_(r)] = {
       players: Number(r.players) || null,
       sets: Number(r.sets) || null,
       games: Number(r.games) || null,
@@ -148,16 +158,15 @@ function getFormats_() {
 function getTournaments_() {
   const rows = sheetRows_("TournamentRounds");
   const formats = getFormats_();
-  const out = {
-    men: { format: formats.men || null, rounds: [] },
-    women: { format: formats.women || null, rounds: [] }
-  };
+  const out = {};
+  const ensureCat = (cat) => { if (!out[cat]) out[cat] = { format: formats[cat] || null, rounds: [] }; };
   const roundIndex = {}; // key: category|roundName -> round object
 
   rows
     .sort((a, b) => Number(a.roundOrder) - Number(b.roundOrder))
     .forEach((r) => {
-      const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+      const cat = catOf_(r);
+      ensureCat(cat);
       const key = cat + "|" + r.roundName;
       if (!roundIndex[key]) {
         const round = { name: String(r.roundName || ""), points: [] };
@@ -167,15 +176,18 @@ function getTournaments_() {
       if (r.point) roundIndex[key].points.push(String(r.point));
     });
 
+  // Categories that only exist in Format (no round rules yet) should still appear.
+  Object.keys(formats).forEach(ensureCat);
+
   return out;
 }
 
 function getStandings_() {
   const rows = sheetRows_("Standings");
-  const out = { men: {}, women: {} };
+  const out = {};
 
   rows.forEach((r) => {
-    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    const cat = catOf_(r);
     const round = String(r.round || "");
     const group = String(r.group || "").trim();
     const entry = {
@@ -189,6 +201,7 @@ function getStandings_() {
     if (r.qualified === true || String(r.qualified).toUpperCase() === "TRUE") entry.qualified = true;
     else if (r.qualified === false || String(r.qualified).toUpperCase() === "FALSE") entry.qualified = false;
 
+    if (!out[cat]) out[cat] = {};
     if (!out[cat][round]) out[cat][round] = group ? {} : [];
 
     if (group) {
@@ -204,10 +217,11 @@ function getStandings_() {
 
 function getPlayoffs_() {
   const rows = sheetRows_("Playoffs");
-  const out = { men: { semifinals: [], final: null }, women: { semifinals: [], final: null } };
+  const out = {};
 
   rows.forEach((r) => {
-    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    const cat = catOf_(r);
+    if (!out[cat]) out[cat] = { semifinals: [], final: null };
     const match = {
       p1: String(r.p1 || ""),
       p2: String(r.p2 || ""),
@@ -280,11 +294,22 @@ function getLiveStandings_() {
   return out;
 }
 
+function getSchedule_() {
+  return sheetRows_("Schedule").map((r) => ({
+    date: String(r.date || ""),
+    day: String(r.day || ""),
+    court: String(r.court || ""),
+    team1: String(r.team1 || ""),
+    team2: String(r.team2 || "")
+  }));
+}
+
 function getResults_() {
   const rows = sheetRows_("Results");
-  const out = { men: [], women: [] };
+  const out = {};
   rows.forEach((r) => {
-    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    const cat = catOf_(r);
+    if (!out[cat]) out[cat] = [];
     out[cat].push({ round: String(r.round || ""), summary: String(r.summary || "") });
   });
   return out;
