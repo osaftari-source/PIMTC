@@ -42,6 +42,45 @@ async function fetchJSON(localPath, sheetAction) {
   return data;
 }
 
+/* Fetches several sheetAction keys in a single Apps Script round-trip instead
+   of one request per key (Apps Script cold-starts are slow, and several
+   simultaneous requests from one visitor don't reliably run in parallel).
+   Shares the same in-memory cache as fetchJSON, so a key fetched here is
+   also a cache hit later if some other page calls its individual getX(). */
+async function fetchBundle(items) {
+  const now = Date.now();
+  const stale = items.filter(({ key }) => {
+    const cached = state.cache[key];
+    return !(cached && now - cached.time < CONFIG.CACHE_TTL_MS);
+  });
+
+  if (stale.length && CONFIG.SHEETS_API_URL) {
+    try {
+      const keyParam = stale.map((i) => i.key).join(",");
+      const url = `${CONFIG.SHEETS_API_URL}?action=bundle&keys=${encodeURIComponent(keyParam)}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("bad response");
+      const data = await res.json();
+      stale.forEach(({ key }) => { state.cache[key] = { data: data[key], time: now }; });
+    } catch (e) {
+      console.warn("Bundle fetch failed, falling back to local data.", e);
+      await Promise.all(stale.map(async ({ key, local }) => {
+        const res = await fetch(local);
+        state.cache[key] = { data: await res.json(), time: now };
+      }));
+    }
+  } else if (stale.length) {
+    await Promise.all(stale.map(async ({ key, local }) => {
+      const res = await fetch(local);
+      state.cache[key] = { data: await res.json(), time: now };
+    }));
+  }
+
+  const result = {};
+  items.forEach(({ key }) => { result[key] = state.cache[key].data; });
+  return result;
+}
+
 const getHome = () => fetchJSON("data/home.json", "home");
 const getMen = () => fetchJSON("data/men.json", "men");
 const getWomen = () => fetchJSON("data/women.json", "women");
@@ -226,7 +265,14 @@ async function renderHome() {
     </section>
   `;
 
-  const [home, men, women, live, updates, homeGallery] = await Promise.all([getHome(), getMen(), getWomen(), getLive(), getUpdates(), getHomeGallery()]);
+  const { home, men, women, live, updates, homeGallery } = await fetchBundle([
+    { key: "home", local: "data/home.json" },
+    { key: "men", local: "data/men.json" },
+    { key: "women", local: "data/women.json" },
+    { key: "live", local: "data/live.json" },
+    { key: "updates", local: "data/updates.json" },
+    { key: "homeGallery", local: "data/home-gallery.json" }
+  ]);
   document.getElementById("homeTitle").textContent = home.name || "Who We Are";
   document.getElementById("homeAbout").textContent = home.about || "";
   const ig = document.getElementById("homeIg");
@@ -441,7 +487,10 @@ function tabBar(cats) {
 
 async function renderTournaments() {
   const app = document.getElementById("app");
-  const [data, standings] = await Promise.all([getTournaments(), getStandings()]);
+  const { tournaments: data, standings } = await fetchBundle([
+    { key: "tournaments", local: "data/tournaments.json" },
+    { key: "standings", local: "data/standings.json" }
+  ]);
   const cats = orderCats(new Set([...Object.keys(data), ...Object.keys(standings)]));
 
   app.innerHTML = `
@@ -524,7 +573,10 @@ function bracketHTML(playoffs) {
 
 async function renderResults() {
   const app = document.getElementById("app");
-  const [data, playoffs] = await Promise.all([getResults(), getPlayoffs()]);
+  const { results: data, playoffs } = await fetchBundle([
+    { key: "results", local: "data/results.json" },
+    { key: "playoffs", local: "data/playoffs.json" }
+  ]);
   const cats = orderCats(new Set([...Object.keys(data), ...Object.keys(playoffs)]));
 
   app.innerHTML = `
@@ -608,7 +660,12 @@ async function renderLive() {
       </div>
     </section>`;
 
-  const [live, updates, liveStandings, schedule] = await Promise.all([getLive(), getUpdates(), getLiveStandings(), getSchedule()]);
+  const { live, updates, liveStandings, schedule } = await fetchBundle([
+    { key: "live", local: "data/live.json" },
+    { key: "updates", local: "data/updates.json" },
+    { key: "liveStandings", local: "data/live-standings.json" },
+    { key: "schedule", local: "data/schedule.json" }
+  ]);
 
   document.getElementById("liveTitle").textContent = live.name || "Live Tournament";
   document.getElementById("liveDesc").textContent = live.description || "";

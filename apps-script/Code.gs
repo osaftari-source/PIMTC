@@ -60,54 +60,49 @@
  *    edit this script (new code doesn't go live on the same URL until redeployed).
  */
 
+// Maps each action name to the function that produces its data. Used both for
+// single-action requests and for ?action=bundle, which runs several of these
+// in one Apps Script execution instead of the browser making several separate
+// (slow) round-trips to Apps Script.
+const ACTIONS_ = {
+  men: function () { return getPlayers_("Men"); },
+  women: function () { return getPlayers_("Women"); },
+  home: getHome_,
+  tournaments: getTournaments_,
+  results: getResults_,
+  standings: getStandings_,
+  playoffs: getPlayoffs_,
+  live: getLive_,
+  updates: getUpdates_,
+  livestandings: getLiveStandings_,
+  schedule: getSchedule_,
+  gallery: getGallery_,
+  homegallery: getHomeGallery_
+};
+
 function doGet(e) {
   const action = (e.parameter.action || "").toLowerCase();
-  let payload;
 
-  switch (action) {
-    case "men":
-      payload = getPlayers_("Men");
-      break;
-    case "women":
-      payload = getPlayers_("Women");
-      break;
-    case "home":
-      payload = getHome_();
-      break;
-    case "tournaments":
-      payload = getTournaments_();
-      break;
-    case "results":
-      payload = getResults_();
-      break;
-    case "standings":
-      payload = getStandings_();
-      break;
-    case "playoffs":
-      payload = getPlayoffs_();
-      break;
-    case "live":
-      payload = getLive_();
-      break;
-    case "updates":
-      payload = getUpdates_();
-      break;
-    case "livestandings":
-      payload = getLiveStandings_();
-      break;
-    case "schedule":
-      payload = getSchedule_();
-      break;
-    case "gallery":
-      payload = getGallery_();
-      break;
-    case "homegallery":
-      payload = getHomeGallery_();
-      break;
-    default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule, gallery, homeGallery." };
+  if (action === "bundle") {
+    // ?action=bundle&keys=home,men,women,live,updates,homeGallery
+    // Response is keyed by exactly the strings passed in `keys` (case preserved),
+    // so the frontend can request "homeGallery" and get back { homeGallery: [...] }
+    // even though lookup internally is case-insensitive.
+    const rawKeys = (e.parameter.keys || "").split(",").map(function (k) { return k.trim(); }).filter(Boolean);
+    const payload = {};
+    rawKeys.forEach(function (rawKey) {
+      const fn = ACTIONS_[rawKey.toLowerCase()];
+      payload[rawKey] = fn ? fn() : { error: "Unknown key: " + rawKey };
+    });
+    return respond_(payload);
   }
 
+  const fn = ACTIONS_[action];
+  const payload = fn ? fn() : { error: "Unknown action. Use one of: " + Object.keys(ACTIONS_).join(", ") + ", bundle." };
+  return respond_(payload);
+}
+
+function respond_(payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
