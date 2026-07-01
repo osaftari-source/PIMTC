@@ -1,5 +1,10 @@
 # Changelog
 
+## v15.1 — Mobile Standings Overflow Fix
+- Fixed mobile standings tables forcing the page wider than the phone viewport.
+- Added grid/item min-width guards so the table scroll container owns horizontal overflow.
+- Bumped service worker cache to `pimtc-v15-1` so the CSS update is picked up after deploy.
+
 ## pimtc-v15
 
 - Added short-lived persistent browser cache for Sheet/API data using `localStorage`.
