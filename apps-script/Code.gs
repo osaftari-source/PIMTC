@@ -117,13 +117,26 @@ function getSheet_(name) {
 function sheetRows_(name) {
   const sheet = getSheet_(name);
   if (!sheet) return [];
+  // Google Sheets silently converts cells that look like dates (e.g. "2026-06-29")
+  // into real Date objects, even when you typed plain text. If we don't catch that,
+  // String(dateObject) produces an ugly full timestamp AND sorts alphabetically
+  // instead of chronologically, which breaks both display and date-based ordering.
+  // So: any cell that comes back as an actual Date gets reformatted to YYYY-MM-DD here,
+  // once, for every tab and every column — not just the ones literally named "date".
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
   const values = sheet.getDataRange().getValues();
   const headers = values.shift().map((h) => String(h).trim());
   return values
     .filter((row) => row.some((cell) => cell !== "" && cell !== null))
     .map((row) => {
       const obj = {};
-      headers.forEach((h, i) => (obj[h] = row[i]));
+      headers.forEach((h, i) => {
+        let cell = row[i];
+        if (cell instanceof Date) {
+          cell = Utilities.formatDate(cell, tz, "yyyy-MM-dd");
+        }
+        obj[h] = cell;
+      });
       return obj;
     });
 }

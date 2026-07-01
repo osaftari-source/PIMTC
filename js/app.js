@@ -633,18 +633,36 @@ async function renderLive() {
     ? scheduleTable(schedule)
     : `<div class="state-msg">No matches scheduled yet.</div>`;
 
+  // Most recent date first; within the same date, lower order number shows first
+  // (order = 1 is "first thing that happened/was posted that day").
   const sorted = [...updates].sort((a, b) => {
     const d = String(b.date || "").localeCompare(String(a.date || ""));
-    return d !== 0 ? d : (Number(b.order) || 0) - (Number(a.order) || 0);
+    return d !== 0 ? d : (Number(a.order) || 0) - (Number(b.order) || 0);
   });
 
   const feed = document.getElementById("updateFeed");
-  feed.innerHTML = sorted.length
-    ? sorted.map(updateCard).join("")
-    : `<div class="state-msg">No updates posted yet — check back soon.</div>`;
+  const VISIBLE_UPDATES = 5;
 
-  if (sorted.some((u) => (u.type || "").toLowerCase() === "instagram")) {
-    ensureInstagramEmbedScript();
+  if (!sorted.length) {
+    feed.innerHTML = `<div class="state-msg">No updates posted yet — check back soon.</div>`;
+  } else {
+    const visible = sorted.slice(0, VISIBLE_UPDATES);
+    const rest = sorted.slice(VISIBLE_UPDATES);
+
+    feed.innerHTML = visible.map(updateCard).join("");
+    if (visible.some((u) => (u.type || "").toLowerCase() === "instagram")) ensureInstagramEmbedScript();
+
+    if (rest.length) {
+      const moreBtn = document.createElement("button");
+      moreBtn.className = "load-more-btn";
+      moreBtn.textContent = `Show ${rest.length} Older Update${rest.length === 1 ? "" : "s"}`;
+      moreBtn.addEventListener("click", () => {
+        moreBtn.insertAdjacentHTML("beforebegin", rest.map(updateCard).join(""));
+        moreBtn.remove();
+        if (rest.some((u) => (u.type || "").toLowerCase() === "instagram")) ensureInstagramEmbedScript();
+      });
+      feed.appendChild(moreBtn);
+    }
   }
 }
 

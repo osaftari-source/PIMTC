@@ -358,6 +358,13 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .schedule-match .vs{ color: rgba(18,24,31,0.35); font-weight:400; margin: 0 6px; font-family: var(--font-mono); font-size:11px; text-transform:uppercase; }
 .schedule-tbc-label{ font-family: var(--font-mono); font-size:11px; color: rgba(18,24,31,0.4); text-transform:uppercase; letter-spacing:1px; }
 
+.load-more-btn{
+  font-family: var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;
+  background: none; border: 1px solid rgba(18,24,31,0.2); color: var(--navy); padding: 10px 22px;
+  border-radius:4px; cursor:pointer; font-size:14px; margin-top:4px; display:inline-block;
+}
+.load-more-btn:hover{ border-color: var(--gold); color: var(--court-bright); }
+
 .result-list{ display:flex; flex-direction:column; gap:12px; }
 .result-row{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
