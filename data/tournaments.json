@@ -2,6 +2,7 @@
   "title": "Singles Tennis Championship",
   "venue": "PIM Tennis Arena",
   "men": {
+    "format": { "players": 14, "sets": 1, "games": 6, "tiebreak": "7pt at 5-5" },
     "rounds": [
       {
         "name": "Round 1",
@@ -22,6 +23,7 @@
     ]
   },
   "women": {
+    "format": { "players": 5, "sets": 1, "games": 4, "tiebreak": null },
     "rounds": []
   }
 }

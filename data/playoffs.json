@@ -1,0 +1,13 @@
+{
+  "men": {
+    "semifinals": [
+      { "p1": "Mansurni", "p2": "Mursal Rajab", "score": "6-2", "winner": "Mansurni" },
+      { "p1": "Aulia Moeda", "p2": "Osman Saftari", "score": "6-2", "winner": "Aulia Moeda" }
+    ],
+    "final": { "p1": "Mansurni", "p2": "Aulia Moeda", "score": "6-3", "winner": "Mansurni" }
+  },
+  "women": {
+    "semifinals": [],
+    "final": null
+  }
+}

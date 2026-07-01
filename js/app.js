@@ -47,6 +47,8 @@ const getMen = () => fetchJSON("data/men.json", "men");
 const getWomen = () => fetchJSON("data/women.json", "women");
 const getTournaments = () => fetchJSON("data/tournaments.json", "tournaments");
 const getResults = () => fetchJSON("data/results.json", "results");
+const getStandings = () => fetchJSON("data/standings.json", "standings");
+const getPlayoffs = () => fetchJSON("data/playoffs.json", "playoffs");
 
 /* --------- Helpers --------- */
 function esc(str) {
@@ -69,12 +71,11 @@ function rankRow(p) {
   const total = wins + losses;
   const pct = total ? Math.round((wins / total) * 100) : 0;
   const leader = p.rank === 1;
-  const isOsman = /osman/i.test(p.name || "");
   return `
   <div class="rank-row ${leader ? "is-leader" : ""}">
     <div class="rank-badge">${p.rank ?? "-"}</div>
     <div class="rank-main">
-      <div class="rank-name">${esc(p.name)} ${isOsman ? '<span class="chip">You</span>' : ""}</div>
+      <div class="rank-name">${esc(p.name)}</div>
       <div class="rank-dept">${esc(p.dept || "")}</div>
       <div class="rank-meta">
         ${p.age ? `<span>Age ${esc(p.age)}</span>` : ""}
@@ -169,6 +170,67 @@ async function renderWomen() {
     : `<div class="state-msg">No player data yet.</div>`;
 }
 
+function initials(name) {
+  return String(name || "")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function formatStats(fmt) {
+  if (!fmt) return "";
+  const blocks = [
+    { num: fmt.players, label: "Players", lead: true },
+    { num: fmt.sets, label: "Set" },
+    { num: fmt.games, label: "Game" }
+  ];
+  if (fmt.tiebreak) blocks.push({ num: fmt.tiebreak.match(/^\d+/)?.[0] || "", label: "Tiebreak", sub: fmt.tiebreak.replace(/^\d+\s*/, "").toUpperCase() });
+  return `<div class="stat-grid">
+    ${blocks.map((b) => `
+      <div class="stat-block ${b.lead ? "lead" : ""}">
+        <div class="stat-num">${esc(b.num)}</div>
+        <div class="stat-label">${esc(b.label)}</div>
+        ${b.sub ? `<div class="stat-sub">${esc(b.sub)}</div>` : ""}
+      </div>`).join("")}
+  </div>`;
+}
+
+function standingsTable(rows) {
+  return `<table class="standings-table">
+    <thead><tr><th>#</th><th>Player</th><th>MP</th><th>W</th><th>Pts</th></tr></thead>
+    <tbody>
+      ${rows.map((r) => `
+        <tr class="${r.qualified ? "qualified" : r.qualified === false ? "eliminated" : ""}">
+          <td>${r.ranking}</td>
+          <td class="p-name">${esc(r.player)}${r.nickname ? ` <span style="color:rgba(18,24,31,0.4); font-weight:400;">(${esc(r.nickname)})</span>` : ""}</td>
+          <td>${r.mp}</td><td>${r.w}</td><td>${r.points}</td>
+        </tr>`).join("")}
+    </tbody>
+  </table>`;
+}
+
+function standingsBlock(roundName, roundData) {
+  const isGrouped = !Array.isArray(roundData);
+  return `
+    <div class="round-block">
+      <div class="round-title">${esc(roundName)}</div>
+      ${isGrouped
+        ? `<div class="standings-grid">
+            ${Object.entries(roundData).map(([group, rows]) => `
+              <div class="standings-group">
+                <h4>${esc(group)}</h4>
+                ${standingsTable(rows)}
+              </div>`).join("")}
+          </div>
+          <div class="standings-note"><span class="q">Advanced</span><span class="e">Eliminated</span></div>`
+        : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData)}</div>`
+      }
+    </div>`;
+}
+
 async function renderTournaments() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -188,21 +250,30 @@ async function renderTournaments() {
       </div>
     </section>`;
 
-  const data = await getTournaments();
+  const [data, standings] = await Promise.all([getTournaments(), getStandings()]);
   const body = document.getElementById("tournBody");
 
   function draw(cat) {
     const rounds = (data[cat] && data[cat].rounds) || [];
-    if (!rounds.length) {
+    const fmt = data[cat] && data[cat].format;
+    const catStandings = standings[cat] || {};
+    const hasContent = rounds.length || Object.keys(catStandings).length || fmt;
+
+    if (!hasContent) {
       body.innerHTML = `<div class="state-msg">Round structure hasn't been published for this category yet.</div>`;
       return;
     }
-    body.innerHTML = rounds.map((r, i) => `
+
+    const rulesHtml = rounds.map((r) => `
       <div class="round-block">
-        <div class="round-title"><span class="num">${i + 1}</span> ${esc(r.name)}</div>
+        <div class="round-title">${esc(r.name)}</div>
         <ul class="round-points">${(r.points || []).map((pt) => `<li>${esc(pt)}</li>`).join("")}</ul>
       </div>
     `).join("");
+
+    const standingsHtml = Object.entries(catStandings).map(([roundName, roundData]) => standingsBlock(roundName, roundData)).join("");
+
+    body.innerHTML = formatStats(fmt) + rulesHtml + standingsHtml;
   }
 
   draw("men");
@@ -213,6 +284,33 @@ async function renderTournaments() {
       draw(btn.dataset.cat);
     });
   });
+}
+
+function bracketHTML(playoffs) {
+  if (!playoffs || !playoffs.final) return "";
+  const matchCard = (m) => `
+    <div class="match-card">
+      <div class="mp-row ${m.winner === m.p1 ? "winner" : ""}"><span><span class="avatar">${initials(m.p1)}</span>${esc(m.p1)}</span></div>
+      <div class="mp-row ${m.winner === m.p2 ? "winner" : ""}"><span><span class="avatar">${initials(m.p2)}</span>${esc(m.p2)}</span></div>
+      <div class="mp-score">${esc(m.score)}</div>
+    </div>`;
+  return `
+    <div class="round-block">
+      <div class="round-title">Playoffs</div>
+      <div class="bracket-wrap">
+        <div class="bracket">
+          <div class="bracket-col">${playoffs.semifinals.map(matchCard).join("")}</div>
+          <div class="bracket-col final-col">${matchCard(playoffs.final)}</div>
+          <div class="bracket-col final-col">
+            <div class="champion-panel">
+              <div class="eyebrow on-dark">Champion</div>
+              <div class="trophy">&#127942;</div>
+              <div class="name">${esc(playoffs.final.winner)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
 async function renderResults() {
@@ -232,18 +330,21 @@ async function renderResults() {
       </div>
     </section>`;
 
-  const data = await getResults();
+  const [data, playoffs] = await Promise.all([getResults(), getPlayoffs()]);
   const body = document.getElementById("resultsBody");
 
   function draw(cat) {
     const rows = data[cat] || [];
-    body.innerHTML = rows.length
+    const listHtml = rows.length
       ? `<div class="result-list">${rows.map((r) => `
           <div class="result-row">
             <div class="round-name">${esc(r.round)}</div>
             <div class="summary">${esc(r.summary || "")}</div>
           </div>`).join("")}</div>`
       : `<div class="state-msg">Results haven't been posted for this category yet.</div>`;
+
+    const bracket = bracketHTML(playoffs[cat]);
+    body.innerHTML = listHtml + (bracket ? `<div style="margin-top:36px;">${bracket}</div>` : "");
   }
 
   draw("men");

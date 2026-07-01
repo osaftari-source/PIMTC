@@ -1,0 +1,47 @@
+{
+  "men": {
+    "Round 1": {
+      "Group A": [
+        {"ranking":1,"player":"Mansurni","mp":6,"w":6,"points":18,"qualified":true},
+        {"ranking":2,"player":"Hafizh Furqan","mp":6,"w":4,"points":14,"qualified":true},
+        {"ranking":3,"player":"Giffari Almuzani","mp":6,"w":4,"points":14,"qualified":true},
+        {"ranking":4,"player":"Fariz Ridha","mp":6,"w":3,"points":12,"qualified":true},
+        {"ranking":5,"player":"Zulfajri Ery S.","mp":6,"w":2,"points":10,"qualified":false},
+        {"ranking":6,"player":"Rahmat Sunarya","mp":6,"w":1,"points":8,"qualified":false},
+        {"ranking":7,"player":"Ferdiyansyah","mp":6,"w":1,"points":8,"qualified":false}
+      ],
+      "Group B": [
+        {"ranking":1,"player":"Aulia Moeda","mp":6,"w":5,"points":16,"qualified":true},
+        {"ranking":2,"player":"Osman Saftari","mp":6,"w":5,"points":16,"qualified":true},
+        {"ranking":3,"player":"Mursal Rajab","mp":6,"w":4,"points":14,"qualified":true},
+        {"ranking":4,"player":"Arief Rahman","mp":6,"w":3,"points":12,"qualified":true},
+        {"ranking":5,"player":"El Rivaldy","mp":6,"w":3,"points":12,"qualified":false},
+        {"ranking":6,"player":"Dian Pratama","mp":6,"w":1,"points":8,"qualified":false},
+        {"ranking":7,"player":"Fathurrahman","mp":6,"w":0,"points":6,"qualified":false}
+      ]
+    },
+    "Round 2": {
+      "Group A": [
+        {"ranking":1,"player":"Mansurni","mp":2,"w":2,"points":6,"qualified":true},
+        {"ranking":2,"player":"Osman Saftari","mp":2,"w":1,"points":4,"qualified":true},
+        {"ranking":3,"player":"Giffari Almuzani","mp":2,"w":1,"points":4,"qualified":false},
+        {"ranking":4,"player":"Arief Rahman","mp":2,"w":0,"points":2,"qualified":false}
+      ],
+      "Group B": [
+        {"ranking":1,"player":"Aulia Moeda","mp":2,"w":2,"points":6,"qualified":true},
+        {"ranking":2,"player":"Mursal Rajab","mp":2,"w":2,"points":6,"qualified":true},
+        {"ranking":3,"player":"Hafizh Furqan","mp":2,"w":0,"points":2,"qualified":false},
+        {"ranking":4,"player":"Fariz Ridha","mp":2,"w":0,"points":2,"qualified":false}
+      ]
+    }
+  },
+  "women": {
+    "Round Robin": [
+      {"ranking":1,"player":"Mauliza Arsita","nickname":"Dekta","mp":4,"w":4,"points":12},
+      {"ranking":2,"player":"Azwarni Islamiah","nickname":"Mia","mp":4,"w":3,"points":10},
+      {"ranking":3,"player":"Noviana Putri","nickname":"Novi","mp":4,"w":2,"points":8},
+      {"ranking":4,"player":"Fierda","nickname":"Pipi","mp":4,"w":1,"points":6},
+      {"ranking":5,"player":"Lisa Zulmayeti","nickname":"Lisa","mp":4,"w":0,"points":4}
+    ]
+  }
+}

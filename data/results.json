@@ -1,10 +1,11 @@
 {
   "men": [
-    { "round": "Round 1", "summary": "Group A and Group B pool play completed." },
-    { "round": "Round 2", "summary": "Cross-group knockout stage completed." },
-    { "round": "Playoffs", "summary": "Semifinals and final." }
+    { "round": "Round 1", "summary": "Group A and Group B pool play completed. Top 4 advanced from each group: Mansurni, Hafizh Furqan, Giffari Almuzani and Fariz Ridha from Group A; Aulia Moeda, Osman Saftari, Mursal Rajab and Arief Rahman from Group B." },
+    { "round": "Round 2", "summary": "Cross-group stage completed. Top 2 from each group advanced to the Semifinals: Mansurni and Osman Saftari from Group A; Aulia Moeda and Mursal Rajab from Group B." },
+    { "round": "Semifinals", "summary": "Mansurni defeated Mursal Rajab 6-2. Aulia Moeda defeated Osman Saftari 6-2." },
+    { "round": "Final", "summary": "Mansurni defeated Aulia Moeda 6-3 to win the championship." }
   ],
   "women": [
-    { "round": "Round Robin", "summary": "5-player round robin completed." }
+    { "round": "Round Robin", "summary": "5-player round robin completed. Mauliza Arsita finished 1st (4-0), followed by Azwarni Islamiah, Noviana Putri, Fierda, and Lisa Zulmayeti." }
   ]
 }

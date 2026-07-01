@@ -10,6 +10,14 @@
  *                     (single data row)
  *    TournamentRounds | category | roundOrder | roundName | point |
  *                     (one row per bullet point; category = "men" or "women")
+ *    Format         | category | players | sets | games | tiebreak |
+ *                     (one row per category; tiebreak e.g. "7pt at 5-5", leave blank if none)
+ *    Standings      | category | round | group | ranking | player | nickname | mp | w | points | qualified |
+ *                     (one row per player per round; leave group blank for round-robin
+ *                      formats like the Women's tournament; qualified = TRUE/FALSE,
+ *                      leave blank if the round has no cut e.g. round robin)
+ *    Playoffs       | category | stage | p1 | p2 | score | winner |
+ *                     (stage = "Semifinal 1", "Semifinal 2", "Final", in that order)
  *    Results        | category | round | summary |
  *                     (category = "men" or "women")
  *
@@ -42,8 +50,14 @@ function doGet(e) {
     case "results":
       payload = getResults_();
       break;
+    case "standings":
+      payload = getStandings_();
+      break;
+    case "playoffs":
+      payload = getPlayoffs_();
+      break;
     default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results." };
+      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs." };
   }
 
   return ContentService
@@ -97,9 +111,27 @@ function getHome_() {
   };
 }
 
+function getFormats_() {
+  const out = {};
+  sheetRows_("Format").forEach((r) => {
+    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    out[cat] = {
+      players: Number(r.players) || null,
+      sets: Number(r.sets) || null,
+      games: Number(r.games) || null,
+      tiebreak: r.tiebreak ? String(r.tiebreak) : null
+    };
+  });
+  return out;
+}
+
 function getTournaments_() {
   const rows = sheetRows_("TournamentRounds");
-  const out = { men: { rounds: [] }, women: { rounds: [] } };
+  const formats = getFormats_();
+  const out = {
+    men: { format: formats.men || null, rounds: [] },
+    women: { format: formats.women || null, rounds: [] }
+  };
   const roundIndex = {}; // key: category|roundName -> round object
 
   rows
@@ -114,6 +146,60 @@ function getTournaments_() {
       }
       if (r.point) roundIndex[key].points.push(String(r.point));
     });
+
+  return out;
+}
+
+function getStandings_() {
+  const rows = sheetRows_("Standings");
+  const out = { men: {}, women: {} };
+
+  rows.forEach((r) => {
+    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    const round = String(r.round || "");
+    const group = String(r.group || "").trim();
+    const entry = {
+      ranking: Number(r.ranking) || null,
+      player: String(r.player || ""),
+      mp: Number(r.mp) || 0,
+      w: Number(r.w) || 0,
+      points: Number(r.points) || 0
+    };
+    if (r.nickname) entry.nickname = String(r.nickname);
+    if (r.qualified === true || String(r.qualified).toUpperCase() === "TRUE") entry.qualified = true;
+    else if (r.qualified === false || String(r.qualified).toUpperCase() === "FALSE") entry.qualified = false;
+
+    if (!out[cat][round]) out[cat][round] = group ? {} : [];
+
+    if (group) {
+      if (!out[cat][round][group]) out[cat][round][group] = [];
+      out[cat][round][group].push(entry);
+    } else {
+      out[cat][round].push(entry);
+    }
+  });
+
+  return out;
+}
+
+function getPlayoffs_() {
+  const rows = sheetRows_("Playoffs");
+  const out = { men: { semifinals: [], final: null }, women: { semifinals: [], final: null } };
+
+  rows.forEach((r) => {
+    const cat = String(r.category || "").toLowerCase() === "women" ? "women" : "men";
+    const match = {
+      p1: String(r.p1 || ""),
+      p2: String(r.p2 || ""),
+      score: String(r.score || ""),
+      winner: String(r.winner || "")
+    };
+    if (String(r.stage || "").toLowerCase().indexOf("final") === 0) {
+      out[cat].final = match;
+    } else {
+      out[cat].semifinals.push(match);
+    }
+  });
 
   return out;
 }

@@ -56,6 +56,22 @@ rankings and tournament info editable from a spreadsheet:
    |---|---|---|---|
    category is `men` or `women`; roundOrder controls display order.
 
+   **Format** (one row per category)
+   | category | players | sets | games | tiebreak |
+   |---|---|---|---|---|
+   tiebreak is free text, e.g. `7pt at 5-5`. Leave blank if there's no tiebreak.
+
+   **Standings** (one row per player per round)
+   | category | round | group | ranking | player | nickname | mp | w | points | qualified |
+   |---|---|---|---|---|---|---|---|---|---|
+   Leave `group` blank for round-robin formats with no groups (e.g. Women's).
+   `qualified` is `TRUE`/`FALSE`; leave blank for rounds with no cut (e.g. round robin).
+
+   **Playoffs** (one row per bracket match)
+   | category | stage | p1 | p2 | score | winner |
+   |---|---|---|---|---|---|
+   `stage` is `Semifinal 1`, `Semifinal 2`, `Final` — in that order.
+
    **Results**
    | category | round | summary |
    |---|---|---|
