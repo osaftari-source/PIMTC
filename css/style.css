@@ -480,7 +480,7 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 @media (max-width: 860px){
   .main-nav{ visibility:hidden; }
   .main-nav.open{ visibility:visible; }
-  .live-section-nav{ top:62px; justify-content:flex-start; overflow-x:auto; }
+  .live-section-nav{ position:static; top:auto; justify-content:flex-start; overflow-x:auto; }
   .live-section-nav a{ white-space:nowrap; }
   .table-scroll::after{ display:block; }
   .schedule-table thead{ display:none; }

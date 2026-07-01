@@ -1,5 +1,11 @@
 # Changelog
 
+## v15.2 — Mobile Subnav & Cold-Load Perception Fix
+- On mobile, Live section sub-navigation now scrolls normally with the page instead of sticking to the viewport.
+- Added Apps Script preconnect/dns-prefetch hints.
+- Added quick local-data fallback if the Apps Script bundle is slow on a cold first load, then refreshes the current route when live Sheet data arrives.
+- Bumped service worker cache to `pimtc-v15-2`.
+
 ## v15.1 — Mobile Standings Overflow Fix
 - Fixed mobile standings tables forcing the page wider than the phone viewport.
 - Added grid/item min-width guards so the table scroll container owns horizontal overflow.

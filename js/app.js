@@ -13,7 +13,8 @@
 const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
-  VERSION: "pimtc-v15"
+  DATA_FALLBACK_DELAY_MS: 1600,
+  VERSION: "pimtc-v15.2"
 };
 
 const state = { cache: {} };
@@ -88,29 +89,54 @@ async function fetchJSON(localPath, sheetAction) {
    simultaneous requests from one visitor don't reliably run in parallel).
    Shares the same in-memory cache as fetchJSON, so a key fetched here is
    also a cache hit later if some other page calls its individual getX(). */
+async function loadLocalBundleItems(items, source = "local") {
+  await Promise.all(items.map(async ({ key, local }) => {
+    const res = await fetch(local);
+    rememberData(key, await res.json(), source);
+  }));
+}
+
+/* Fetches several sheetAction keys in a single Apps Script round-trip instead
+   of one request per key. On a cold first load, Apps Script can still be slow;
+   if it has not answered quickly, show bundled local JSON first, then refresh
+   the current route once the live Sheet response arrives. */
 async function fetchBundle(items) {
   const stale = items.filter(({ key }) => !getCacheEntry(key));
 
   if (stale.length && CONFIG.SHEETS_API_URL) {
-    try {
-      const keyParam = stale.map((i) => i.key).join(",");
-      const url = `${CONFIG.SHEETS_API_URL}?action=bundle&keys=${encodeURIComponent(keyParam)}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("bad response");
-      const data = await res.json();
-      stale.forEach(({ key }) => { rememberData(key, data[key], "network"); });
-    } catch (e) {
-      console.warn("Bundle fetch failed, falling back to local data.", e);
-      await Promise.all(stale.map(async ({ key, local }) => {
-        const res = await fetch(local);
-        rememberData(key, await res.json(), "local");
-      }));
+    const keyParam = stale.map((i) => i.key).join(",");
+    const url = `${CONFIG.SHEETS_API_URL}?action=bundle&keys=${encodeURIComponent(keyParam)}`;
+
+    const networkPromise = fetch(url, { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("bad response");
+        return res.json();
+      })
+      .then((data) => {
+        stale.forEach(({ key }) => { rememberData(key, data[key], "network"); });
+        return true;
+      });
+
+    const quickResult = await Promise.race([
+      networkPromise.catch((e) => {
+        console.warn("Bundle fetch failed, falling back to local data.", e);
+        return false;
+      }),
+      new Promise((resolve) => setTimeout(() => resolve("timeout"), CONFIG.DATA_FALLBACK_DELAY_MS))
+    ]);
+
+    if (quickResult === "timeout") {
+      await loadLocalBundleItems(stale, "local-quick");
+      networkPromise.then(() => {
+        window.dispatchEvent(new CustomEvent("pimtc:background-refresh", {
+          detail: { keys: stale.map((i) => i.key) }
+        }));
+      }).catch(() => {});
+    } else if (quickResult === false) {
+      await loadLocalBundleItems(stale, "local");
     }
   } else if (stale.length) {
-    await Promise.all(stale.map(async ({ key, local }) => {
-      const res = await fetch(local);
-      rememberData(key, await res.json(), "local");
-    }));
+    await loadLocalBundleItems(stale, "local");
   }
 
   const result = {};
@@ -921,6 +947,18 @@ function closeMenu() {
   toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-label", "Open menu");
 }
+
+
+let backgroundRefreshTimer = null;
+window.addEventListener("pimtc:background-refresh", () => {
+  clearTimeout(backgroundRefreshTimer);
+  backgroundRefreshTimer = setTimeout(async () => {
+    const route = currentRoute();
+    const y = window.scrollY;
+    await routes[route]();
+    window.scrollTo({ top: y, behavior: "instant" in window ? "instant" : "auto" });
+  }, 250);
+});
 
 window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", () => {
