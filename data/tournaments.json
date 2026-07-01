@@ -1,0 +1,27 @@
+{
+  "title": "Singles Tennis Championship",
+  "venue": "PIM Tennis Arena",
+  "men": {
+    "rounds": [
+      {
+        "name": "Round 1",
+        "points": [
+          "Features 2 groups (Group A and Group B), each with 7 players randomly assigned.",
+          "The top 4 players from each group advance to Round 2.",
+          "Players ranked 5th and below are eliminated."
+        ]
+      },
+      {
+        "name": "Round 2",
+        "points": [
+          "Features 2 groups of 4 players each, assigned through a cross-group system: Group A gets 1st & 3rd from Group A, 2nd & 4th from Group B; Group B gets 1st & 3rd from Group B, 2nd & 4th from Group A.",
+          "Players from the same Round 1 group won't face each other again to avoid rematches.",
+          "The top 2 players from each group advance to the Semifinals."
+        ]
+      }
+    ]
+  },
+  "women": {
+    "rounds": []
+  }
+}

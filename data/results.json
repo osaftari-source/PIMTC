@@ -1,0 +1,10 @@
+{
+  "men": [
+    { "round": "Round 1", "summary": "Group A and Group B pool play completed." },
+    { "round": "Round 2", "summary": "Cross-group knockout stage completed." },
+    { "round": "Playoffs", "summary": "Semifinals and final." }
+  ],
+  "women": [
+    { "round": "Round Robin", "summary": "5-player round robin completed." }
+  ]
+}

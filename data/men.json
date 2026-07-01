@@ -1,0 +1,15 @@
+[
+  {"rank":1,"name":"Mansurni","age":41,"plays":"Right-handed, Single-handed backhand","wins":10,"losses":0,"racket":"Babolat Pure Aero","dept":"Plant Operation-1","photo":""},
+  {"rank":2,"name":"Aulia Moeda","age":29,"plays":"Right-handed, Double-handed backhand","wins":8,"losses":2,"racket":"Head Gravity","dept":"Ammonia Tank Project","photo":""},
+  {"rank":3,"name":"Osman Saftari","age":37,"plays":"Right-handed, Double-handed backhand","wins":7,"losses":2,"racket":"Yonex Ezone","dept":"Ammonia Tank Project","photo":""},
+  {"rank":4,"name":"Mursal Rajab","age":40,"plays":"Right-handed, Double-handed backhand","wins":6,"losses":3,"racket":"Babolat Pure Aero","dept":"Inspection & Reliability","photo":""},
+  {"rank":5,"name":"Giffari Almuzani","age":30,"plays":"Right-handed, Double-handed backhand","wins":5,"losses":3,"racket":"Yonex Ezone","dept":"Process Engineer","photo":""},
+  {"rank":6,"name":"Fariz Ridha","age":35,"plays":"Right-handed, Double-handed backhand","wins":3,"losses":5,"racket":"Yonex Vcore","dept":"Planning and Maintenance","photo":""},
+  {"rank":7,"name":"Arief Rahman","age":31,"plays":"Right-handed, Double-handed backhand","wins":3,"losses":5,"racket":"Babolat Pure Aero","dept":"Executive Assistant","photo":""},
+  {"rank":8,"name":"El Rivaldy","age":null,"plays":"Right-handed, Single-handed backhand","wins":5,"losses":3,"racket":"Babolat Pure Drive","dept":"Heavy Equipment","photo":""},
+  {"rank":9,"name":"Dian Pratama","age":31,"plays":"Right-handed, Double-handed backhand","wins":3,"losses":6,"racket":"Head Speed","dept":"Business Development","photo":""},
+  {"rank":10,"name":"Zulfajri Ery Syahputra","age":32,"plays":"Right-handed, Single-handed backhand","wins":2,"losses":5,"racket":"Babolat Pure Strike","dept":"Safety","photo":""},
+  {"rank":11,"name":"Rahmat Sunarya","age":31,"plays":"Right-handed, Single-handed backhand","wins":2,"losses":6,"racket":"Volkl Boris Becker","dept":"Executive Assistant","photo":""},
+  {"rank":12,"name":"Ferdiyansyah","age":39,"plays":"Right-handed, Single-handed backhand","wins":1,"losses":6,"racket":"Babolat Pure Strike","dept":"Inspection & Reliability","photo":""},
+  {"rank":13,"name":"Fathurrahman","age":29,"plays":"Right-handed, Single-handed backhand","wins":0,"losses":7,"racket":"Head Radical","dept":"Ammonia Tank Project","photo":""}
+]

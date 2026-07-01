@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PIM Tennis Club</title>
+<meta name="description" content="Pupuk Iskandar Muda Tennis Club — rankings, tournaments, and results.">
+<meta name="theme-color" content="#0A1F3D">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="seam-loader" id="seamLoader" aria-hidden="true">
+  <svg viewBox="0 0 100 100"><path d="M50 2 C 20 25, 20 75, 50 98" fill="none"/><path d="M50 2 C 80 25, 80 75, 50 98" fill="none"/></svg>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#/home" class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 2 C 8 12, 8 28, 20 38" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M20 2 C 32 12, 32 28, 20 38" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+      </span>
+      <span class="brand-text">PIM<b>TC</b></span>
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#/home" data-route="home">Home</a>
+      <a href="#/tournaments" data-route="tournaments">Tournaments</a>
+      <a href="#/results" data-route="results">Results</a>
+      <a href="#/men" data-route="men">Men</a>
+      <a href="#/women" data-route="women">Women</a>
+      <a href="#/inquiry" data-route="inquiry" class="nav-cta">Inquiry</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="app" role="main"></main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="brand-text">PIM<b>TC</b></span>
+      <p>Pupuk Iskandar Muda Tennis Club</p>
+    </div>
+    <div class="footer-links">
+      <a href="#/tournaments">Tournaments</a>
+      <a href="#/results">Results</a>
+      <a href="#/men">Men</a>
+      <a href="#/women">Women</a>
+      <a href="#/inquiry">Inquiry</a>
+    </div>
+    <a class="footer-ig" id="footerIg" href="https://www.instagram.com/pimtennisclub/" target="_blank" rel="noopener">Follow @pimtennisclub</a>
+  </div>
+  <div class="footer-bottom">Created and edited by Osman Saftari &middot; <span id="footYear"></span></div>
+</footer>
+
+<div class="install-toast" id="installToast">
+  <span>Install PIMTC for quick, offline access</span>
+  <div class="install-toast-actions">
+    <button id="installBtn">Install</button>
+    <button id="dismissInstall" aria-label="Dismiss">&times;</button>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
