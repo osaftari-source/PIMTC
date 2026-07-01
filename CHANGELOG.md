@@ -1,5 +1,11 @@
 # Changelog
 
+## pimtc-v15.2.1
+
+- Fixed Live section navigation so `Standings / Schedule / Updates` scrolls normally with the page on both desktop and mobile.
+- Removed sticky positioning and blur treatment from the Live sub-navigation.
+- Bumped service worker cache to `pimtc-v15-2-1`.
+
 ## v15.2 — Mobile Subnav & Cold-Load Perception Fix
 - On mobile, Live section sub-navigation now scrolls normally with the page instead of sticking to the viewport.
 - Added Apps Script preconnect/dns-prefetch hints.

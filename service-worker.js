@@ -1,4 +1,4 @@
-const CACHE_NAME = "pimtc-v15-2-2";
+const CACHE_NAME = "pimtc-v15-2-1";
 const APP_SHELL = [
   "./",
   "./index.html",
