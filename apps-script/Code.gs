@@ -6,8 +6,11 @@
  *
  *    Men            | rank | name | age | plays | wins | losses | racket | dept | photo |
  *    Women          | rank | name | age | plays | wins | losses | racket | dept | photo |
- *    Home           | name | tagline | about | photo | instagram | mapEmbed | lat | lng |
- *                     (single data row; photo is a public image URL for the Home page)
+ *    Home           | name | tagline | about | photo | mediaType | instagram | mapEmbed | lat | lng |
+ *                     (single data row; photo is a URL — for a plain picture, use a direct
+ *                      image link and leave mediaType blank/"photo". To embed an Instagram
+ *                      post/reel or YouTube video instead, put that URL in photo and set
+ *                      mediaType to "instagram" or "youtube".)
  *    TournamentRounds | category | roundOrder | roundName | point |
  *                     (one row per bullet point; category = "men" or "women")
  *    Format         | category | players | sets | games | tiebreak |
@@ -34,6 +37,11 @@
  *    Schedule       | date | day | court | team1 | team2 |
  *                     (one row per match; leave date and day blank for matches without a
  *                      confirmed date yet — they'll show under "Date TBC". date format YYYY-MM-DD.)
+ *    Gallery        | event | date | caption | type | url |
+ *                     (one row per photo/video; event is a free-text group name, e.g.
+ *                      "PIMTC 500 Doubles 2026" — photos with the same event text are
+ *                      grouped together on the Gallery page, most recent event first.
+ *                      type = "instagram", "youtube", or "photo".)
  *
  * 2. Extensions > Apps Script, paste this file in as Code.gs.
  * 3. Deploy > New deployment > Web app.
@@ -82,8 +90,11 @@ function doGet(e) {
     case "schedule":
       payload = getSchedule_();
       break;
+    case "gallery":
+      payload = getGallery_();
+      break;
     default:
-      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule." };
+      payload = { error: "Unknown action. Use one of: men, women, home, tournaments, results, standings, playoffs, live, updates, liveStandings, schedule, gallery." };
   }
 
   return ContentService
@@ -131,6 +142,7 @@ function getHome_() {
     tagline: String(r.tagline || "Serve, Rally, Win!"),
     about: String(r.about || ""),
     photo: String(r.photo || ""),
+    mediaType: String(r.mediaType || "photo").toLowerCase(),
     instagram: String(r.instagram || ""),
     mapEmbed: String(r.mapEmbed || ""),
     lat: Number(r.lat) || null,
@@ -301,6 +313,16 @@ function getSchedule_() {
     court: String(r.court || ""),
     team1: String(r.team1 || ""),
     team2: String(r.team2 || "")
+  }));
+}
+
+function getGallery_() {
+  return sheetRows_("Gallery").map((r) => ({
+    event: String(r.event || ""),
+    date: String(r.date || ""),
+    caption: String(r.caption || ""),
+    type: String(r.type || "photo").toLowerCase(),
+    url: String(r.url || "")
   }));
 }
 

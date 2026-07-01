@@ -53,6 +53,7 @@ const getLive = () => fetchJSON("data/live.json", "live");
 const getUpdates = () => fetchJSON("data/updates.json", "updates");
 const getLiveStandings = () => fetchJSON("data/live-standings.json", "liveStandings");
 const getSchedule = () => fetchJSON("data/schedule.json", "schedule");
+const getGallery = () => fetchJSON("data/gallery.json", "gallery");
 
 /* --------- Helpers --------- */
 function esc(str) {
@@ -184,9 +185,17 @@ async function renderHome() {
   document.getElementById("homeAbout").textContent = home.about || "";
   const ig = document.getElementById("homeIg");
   if (home.instagram) ig.href = home.instagram;
-  document.getElementById("aboutPhoto").innerHTML = home.photo
-    ? `<img src="${esc(home.photo)}" alt="${esc(home.name || "PIM Tennis Club")}" loading="lazy">`
-    : `<div class="about-photo-fallback"><img src="icons/logo.png" alt="PIMTC crest" width="140" height="140"></div>`;
+  const aboutPhoto = document.getElementById("aboutPhoto");
+  const mediaType = (home.mediaType || "photo").toLowerCase();
+  if (home.photo && mediaType !== "photo") {
+    aboutPhoto.classList.add("is-embed");
+    aboutPhoto.innerHTML = embedBlock({ type: mediaType, url: home.photo });
+    if (mediaType === "instagram") ensureInstagramEmbedScript();
+  } else if (home.photo) {
+    aboutPhoto.innerHTML = `<img src="${esc(home.photo)}" alt="${esc(home.name || "PIM Tennis Club")}" loading="lazy">`;
+  } else {
+    aboutPhoto.innerHTML = `<div class="about-photo-fallback"><img src="icons/logo.png" alt="PIMTC crest" width="140" height="140"></div>`;
+  }
   if (home.mapEmbed) {
     document.getElementById("mapFrame").innerHTML = `<iframe src="${esc(home.mapEmbed)}" loading="lazy" title="Club location"></iframe>`;
   }
@@ -591,6 +600,64 @@ async function renderLive() {
   }
 }
 
+function galleryCard(item) {
+  return `
+    <div class="gallery-card">
+      ${embedBlock(item)}
+      ${item.caption || item.date ? `
+        <div class="gallery-card-caption">
+          ${item.caption ? esc(item.caption) : ""}
+          ${item.date ? `<span class="gallery-card-date">${esc(item.date)}</span>` : ""}
+        </div>` : ""}
+    </div>`;
+}
+
+async function renderGallery() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <section class="section-dark section" style="padding-bottom:40px;">
+      <div class="wrap">
+        <span class="eyebrow on-dark">Moments From The Club</span>
+        <h2>Gallery</h2>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap" id="galleryBody"><div class="skeleton" style="height:240px"></div></div>
+    </section>`;
+
+  const items = await getGallery();
+  const body = document.getElementById("galleryBody");
+
+  if (!items.length) {
+    body.innerHTML = `<div class="state-msg">No photos posted yet — check back soon.</div>`;
+    return;
+  }
+
+  const groups = {};
+  items.forEach((item) => {
+    const event = item.event || "Uncategorized";
+    if (!groups[event]) groups[event] = [];
+    groups[event].push(item);
+  });
+
+  const eventOrder = Object.keys(groups).sort((a, b) => {
+    const latest = (g) => g.reduce((max, i) => (i.date || "") > max ? (i.date || "") : max, "");
+    return latest(groups[b]).localeCompare(latest(groups[a]));
+  });
+
+  body.innerHTML = eventOrder.map((event) => `
+    <div class="gallery-group">
+      <div class="gallery-group-title">${esc(event)}</div>
+      <div class="gallery-group-meta">${groups[event].length} item${groups[event].length === 1 ? "" : "s"}</div>
+      <div class="gallery-grid">${groups[event].map(galleryCard).join("")}</div>
+    </div>
+  `).join("");
+
+  if (items.some((i) => (i.type || "").toLowerCase() === "instagram")) {
+    ensureInstagramEmbedScript();
+  }
+}
+
 function renderInquiry() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -634,6 +701,7 @@ const routes = {
   live: renderLive,
   tournaments: renderTournaments,
   results: renderResults,
+  gallery: renderGallery,
   men: renderMen,
   women: renderWomen,
   inquiry: renderInquiry

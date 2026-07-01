@@ -48,10 +48,13 @@ rankings and tournament info editable from a spreadsheet:
    |---|---|---|---|---|---|---|---|---|
 
    **Home** (one data row)
-   | name | tagline | about | photo | instagram | mapEmbed | lat | lng |
-   |---|---|---|---|---|---|---|---|
-   `photo` is a public image URL for the picture on the Home page. Leave blank
-   and the site shows a designed placeholder instead of a broken image.
+   | name | tagline | about | photo | mediaType | instagram | mapEmbed | lat | lng |
+   |---|---|---|---|---|---|---|---|---|
+   For a plain picture: put a direct image URL in `photo`, leave `mediaType`
+   blank (or `photo`). To embed an Instagram post/reel or YouTube video in
+   that same spot instead, put that URL in `photo` and set `mediaType` to
+   `instagram` or `youtube`. Leave `photo` blank entirely and the site shows
+   a designed placeholder instead of a broken image.
 
    **TournamentRounds** (one row per bullet point)
    | category | roundOrder | roundName | point |
@@ -107,6 +110,15 @@ rankings and tournament info editable from a spreadsheet:
    `date` format is `YYYY-MM-DD`. Leave `date`/`day` blank for matches that
    aren't scheduled yet — they'll show under "Date TBC" at the bottom of the list.
 
+   **Gallery** (one row per photo/video, standalone from the live Updates feed)
+   | event | date | caption | type | url |
+   |---|---|---|---|---|
+   `event` is free text and groups photos together on the Gallery page —
+   e.g. every row with `event = PIMTC 500 Doubles 2026` shows up under one
+   heading, most recent event first. `type` is `instagram`, `youtube`, or
+   `photo` (same embedding rules as Updates — see the posting workflow below
+   for where to host photos so they have a real, direct link).
+
 2. Populate the sheet from your current roster (the `data/*.json`
    files in this project already contain everything currently on the
    Google Site, so you can copy those values in as a starting point).
@@ -145,6 +157,15 @@ This is the day-to-day workflow once the Sheet is connected:
 
 For a text-only update (no media yet), leave `type` as `text` and the `url`
 column blank — it'll show as a caption-only card.
+
+**Hosting photos for `type = photo`** (used in both Updates and Gallery):
+the URL needs to be a *direct* link to the image file itself, not a link to
+a viewer page. Google Photos and OneDrive/Google Drive share links do **not**
+work here — they open a webpage, not the raw image, so the site would just
+show a broken image. Reliable options: upload to
+[Imgur](https://imgur.com) and use its direct image link (looks like
+`https://i.imgur.com/xxxx.jpg`), or post to Instagram and use `type = instagram`
+instead, which embeds the whole post correctly.
 
 When the tournament wraps up, see the migration steps below before flipping
 `status` to `completed` — the Live tab is a working/staging area, not the

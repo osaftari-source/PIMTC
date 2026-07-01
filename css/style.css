@@ -144,6 +144,8 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .about-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items:start; }
 .about-photo{ border-radius: 6px; overflow:hidden; box-shadow: var(--shadow); aspect-ratio: 4/3; background: var(--navy-soft); }
 .about-photo img{ width:100%; height:100%; object-fit:cover; }
+.about-photo.is-embed{ aspect-ratio: auto; background: none; box-shadow: none; }
+.about-photo.is-embed .embed-wrap{ max-width: none; }
 .about-photo-fallback{
   width:100%; height:100%; display:flex; align-items:center; justify-content:center;
   background: radial-gradient(120% 140% at 20% 0%, var(--navy-soft) 0%, var(--navy) 60%, var(--navy-deep) 100%);
@@ -259,6 +261,19 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .champion-panel .name{ font-family: var(--font-display); font-size:40px; font-weight:800; }
 .champion-panel .trophy{ font-size: 30px; margin-bottom: 4px; }
 
+
+/* ---------- Gallery ---------- */
+.gallery-group{ margin-bottom: 52px; }
+.gallery-group:last-child{ margin-bottom: 0; }
+.gallery-group-title{ font-family: var(--font-display); font-size: 26px; font-weight:700; margin-bottom: 4px; }
+.gallery-group-meta{ font-family: var(--font-mono); font-size:12px; color: rgba(18,24,31,0.45); margin-bottom: 18px; }
+.gallery-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.gallery-card{ border-radius: 8px; overflow:hidden; background: var(--navy); box-shadow: 0 6px 20px rgba(10,31,61,0.12); }
+.gallery-card .embed-wrap{ max-width:none; border-radius:0; }
+.gallery-card .embed-wrap.photo img{ box-shadow:none; border-radius:0; aspect-ratio: 4/3; object-fit:cover; }
+.gallery-card .embed-wrap.yt{ box-shadow:none; }
+.gallery-card-caption{ padding: 10px 12px; font-size:13px; color: rgba(244,240,230,0.75); }
+.gallery-card-date{ font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color: rgba(244,240,230,0.4); display:block; margin-top:4px; }
 
 /* ---------- Live badge ---------- */
 .live-dot{
