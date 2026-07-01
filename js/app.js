@@ -396,20 +396,28 @@ function pairStandingsBlock(roundName, groups) {
 }
 
 function scheduleTable(matches) {
-  const dated = matches.filter((m) => m.date).sort((a, b) => a.date.localeCompare(b.date));
+  const dated = matches.filter((m) => m.date).sort((a, b) => {
+    const d = a.date.localeCompare(b.date);
+    return d !== 0 ? d : String(a.time || "").localeCompare(String(b.time || ""));
+  });
   const tbc = matches.filter((m) => !m.date);
+
+  const matchCell = (m) => m.team2
+    ? `<span class="schedule-match">${esc(m.team1)}<span class="vs">vs</span>${esc(m.team2)}</span>`
+    : `<span class="schedule-match schedule-label">${esc(m.team1)}</span>`;
 
   const row = (m) => `
     <tr>
       <td>${m.date
         ? `<span class="schedule-date">${esc(m.date)}${m.day ? `<span class="day">${esc(m.day)}</span>` : ""}</span>`
         : `<span class="schedule-tbc-label">Date TBC</span>`}</td>
+      <td>${m.time ? `<span class="schedule-time">${esc(m.time)}</span>` : ""}</td>
       <td>${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : ""}</td>
-      <td><span class="schedule-match">${esc(m.team1)}<span class="vs">vs</span>${esc(m.team2)}</span></td>
+      <td>${matchCell(m)}</td>
     </tr>`;
 
   return `<table class="schedule-table">
-    <thead><tr><th>Date</th><th>Court</th><th>Match</th></tr></thead>
+    <thead><tr><th>Date</th><th>Time</th><th>Court</th><th>Match</th></tr></thead>
     <tbody>${dated.map(row).join("")}${tbc.map(row).join("")}</tbody>
   </table>`;
 }

@@ -105,10 +105,14 @@ rankings and tournament info editable from a spreadsheet:
    doubles format is always grouped.
 
    **Schedule** (one row per match)
-   | date | day | court | team1 | team2 |
-   |---|---|---|---|---|
-   `date` format is `YYYY-MM-DD`. Leave `date`/`day` blank for matches that
-   aren't scheduled yet — they'll show under "Date TBC" at the bottom of the list.
+   | date | day | time | court | team1 | team2 |
+   |---|---|---|---|---|---|
+   `date` format is `YYYY-MM-DD`, `time` is plain text like `17:00`. Leave
+   `date`/`day` blank for matches that aren't scheduled yet — they'll show
+   under "Date TBC" at the bottom of the list. For a round where the teams
+   aren't known yet (e.g. "Semifinal 1" before the group stage finishes),
+   put the round name in `team1` and leave `team2` blank — it displays as a
+   plain label instead of "X vs Y".
 
    **Gallery** (one row per photo/video, standalone from the live Updates feed)
    | event | date | caption | type | url |

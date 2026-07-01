@@ -354,7 +354,9 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .schedule-date{ font-family: var(--font-display); font-weight:700; font-size:15px; white-space:nowrap; }
 .schedule-date .day{ display:block; font-family: var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; color: rgba(18,24,31,0.45); font-weight:400; }
 .schedule-court{ font-family: var(--font-mono); font-size:11px; color: var(--court-bright); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+.schedule-time{ font-family: var(--font-mono); font-size:13px; color: var(--ink); white-space:nowrap; }
 .schedule-match{ font-family: var(--font-display); font-weight:600; font-size:16px; }
+.schedule-match.schedule-label{ color: var(--gold); text-transform:uppercase; letter-spacing:0.5px; font-size:14px; }
 .schedule-match .vs{ color: rgba(18,24,31,0.35); font-weight:400; margin: 0 6px; font-family: var(--font-mono); font-size:11px; text-transform:uppercase; }
 .schedule-tbc-label{ font-family: var(--font-mono); font-size:11px; color: rgba(18,24,31,0.4); text-transform:uppercase; letter-spacing:1px; }
 

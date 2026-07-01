@@ -1,9 +1,9 @@
 {
   "Group Stage": {
     "Group A": [
-      { "ranking": 1, "pair": "Gipa / Mursal", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
-      { "ranking": 2, "pair": "Fatur / Dian", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
-      { "ranking": 3, "pair": "Osman / Ferdy", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
+      { "ranking": 1, "pair": "Osman / Ferdy", "mp": 1, "w": 1, "l": 0, "gw": 7, "gl": 3, "diff": 4, "points": 3 },
+      { "ranking": 2, "pair": "Fatur / Dian", "mp": 1, "w": 0, "l": 1, "gw": 3, "gl": 7, "diff": -4, "points": 1 },
+      { "ranking": 3, "pair": "Gipa / Mursal", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
       { "ranking": 4, "pair": "Arief / Moeda", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 }
     ],
     "Group B": [

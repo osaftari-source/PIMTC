@@ -34,9 +34,12 @@
  *    LiveStandings  | round | group | ranking | pair | mp | w | l | gw | gl | diff | points |
  *                     (one row per pair per round; group is required here — e.g. "Group A" —
  *                      since the live doubles format is always grouped. gw/gl = games won/lost.)
- *    Schedule       | date | day | court | team1 | team2 |
+ *    Schedule       | date | day | time | court | team1 | team2 |
  *                     (one row per match; leave date and day blank for matches without a
- *                      confirmed date yet — they'll show under "Date TBC". date format YYYY-MM-DD.)
+ *                      confirmed date yet — they'll show under "Date TBC". date format YYYY-MM-DD,
+ *                      time as plain text e.g. "17:00". For rounds without known teams yet
+ *                      (e.g. "Semifinal 1"), put the round name in team1 and leave team2 blank —
+ *                      it'll display as a plain label instead of "X vs Y".)
  *    Gallery        | event | date | caption | type | url |
  *                     (one row per photo/video; event is a free-text group name, e.g.
  *                      "PIMTC 500 Doubles 2026" — photos with the same event text are
@@ -331,6 +334,7 @@ function getSchedule_() {
   return sheetRows_("Schedule").map((r) => ({
     date: String(r.date || ""),
     day: String(r.day || ""),
+    time: String(r.time || ""),
     court: String(r.court || ""),
     team1: String(r.team1 || ""),
     team2: String(r.team2 || "")
