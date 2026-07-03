@@ -1,4 +1,4 @@
-# PIM Tennis Club — PWA
+# PIM Tennis Club — PWA 
 
 An installable, offline-capable rewrite of the PIMTC Google Site
 (https://sites.google.com/view/pimtennisclub) — Home, Tournaments,
