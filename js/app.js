@@ -14,7 +14,7 @@ const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v15.2.5"
+  VERSION: "pimtc-v15.2.6"
 };
 
 const state = { cache: {} };
@@ -822,83 +822,12 @@ async function renderLive() {
 let liveNavStickyCleanup = null;
 
 function setupLiveSectionNavStickiness() {
+  // v15.2.6: use native CSS sticky instead of JS fixed positioning.
+  // The JS fixed version worked, but it created a visible vertical gap on some browsers.
   if (liveNavStickyCleanup) {
     liveNavStickyCleanup();
     liveNavStickyCleanup = null;
   }
-
-  const nav = document.querySelector(".live-section-nav");
-  if (!nav) return;
-
-  const placeholder = document.createElement("div");
-  placeholder.className = "live-section-nav-placeholder";
-  placeholder.setAttribute("aria-hidden", "true");
-  nav.insertAdjacentElement("afterend", placeholder);
-
-  let naturalTop = 0;
-
-  const headerHeight = () => {
-    const header = document.querySelector(".site-header");
-    return header ? Math.ceil(header.getBoundingClientRect().height) : 0;
-  };
-
-  const navHeight = () => Math.ceil(nav.getBoundingClientRect().height || 0);
-
-  const measureNaturalTop = () => {
-    const wasPinned = nav.classList.contains("is-pinned");
-    if (wasPinned) {
-      nav.classList.remove("is-pinned");
-      nav.style.top = "";
-      placeholder.style.height = "0px";
-    }
-    naturalTop = nav.getBoundingClientRect().top + window.scrollY;
-    if (wasPinned) {
-      nav.classList.add("is-pinned");
-      nav.style.top = `${headerHeight()}px`;
-      placeholder.style.height = `${navHeight()}px`;
-    }
-  };
-
-  const update = () => {
-    if (!document.body.contains(nav)) {
-      if (liveNavStickyCleanup) liveNavStickyCleanup();
-      return;
-    }
-
-    const h = headerHeight();
-    const shouldPin = window.scrollY + h >= naturalTop;
-
-    if (shouldPin) {
-      placeholder.style.height = `${navHeight()}px`;
-      nav.style.top = `${h}px`;
-      nav.classList.add("is-pinned");
-    } else {
-      nav.classList.remove("is-pinned");
-      nav.style.top = "";
-      placeholder.style.height = "0px";
-    }
-  };
-
-  const onResize = () => {
-    measureNaturalTop();
-    update();
-  };
-
-  requestAnimationFrame(() => {
-    measureNaturalTop();
-    update();
-  });
-
-  window.addEventListener("scroll", update, { passive: true });
-  window.addEventListener("resize", onResize);
-
-  liveNavStickyCleanup = () => {
-    window.removeEventListener("scroll", update);
-    window.removeEventListener("resize", onResize);
-    nav.classList.remove("is-pinned");
-    nav.style.top = "";
-    placeholder.remove();
-  };
 }
 
 function scrollToLiveSection(targetId) {

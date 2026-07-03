@@ -533,3 +533,25 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .live-section-nav{ justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; }
   .live-section-nav button{ white-space:nowrap; }
 }
+
+
+/* ---------- v15.2.6 sticky sub-nav gap fix ---------- */
+/* Use native sticky positioning so the Live mini-nav follows the viewport
+   without the extra fixed-position gap seen in some browsers. */
+.live-section-nav{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 650 !important;
+  margin: 0 !important;
+}
+.live-section-nav.is-pinned{
+  position: sticky !important;
+  top: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  width: auto !important;
+  box-shadow: 0 8px 20px rgba(18,24,31,.08);
+}
+.live-section-nav-placeholder{ display:none !important; height:0 !important; }
+.live-compact-section{ scroll-margin-top: 82px; }
+.footer-version{ margin-left:8px; color:rgba(244,240,230,.62); font-family:var(--font-mono); }

@@ -58,3 +58,8 @@
 - Made the footer version easier to see: `Version pimtc-v15.2.5`.
 - Added cache-busting for `css/style.css` and `js/app.js` in `index.html`.
 - Bumped the service worker cache to `pimtc-v15-2-5`.
+
+## v15.2.6 — Sticky Sub-nav Gap Fix
+- Replaced the JS fixed-position Live sub-nav pinning with native CSS sticky behavior.
+- Removed the placeholder/fixed-position layout that caused a visible vertical gap above the sub-nav on some browsers.
+- Bumped visible footer version to `pimtc-v15.2.6` and service worker cache to `pimtc-v15-2-6`.
