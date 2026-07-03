@@ -14,7 +14,7 @@ const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.0.0",
+  VERSION: "pimtc-v16.0.1",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -1128,15 +1128,13 @@ function closeMenu() {
 }
 
 
-let backgroundRefreshTimer = null;
-window.addEventListener("pimtc:background-refresh", () => {
-  clearTimeout(backgroundRefreshTimer);
-  backgroundRefreshTimer = setTimeout(async () => {
-    const route = currentRoute();
-    const y = window.scrollY;
-    await routes[route]();
-    window.scrollTo({ top: y, behavior: "instant" in window ? "instant" : "auto" });
-  }, 250);
+window.addEventListener("pimtc:background-refresh", (event) => {
+  // v16.0.1: do not re-render the full page when Apps Script catches up.
+  // In v16.0.0 the background refresh rebuilt the current route, which could
+  // momentarily clamp scroll position and flash the dark-blue Live hero section.
+  // The fresh Sheet data is still stored in cache and will be used on the next
+  // route visit/refresh, but the visible page remains stable while reading.
+  console.info("PIMTC background data refreshed", event.detail?.keys || []);
 });
 
 window.addEventListener("hashchange", router);

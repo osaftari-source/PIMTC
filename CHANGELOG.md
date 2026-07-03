@@ -1,5 +1,11 @@
 # Changelog
 
+## pimtc-v16.0.1 — Background Refresh Stability Fix
+- Prevented Apps Script background refresh from fully re-rendering the current page after static snapshot load.
+- Fixes the Live page flashing/jumping back to the dark-blue hero/background when Sheet data catches up.
+- Fresh background data is still cached and used on the next refresh/navigation.
+- Bumped visible footer version and service worker cache to `pimtc-v16.0.1`.
+
 ## pimtc-v16.0.0 — Static Data Snapshot Loader
 - Added `data/latest-data.json` as a fast GitHub-hosted public data snapshot.
 - Updated the data layer so pages render from the static snapshot first, then refresh from Apps Script in the background.
