@@ -555,3 +555,34 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .live-section-nav-placeholder{ display:none !important; height:0 !important; }
 .live-compact-section{ scroll-margin-top: 82px; }
 .footer-version{ margin-left:8px; color:rgba(244,240,230,.62); font-family:var(--font-mono); }
+
+
+/* ---------- v15.2.7 persistent Live sub-nav fix ---------- */
+/* JS toggles .is-pinned because CSS sticky stops at the parent container. */
+.live-section-nav{
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 650 !important;
+  width: 100%;
+  margin: 0 !important;
+}
+.live-section-nav.is-pinned{
+  position: fixed !important;
+  top: var(--live-nav-fixed-top, 0px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  z-index: 650 !important;
+  box-shadow: 0 8px 20px rgba(18,24,31,.08);
+}
+.live-section-nav-placeholder{
+  display:block !important;
+  height:0 !important;
+}
+.live-section-nav-placeholder.is-active{
+  height: var(--live-nav-height, 0px) !important;
+}
+.live-compact-section{ scroll-margin-top: calc(var(--live-nav-height, 48px) + 82px); }

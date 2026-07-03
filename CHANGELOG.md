@@ -1,3 +1,11 @@
+# Changelog
+
+## pimtc-v15.2.7 — Persistent Sticky Live Sub-nav Fix
+- Replaced the constrained native sticky Live sub-nav with a JS-pinned behavior that stays visible through Standings, Schedule, and Updates.
+- Added a same-height placeholder only when pinned so the page does not jump while avoiding the previous large visual gap.
+- Calculates the fixed top position from the actual site header position.
+- Updated visible footer version and service worker cache to `pimtc-v15.2.7`.
+
 
 ## v15.2.3 — Live Sub-nav Sticky Cache-Bust Fix
 
