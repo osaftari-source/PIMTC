@@ -50,3 +50,11 @@
 - Added Apps Script data normalization helpers and `?action=health` validation endpoint.
 - Bumped service worker cache to `pimtc-v15` and added runtime media caching.
 - Added deploy and Sheet editing guides.
+
+## pimtc-v15.2.5 — Robust Sticky Live Sub-Nav + Visible Version
+
+- Reworked the Live Standings / Schedule / Updates sub-nav so it follows the user while scrolling by pinning under the main site header after the nav reaches the top of the viewport.
+- Added a layout placeholder while the sub-nav is pinned, preventing content jump.
+- Made the footer version easier to see: `Version pimtc-v15.2.5`.
+- Added cache-busting for `css/style.css` and `js/app.js` in `index.html`.
+- Bumped the service worker cache to `pimtc-v15-2-5`.

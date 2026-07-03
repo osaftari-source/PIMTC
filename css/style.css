@@ -502,23 +502,34 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .result-row .summary{ margin-top:4px; }
 }
 
-/* v15.2.4: Keep Live sub-nav visible while scrolling, directly below the sticky site header. */
-body .live-section-nav,
-body main .live-section-nav,
-body #app .live-section-nav {
-  position: sticky !important;
-  top: 65px !important;
-  bottom: auto !important;
-  left: auto !important;
-  right: auto !important;
-  z-index: 450 !important;
-  transform: none !important;
+
+/* v15.2.5: Robust Live sub-nav follow-scroll behavior.
+   JS pins the nav under the sticky site header after the user reaches it,
+   and a placeholder keeps the page layout from jumping. */
+.live-section-nav{
+  position: relative;
+  top: auto;
+  z-index: 450;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  padding:10px 16px;
+  background:rgba(244,240,230,.94);
+  border-bottom:1px solid rgba(18,24,31,.08);
   backdrop-filter: blur(12px);
 }
+.live-section-nav.is-pinned{
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 450;
+  box-shadow: 0 8px 20px rgba(18,24,31,.08);
+}
+.live-section-nav-placeholder{ height:0; }
+.footer-version{ margin-left:8px; color:rgba(244,240,230,.62); font-family:var(--font-mono); }
 @media (max-width: 860px){
-  body .live-section-nav,
-  body main .live-section-nav,
-  body #app .live-section-nav {
-    top: 62px !important;
-  }
+  .live-section-nav{ justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .live-section-nav button{ white-space:nowrap; }
 }
