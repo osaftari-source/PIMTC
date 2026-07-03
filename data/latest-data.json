@@ -1,0 +1,848 @@
+{
+  "version": "pimtc-v16.0.0",
+  "publishedAt": "2026-07-03T15:20:00+07:00",
+  "source": "Static snapshot generated from the attached PIMTC Backend workbook",
+  "data": {
+    "home": {
+      "name": "Pupuk Iskandar Muda Tennis Club",
+      "tagline": "Serve, Rally, Win!",
+      "about": "PIM Tennis Club is a community-based sports club located in Pupuk Iskandar Muda. We host regular training sessions, tournaments, and represent our organization in external events. Whether you're new to the sport or looking to sharpen your game, our club welcomes players of all levels.",
+      "photo": "https://osaftari-source.github.io/PIMTC/media/RPsPPb0.jpg",
+      "mediaType": "photo",
+      "instagram": "https://www.instagram.com/pimtennisclub/",
+      "mapEmbed": "https://maps-api-ssl.google.com/maps?hl=en-US&ll=5.2179,97.029367&output=embed&q=5.217773,97.029371&z=17",
+      "lat": 5.217773,
+      "lng": 97.029371
+    },
+    "men": [
+      {
+        "rank": 1,
+        "name": "Mansurni",
+        "age": 41,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 10,
+        "losses": 0,
+        "racket": "Babolat Pure Aero",
+        "dept": "Plant Operation-1",
+        "photo": ""
+      },
+      {
+        "rank": 2,
+        "name": "Aulia Moeda",
+        "age": 29,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 8,
+        "losses": 2,
+        "racket": "Head Gravity",
+        "dept": "Ammonia Tank Project",
+        "photo": ""
+      },
+      {
+        "rank": 3,
+        "name": "Osman Saftari",
+        "age": 37,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 7,
+        "losses": 2,
+        "racket": "Yonex Ezone",
+        "dept": "Ammonia Tank Project",
+        "photo": ""
+      },
+      {
+        "rank": 4,
+        "name": "Mursal Rajab",
+        "age": 40,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 6,
+        "losses": 3,
+        "racket": "Babolat Pure Aero",
+        "dept": "Inspection & Reliability",
+        "photo": ""
+      },
+      {
+        "rank": 5,
+        "name": "Giffari Almuzani",
+        "age": 30,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 5,
+        "losses": 3,
+        "racket": "Yonex Ezone",
+        "dept": "Process Engineer",
+        "photo": ""
+      },
+      {
+        "rank": 6,
+        "name": "Fariz Ridha",
+        "age": 35,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 3,
+        "losses": 5,
+        "racket": "Yonex Vcore",
+        "dept": "Planning and Maintenance",
+        "photo": ""
+      },
+      {
+        "rank": 7,
+        "name": "Arief Rahman",
+        "age": 31,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 3,
+        "losses": 5,
+        "racket": "Babolat Pure Aero",
+        "dept": "Executive Assistant",
+        "photo": ""
+      },
+      {
+        "rank": 8,
+        "name": "El Rivaldy",
+        "age": null,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 5,
+        "losses": 3,
+        "racket": "Babolat Pure Drive",
+        "dept": "Heavy Equipment",
+        "photo": ""
+      },
+      {
+        "rank": 9,
+        "name": "Dian Pratama",
+        "age": 31,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 3,
+        "losses": 6,
+        "racket": "Head Speed",
+        "dept": "Business Development",
+        "photo": ""
+      },
+      {
+        "rank": 10,
+        "name": "Zulfajri Ery Syahputra",
+        "age": 32,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 2,
+        "losses": 5,
+        "racket": "Babolat Pure Strike",
+        "dept": "Safety",
+        "photo": ""
+      },
+      {
+        "rank": 11,
+        "name": "Rahmat Sunarya",
+        "age": 31,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 2,
+        "losses": 6,
+        "racket": "Volkl Boris Becker",
+        "dept": "Executive Assistant",
+        "photo": ""
+      },
+      {
+        "rank": 12,
+        "name": "Ferdiyansyah",
+        "age": 39,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 1,
+        "losses": 6,
+        "racket": "Babolat Pure Strike",
+        "dept": "Inspection & Reliability",
+        "photo": ""
+      },
+      {
+        "rank": 13,
+        "name": "Fathurrahman",
+        "age": 29,
+        "plays": "Right-handed, Single-handed backhand",
+        "wins": 0,
+        "losses": 7,
+        "racket": "Head Radical",
+        "dept": "Ammonia Tank Project",
+        "photo": ""
+      }
+    ],
+    "women": [
+      {
+        "rank": 1,
+        "name": "Mauliza Arsita",
+        "age": 31,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 4,
+        "losses": 0,
+        "racket": "Wilson",
+        "dept": "Researcher Calibration & Inventory",
+        "photo": ""
+      },
+      {
+        "rank": 2,
+        "name": "Azwarni Islamiah",
+        "age": 24,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 3,
+        "losses": 1,
+        "racket": "Babolat",
+        "dept": "Marketing & Sales",
+        "photo": ""
+      },
+      {
+        "rank": 3,
+        "name": "Noviana Putri",
+        "age": 30,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 2,
+        "losses": 2,
+        "racket": "Yonex Ezone",
+        "dept": "Finance",
+        "photo": ""
+      },
+      {
+        "rank": 4,
+        "name": "Fierda",
+        "age": 31,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 1,
+        "losses": 3,
+        "racket": "Yonex Ezone",
+        "dept": "Dentist (PIKA)",
+        "photo": ""
+      },
+      {
+        "rank": 5,
+        "name": "Lisa Zulmayeti",
+        "age": 29,
+        "plays": "Right-handed, Double-handed backhand",
+        "wins": 0,
+        "losses": 4,
+        "racket": "Babolat Boost",
+        "dept": "Production Planning",
+        "photo": ""
+      }
+    ],
+    "tournaments": {
+      "men": {
+        "format": {
+          "players": 14,
+          "sets": 1,
+          "games": 6,
+          "tiebreak": "7pt at 5-5"
+        },
+        "rounds": [
+          {
+            "name": "Round 1",
+            "points": [
+              "Features 2 groups (Group A and Group B), each with 7 players randomly assigned.",
+              "The top 4 players from each group advance to Round 2.",
+              "Players ranked 5th and below are eliminated."
+            ]
+          },
+          {
+            "name": "Round 2",
+            "points": [
+              "Features 2 groups of 4 players each, assigned through a cross-group system: Group A gets 1st & 3rd from Group A, 2nd & 4th from Group B; Group B gets 1st & 3rd from Group B, 2nd & 4th from Group A.",
+              "Players from the same Round 1 group won't face each other again to avoid rematches.",
+              "The top 2 players from each group advance to the Semifinals."
+            ]
+          }
+        ]
+      },
+      "women": {
+        "format": {
+          "players": 5,
+          "sets": 1,
+          "games": 4,
+          "tiebreak": null
+        },
+        "rounds": []
+      }
+    },
+    "results": {
+      "men": [
+        {
+          "round": "Round 1",
+          "summary": "Group A and Group B pool play completed. Top 4 advanced from each group: Mansurni, Hafizh Furqan, Giffari Almuzani and Fariz Ridha from Group A; Aulia Moeda, Osman Saftari, Mursal Rajab and Arief Rahman from Group B."
+        },
+        {
+          "round": "Round 2",
+          "summary": "Cross-group stage completed. Top 2 from each group advanced to the Semifinals: Mansurni and Osman Saftari from Group A; Aulia Moeda and Mursal Rajab from Group B."
+        },
+        {
+          "round": "Semifinals",
+          "summary": "Mansurni defeated Mursal Rajab 6-2. Aulia Moeda defeated Osman Saftari 6-2."
+        },
+        {
+          "round": "Final",
+          "summary": "Mansurni defeated Aulia Moeda 6-3 to win the championship."
+        }
+      ],
+      "women": [
+        {
+          "round": "Round Robin",
+          "summary": "5-player round robin completed. Mauliza Arsita finished 1st (4-0), followed by Azwarni Islamiah, Noviana Putri, Fierda, and Lisa Zulmayeti."
+        }
+      ]
+    },
+    "standings": {
+      "men": {
+        "Round 1": {
+          "Group A": [
+            {
+              "ranking": 1,
+              "player": "Mansurni",
+              "nickname": "",
+              "mp": 6,
+              "w": 6,
+              "points": 18,
+              "qualified": true
+            },
+            {
+              "ranking": 2,
+              "player": "Hafizh Furqan",
+              "nickname": "",
+              "mp": 6,
+              "w": 4,
+              "points": 14,
+              "qualified": true
+            },
+            {
+              "ranking": 3,
+              "player": "Giffari Almuzani",
+              "nickname": "",
+              "mp": 6,
+              "w": 4,
+              "points": 14,
+              "qualified": true
+            },
+            {
+              "ranking": 4,
+              "player": "Fariz Ridha",
+              "nickname": "",
+              "mp": 6,
+              "w": 3,
+              "points": 12,
+              "qualified": true
+            },
+            {
+              "ranking": 5,
+              "player": "Zulfajri Ery S.",
+              "nickname": "",
+              "mp": 6,
+              "w": 2,
+              "points": 10,
+              "qualified": false
+            },
+            {
+              "ranking": 6,
+              "player": "Rahmat Sunarya",
+              "nickname": "",
+              "mp": 6,
+              "w": 1,
+              "points": 8,
+              "qualified": false
+            },
+            {
+              "ranking": 7,
+              "player": "Ferdiyansyah",
+              "nickname": "",
+              "mp": 6,
+              "w": 1,
+              "points": 8,
+              "qualified": false
+            }
+          ],
+          "Group B": [
+            {
+              "ranking": 1,
+              "player": "Aulia Moeda",
+              "nickname": "",
+              "mp": 6,
+              "w": 5,
+              "points": 16,
+              "qualified": true
+            },
+            {
+              "ranking": 2,
+              "player": "Osman Saftari",
+              "nickname": "",
+              "mp": 6,
+              "w": 5,
+              "points": 16,
+              "qualified": true
+            },
+            {
+              "ranking": 3,
+              "player": "Mursal Rajab",
+              "nickname": "",
+              "mp": 6,
+              "w": 4,
+              "points": 14,
+              "qualified": true
+            },
+            {
+              "ranking": 4,
+              "player": "Arief Rahman",
+              "nickname": "",
+              "mp": 6,
+              "w": 3,
+              "points": 12,
+              "qualified": true
+            },
+            {
+              "ranking": 5,
+              "player": "El Rivaldy",
+              "nickname": "",
+              "mp": 6,
+              "w": 3,
+              "points": 12,
+              "qualified": false
+            },
+            {
+              "ranking": 6,
+              "player": "Dian Pratama",
+              "nickname": "",
+              "mp": 6,
+              "w": 1,
+              "points": 8,
+              "qualified": false
+            },
+            {
+              "ranking": 7,
+              "player": "Fathurrahman",
+              "nickname": "",
+              "mp": 6,
+              "w": 0,
+              "points": 6,
+              "qualified": false
+            }
+          ]
+        },
+        "Round 2": {
+          "Group A": [
+            {
+              "ranking": 1,
+              "player": "Mansurni",
+              "nickname": "",
+              "mp": 2,
+              "w": 2,
+              "points": 6,
+              "qualified": true
+            },
+            {
+              "ranking": 2,
+              "player": "Osman Saftari",
+              "nickname": "",
+              "mp": 2,
+              "w": 1,
+              "points": 4,
+              "qualified": true
+            },
+            {
+              "ranking": 3,
+              "player": "Giffari Almuzani",
+              "nickname": "",
+              "mp": 2,
+              "w": 1,
+              "points": 4,
+              "qualified": false
+            },
+            {
+              "ranking": 4,
+              "player": "Arief Rahman",
+              "nickname": "",
+              "mp": 2,
+              "w": 0,
+              "points": 2,
+              "qualified": false
+            }
+          ],
+          "Group B": [
+            {
+              "ranking": 1,
+              "player": "Aulia Moeda",
+              "nickname": "",
+              "mp": 2,
+              "w": 2,
+              "points": 6,
+              "qualified": true
+            },
+            {
+              "ranking": 2,
+              "player": "Mursal Rajab",
+              "nickname": "",
+              "mp": 2,
+              "w": 2,
+              "points": 6,
+              "qualified": true
+            },
+            {
+              "ranking": 3,
+              "player": "Hafizh Furqan",
+              "nickname": "",
+              "mp": 2,
+              "w": 0,
+              "points": 2,
+              "qualified": false
+            },
+            {
+              "ranking": 4,
+              "player": "Fariz Ridha",
+              "nickname": "",
+              "mp": 2,
+              "w": 0,
+              "points": 2,
+              "qualified": false
+            }
+          ]
+        }
+      },
+      "women": {
+        "Round Robin": {
+          "Overall": [
+            {
+              "ranking": 1,
+              "player": "Mauliza Arsita",
+              "nickname": "Dekta",
+              "mp": 4,
+              "w": 4,
+              "points": 12,
+              "qualified": null
+            },
+            {
+              "ranking": 2,
+              "player": "Azwarni Islamiah",
+              "nickname": "Mia",
+              "mp": 4,
+              "w": 3,
+              "points": 10,
+              "qualified": null
+            },
+            {
+              "ranking": 3,
+              "player": "Noviana Putri",
+              "nickname": "Novi",
+              "mp": 4,
+              "w": 2,
+              "points": 8,
+              "qualified": null
+            },
+            {
+              "ranking": 4,
+              "player": "Fierda",
+              "nickname": "Pipi",
+              "mp": 4,
+              "w": 1,
+              "points": 6,
+              "qualified": null
+            },
+            {
+              "ranking": 5,
+              "player": "Lisa Zulmayeti",
+              "nickname": "Lisa",
+              "mp": 4,
+              "w": 0,
+              "points": 4,
+              "qualified": null
+            }
+          ]
+        }
+      }
+    },
+    "playoffs": {
+      "men": [
+        {
+          "stage": "Semifinal 1",
+          "p1": "Mansurni",
+          "p2": "Mursal Rajab",
+          "score": "6-2",
+          "winner": "Mansurni"
+        },
+        {
+          "stage": "Semifinal 2",
+          "p1": "Aulia Moeda",
+          "p2": "Osman Saftari",
+          "score": "6-2",
+          "winner": "Aulia Moeda"
+        },
+        {
+          "stage": "Final",
+          "p1": "Mansurni",
+          "p2": "Aulia Moeda",
+          "score": "6-3",
+          "winner": "Mansurni"
+        }
+      ]
+    },
+    "live": {
+      "id": "pimtc500-doubles-2026",
+      "name": "Turnamen Tenis Ganda Pria PIMTC 500 2026",
+      "status": "ongoing",
+      "venue": "PIM Tennis Arena",
+      "startDate": "July 2026",
+      "format": {
+        "teams": 8,
+        "sets": 1,
+        "games": 7,
+        "tiebreak": "7pt at 6-6"
+      },
+      "description": "A random pairs-draw men's doubles tournament. 8 pairs split into Group A and Group B for round-robin group stage play, best of 1 set to 7 games with a 7-point tiebreak at 6-6."
+    },
+    "updates": [
+      {
+        "date": "2026-06-30",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "First results are in from Group A: Osman/Ferdi with a 7-3 win over Dian/Fathur.",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-06-29",
+        "order": 2,
+        "round": "Group Stage",
+        "caption": "1st match on Group A",
+        "type": "photo",
+        "url": "https://osaftari-source.github.io/PIMTC/media/GtjaBpC.jpg"
+      },
+      {
+        "date": "2026-06-25",
+        "order": 3,
+        "round": "Group Stage",
+        "caption": "First results are in from Group B: Fariz/Dian opened with a 7-3 win over Memed/Heri.",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-06-25",
+        "order": 4,
+        "round": "Group Stage",
+        "caption": "1st match on Group B",
+        "type": "photo",
+        "url": "https://osaftari-source.github.io/PIMTC/media/Q3zga5E.jpg"
+      },
+      {
+        "date": "2026-06-20",
+        "order": 5,
+        "round": "Group Stage Draw",
+        "caption": "Random pairs draw complete — 8 pairs split into Group A and Group B for round-robin group play.",
+        "type": "text",
+        "url": ""
+      }
+    ],
+    "liveStandings": {
+      "Group Stage": {
+        "Group A": [
+          {
+            "ranking": 1,
+            "pair": "Osman / Ferdy",
+            "mp": 1,
+            "w": 1,
+            "l": 0,
+            "gw": 7,
+            "gl": 3,
+            "diff": 4,
+            "points": 3
+          },
+          {
+            "ranking": 2,
+            "pair": "Fatur / Dian",
+            "mp": 1,
+            "w": 0,
+            "l": 1,
+            "gw": 3,
+            "gl": 7,
+            "diff": -4,
+            "points": 1
+          },
+          {
+            "ranking": 3,
+            "pair": "Gipa / Mursal",
+            "mp": 0,
+            "w": 0,
+            "l": 0,
+            "gw": 0,
+            "gl": 0,
+            "diff": 0,
+            "points": 0
+          },
+          {
+            "ranking": 4,
+            "pair": "Arief / Moeda",
+            "mp": 0,
+            "w": 0,
+            "l": 0,
+            "gw": 0,
+            "gl": 0,
+            "diff": 0,
+            "points": 0
+          }
+        ],
+        "Group B": [
+          {
+            "ranking": 1,
+            "pair": "Fariz / Dian",
+            "mp": 1,
+            "w": 1,
+            "l": 0,
+            "gw": 7,
+            "gl": 3,
+            "diff": 4,
+            "points": 3
+          },
+          {
+            "ranking": 2,
+            "pair": "Memed / Heri",
+            "mp": 1,
+            "w": 0,
+            "l": 1,
+            "gw": 3,
+            "gl": 7,
+            "diff": -4,
+            "points": 1
+          },
+          {
+            "ranking": 3,
+            "pair": "Akbar / Syahrul",
+            "mp": 0,
+            "w": 0,
+            "l": 0,
+            "gw": 0,
+            "gl": 0,
+            "diff": 0,
+            "points": 0
+          },
+          {
+            "ranking": 4,
+            "pair": "Zes / Rahmat",
+            "mp": 0,
+            "w": 0,
+            "l": 0,
+            "gw": 0,
+            "gl": 0,
+            "diff": 0,
+            "points": 0
+          }
+        ]
+      }
+    },
+    "schedule": [
+      {
+        "date": "2026-07-02",
+        "day": "Kamis",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Fariz/Dian",
+        "team2": "Akbar/Syahrul"
+      },
+      {
+        "date": "2026-07-06",
+        "day": "Senin",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Gipa/Mursal",
+        "team2": "Dian/Fatur"
+      },
+      {
+        "date": "2026-07-06",
+        "day": "Senin",
+        "time": "17:00",
+        "court": "Lapangan 2",
+        "team1": "Arief/Moeda",
+        "team2": "Osman/Ferdy"
+      },
+      {
+        "date": "2026-07-06",
+        "day": "Senin",
+        "time": "20:30",
+        "court": "Lapangan 1",
+        "team1": "Zes/Rahmat",
+        "team2": "Heri/Memed"
+      },
+      {
+        "date": "2026-07-07",
+        "day": "Selasa",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Arief/Moeda",
+        "team2": "Dian/Fatur"
+      },
+      {
+        "date": "2026-07-07",
+        "day": "Selasa",
+        "time": "17:00",
+        "court": "Lapangan 2",
+        "team1": "Gipa/Mursal",
+        "team2": "Osman/Ferdy"
+      },
+      {
+        "date": "2026-07-08",
+        "day": "Rabu",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Heri/Memed",
+        "team2": "Akbar/Syahrul"
+      },
+      {
+        "date": "2026-07-08",
+        "day": "Rabu",
+        "time": "18:00",
+        "court": "Lapangan 1",
+        "team1": "Akbar/Syahrul",
+        "team2": "Zes/Rahmat"
+      },
+      {
+        "date": "2026-07-08",
+        "day": "Rabu",
+        "time": "20:30",
+        "court": "Lapangan 1",
+        "team1": "Gipa/Mursal",
+        "team2": "Arief/Moeda"
+      },
+      {
+        "date": "2026-07-13",
+        "day": "Senin",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Fariz/Dian",
+        "team2": "Zes/Rahmat"
+      },
+      {
+        "date": "2026-07-14",
+        "day": "Selasa",
+        "time": "17:00",
+        "court": "",
+        "team1": "Semifinal 1",
+        "team2": ""
+      },
+      {
+        "date": "2026-07-15",
+        "day": "Rabu",
+        "time": "17:00",
+        "court": "",
+        "team1": "Semifinal 2",
+        "team2": ""
+      },
+      {
+        "date": "2026-07-16",
+        "day": "Kamis",
+        "time": "17:00",
+        "court": "",
+        "team1": "Final",
+        "team2": ""
+      }
+    ],
+    "gallery": [
+      {
+        "event": "The Team",
+        "date": "",
+        "caption": "",
+        "type": "photo",
+        "url": "https://osaftari-source.github.io/PIMTC/media/RPsPPb0.jpg"
+      },
+      {
+        "event": "The Team",
+        "date": "",
+        "caption": "",
+        "type": "photo",
+        "url": "https://osaftari-source.github.io/PIMTC/media/ZddSRle.jpg"
+      }
+    ],
+    "homeGallery": []
+  }
+}

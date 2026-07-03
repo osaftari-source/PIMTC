@@ -1,5 +1,12 @@
 # Changelog
 
+## pimtc-v16.0.0 — Static Data Snapshot Loader
+- Added `data/latest-data.json` as a fast GitHub-hosted public data snapshot.
+- Updated the data layer so pages render from the static snapshot first, then refresh from Apps Script in the background.
+- Preserved the existing fallback chain: snapshot → Apps Script/background refresh → local JSON fallback.
+- Data refreshed labels now use the snapshot `publishedAt` timestamp when snapshot data is shown.
+- Updated cache-busting, visible footer version, and service worker cache to `pimtc-v16.0.0`.
+
 ## pimtc-v15.2.7 — Persistent Sticky Live Sub-nav Fix
 - Replaced the constrained native sticky Live sub-nav with a JS-pinned behavior that stays visible through Standings, Schedule, and Updates.
 - Added a same-height placeholder only when pinned so the page does not jump while avoiding the previous large visual gap.

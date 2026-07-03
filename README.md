@@ -237,3 +237,10 @@ python3 -m http.server 8080
 then open `http://localhost:8080`. (Opening `index.html` directly via
 `file://` will break the service worker and fetch calls — always use
 a local server or GitHub Pages.)
+
+
+## v16 Static Snapshot Note
+
+The public site now tries to load `data/latest-data.json` first because GitHub Pages serves it faster than Google Apps Script cold starts. Apps Script is still used as a background refresh source, and the older per-tab local JSON files remain as final fallback data.
+
+For v16.0 manual deployment, upload `data/latest-data.json` together with the updated HTML/CSS/JS/service worker files. If you edit the Google Sheet later, the live Apps Script refresh can still update visitors in the background, but the fastest first-load snapshot will only change after `data/latest-data.json` is updated in GitHub.

@@ -14,14 +14,21 @@ const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v15.2.7"
+  VERSION: "pimtc-v16.0.0",
+  SNAPSHOT_URL: "data/latest-data.json"
 };
 
-const state = { cache: {} };
+const state = { cache: {}, snapshotPromise: null };
 const PERSIST_PREFIX = "pimtc_cache_";
 
 function cacheFresh(entry) {
   return entry && Date.now() - entry.time < CONFIG.CACHE_TTL_MS;
+}
+
+function normalizePublishedAt(value) {
+  if (!value) return null;
+  const time = Date.parse(value);
+  return Number.isNaN(time) ? null : time;
 }
 
 function readPersistentCache(key) {
@@ -36,8 +43,13 @@ function readPersistentCache(key) {
   }
 }
 
-function rememberData(key, data, source = "network") {
-  const entry = { data, time: Date.now(), source };
+function rememberData(key, data, source = "network", publishedAt = null) {
+  const entry = {
+    data,
+    time: Date.now(),
+    source,
+    publishedAt: normalizePublishedAt(publishedAt)
+  };
   state.cache[key] = entry;
   try { localStorage.setItem(PERSIST_PREFIX + key, JSON.stringify(entry)); } catch (e) {}
   return data;
@@ -55,10 +67,44 @@ function getCacheEntry(key) {
 }
 
 function lastUpdatedLabel(keys) {
-  const times = keys.map((key) => state.cache[key]?.time).filter(Boolean);
+  const times = keys.map((key) => state.cache[key]?.publishedAt || state.cache[key]?.time).filter(Boolean);
   if (!times.length) return "";
   const latest = Math.max(...times);
   return new Date(latest).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
+async function loadSnapshot() {
+  if (!CONFIG.SNAPSHOT_URL) return null;
+  if (!state.snapshotPromise) {
+    state.snapshotPromise = fetch(CONFIG.SNAPSHOT_URL, { cache: "default" })
+      .then((res) => {
+        if (!res.ok) throw new Error("snapshot unavailable");
+        return res.json();
+      })
+      .catch((e) => {
+        console.warn("Static data snapshot unavailable; continuing with API/local fallback.", e);
+        return null;
+      });
+  }
+  return state.snapshotPromise;
+}
+
+async function loadSnapshotItems(items) {
+  const snapshot = await loadSnapshot();
+  const bundle = snapshot?.data || snapshot;
+  if (!bundle || typeof bundle !== "object") return 0;
+  let count = 0;
+  items.forEach(({ key }) => {
+    if (Object.prototype.hasOwnProperty.call(bundle, key) && bundle[key] !== undefined) {
+      rememberData(key, bundle[key], "snapshot", snapshot.publishedAt || snapshot.generatedAt);
+      count += 1;
+    }
+  });
+  return count;
+}
+
+function notifyBackgroundRefresh(keys) {
+  window.dispatchEvent(new CustomEvent("pimtc:background-refresh", { detail: { keys } }));
 }
 
 /* --------- Data layer --------- */
@@ -67,16 +113,34 @@ async function fetchJSON(localPath, sheetAction) {
   const cached = getCacheEntry(cacheKey);
   if (cached) return cached.data;
 
-  if (CONFIG.SHEETS_API_URL) {
-    try {
-      const url = `${CONFIG.SHEETS_API_URL}?action=${sheetAction}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("bad response");
-      const data = await res.json();
-      return rememberData(cacheKey, data, "network");
-    } catch (e) {
-      console.warn(`Sheets fetch failed for ${sheetAction}, falling back to local data.`, e);
-    }
+  let networkPromise = null;
+  if (CONFIG.SHEETS_API_URL && sheetAction) {
+    const url = `${CONFIG.SHEETS_API_URL}?action=${sheetAction}`;
+    networkPromise = fetch(url, { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("bad response");
+        return res.json();
+      })
+      .then((data) => {
+        rememberData(cacheKey, data, "network");
+        notifyBackgroundRefresh([cacheKey]);
+        return data;
+      })
+      .catch((e) => {
+        console.warn(`Sheets fetch failed for ${sheetAction}; using snapshot/local fallback if available.`, e);
+        return null;
+      });
+  }
+
+  const loaded = await loadSnapshotItems([{ key: cacheKey, local: localPath }]);
+  if (loaded) {
+    networkPromise?.catch(() => {});
+    return state.cache[cacheKey].data;
+  }
+
+  if (networkPromise) {
+    const data = await networkPromise;
+    if (data !== null) return data;
   }
 
   const res = await fetch(localPath);
@@ -96,47 +160,59 @@ async function loadLocalBundleItems(items, source = "local") {
   }));
 }
 
-/* Fetches several sheetAction keys in a single Apps Script round-trip instead
-   of one request per key. On a cold first load, Apps Script can still be slow;
-   if it has not answered quickly, show bundled local JSON first, then refresh
-   the current route once the live Sheet response arrives. */
-async function fetchBundle(items) {
-  const stale = items.filter(({ key }) => !getCacheEntry(key));
-
-  if (stale.length && CONFIG.SHEETS_API_URL) {
-    const keyParam = stale.map((i) => i.key).join(",");
-    const url = `${CONFIG.SHEETS_API_URL}?action=bundle&keys=${encodeURIComponent(keyParam)}`;
-
-    const networkPromise = fetch(url, { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error("bad response");
-        return res.json();
-      })
-      .then((data) => {
-        stale.forEach(({ key }) => { rememberData(key, data[key], "network"); });
-        return true;
+function fetchBundleFromSheets(items) {
+  if (!CONFIG.SHEETS_API_URL || !items.length) return null;
+  const keyParam = items.map((i) => i.key).join(",");
+  const url = `${CONFIG.SHEETS_API_URL}?action=bundle&keys=${encodeURIComponent(keyParam)}`;
+  return fetch(url, { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error("bad response");
+      return res.json();
+    })
+    .then((data) => {
+      items.forEach(({ key }) => {
+        if (Object.prototype.hasOwnProperty.call(data, key)) rememberData(key, data[key], "network");
       });
+      return true;
+    });
+}
 
-    const quickResult = await Promise.race([
-      networkPromise.catch((e) => {
-        console.warn("Bundle fetch failed, falling back to local data.", e);
-        return false;
-      }),
-      new Promise((resolve) => setTimeout(() => resolve("timeout"), CONFIG.DATA_FALLBACK_DELAY_MS))
-    ]);
+/* Fetches several sheetAction keys in a single Apps Script round-trip.
+   v16: the first render uses the GitHub-hosted static snapshot when available,
+   then Apps Script refreshes in the background. This avoids slow public first
+   loads caused by Apps Script cold starts while preserving live Sheet data. */
+async function fetchBundle(items) {
+  let stale = items.filter(({ key }) => !getCacheEntry(key));
 
-    if (quickResult === "timeout") {
-      await loadLocalBundleItems(stale, "local-quick");
-      networkPromise.then(() => {
-        window.dispatchEvent(new CustomEvent("pimtc:background-refresh", {
-          detail: { keys: stale.map((i) => i.key) }
-        }));
-      }).catch(() => {});
-    } else if (quickResult === false) {
+  if (stale.length) {
+    const networkPromise = fetchBundleFromSheets(stale);
+    const snapshotCount = await loadSnapshotItems(stale);
+
+    stale = items.filter(({ key }) => !getCacheEntry(key));
+
+    if (snapshotCount > 0) {
+      if (stale.length) await loadLocalBundleItems(stale, "local-after-partial-snapshot");
+      networkPromise?.then(() => notifyBackgroundRefresh(items.map((i) => i.key))).catch((e) => {
+        console.warn("Background Sheet refresh failed after snapshot load.", e);
+      });
+    } else if (networkPromise) {
+      const quickResult = await Promise.race([
+        networkPromise.catch((e) => {
+          console.warn("Bundle fetch failed, falling back to local data.", e);
+          return false;
+        }),
+        new Promise((resolve) => setTimeout(() => resolve("timeout"), CONFIG.DATA_FALLBACK_DELAY_MS))
+      ]);
+
+      if (quickResult === "timeout") {
+        await loadLocalBundleItems(stale, "local-quick");
+        networkPromise.then(() => notifyBackgroundRefresh(items.map((i) => i.key))).catch(() => {});
+      } else if (quickResult === false) {
+        await loadLocalBundleItems(stale, "local");
+      }
+    } else if (stale.length) {
       await loadLocalBundleItems(stale, "local");
     }
-  } else if (stale.length) {
-    await loadLocalBundleItems(stale, "local");
   }
 
   const result = {};
