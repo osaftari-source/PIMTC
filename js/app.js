@@ -14,7 +14,7 @@ const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v15.2"
+  VERSION: "pimtc-v15.2.2"
 };
 
 const state = { cache: {} };
@@ -714,9 +714,9 @@ async function renderLive() {
       </div>
     </section>
     <nav class="live-section-nav" aria-label="Live tournament sections">
-      <a href="#/live" data-live-target="live-standings">Standings</a>
-      <a href="#/live" data-live-target="live-schedule">Schedule</a>
-      <a href="#/live" data-live-target="live-updates">Updates</a>
+      <button type="button" data-live-target="live-standings">Standings</button>
+      <button type="button" data-live-target="live-schedule">Schedule</button>
+      <button type="button" data-live-target="live-updates">Updates</button>
     </nav>
     <section class="section live-compact-section" id="live-standings">
       <div class="wrap">
@@ -815,12 +815,27 @@ async function renderLive() {
     }
   }
 
-  document.querySelectorAll("[data-live-target]").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const target = document.getElementById(link.dataset.liveTarget);
-      target?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+}
+
+function scrollToLiveSection(targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  const details = target.querySelector("details");
+  if (details) details.open = true;
+  const header = document.querySelector(".site-header");
+  const liveNav = document.querySelector(".live-section-nav");
+  const headerOffset = (header ? header.getBoundingClientRect().height : 0) +
+    (liveNav ? liveNav.getBoundingClientRect().height : 0) + 14;
+  const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+function bindGlobalLiveSectionNav() {
+  document.addEventListener("click", (event) => {
+    const control = event.target.closest("[data-live-target]");
+    if (!control) return;
+    event.preventDefault();
+    scrollToLiveSection(control.dataset.liveTarget);
   });
 }
 
@@ -962,6 +977,7 @@ window.addEventListener("pimtc:background-refresh", () => {
 
 window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", () => {
+  bindGlobalLiveSectionNav();
   if (!location.hash) location.hash = "#/home";
   router();
 

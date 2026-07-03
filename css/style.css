@@ -459,8 +459,8 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .standings-group{ overflow:hidden; }
 .table-scroll table{ max-width:none; }
 
-/* ---------- v15.2.1 live sub-nav normal-flow fix ---------- */
-/* Live section nav intentionally scrolls with the page on all screen sizes. */
+/* ---------- Live sub-nav ---------- */
+/* The Live section nav intentionally stays visible while the page scrolls. */
 
 /* ---------- v15 accessibility / mobile robustness ---------- */
 .table-scroll{ width:100%; max-width:100%; min-width:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; display:block; touch-action:pan-x pan-y; }
@@ -468,9 +468,9 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
 .standings-table caption,
 .schedule-table caption{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 .live-section-nav{ position:static; top:auto; z-index:auto; display:flex; gap:8px; justify-content:center; padding:10px 16px; background:rgba(244,240,230,.92); border-bottom:1px solid rgba(18,24,31,.08); }
-.live-section-nav a{ font-family:var(--font-display); text-transform:uppercase; letter-spacing:.5px; font-weight:700; font-size:14px; color:var(--navy); border:1px solid rgba(18,24,31,.12); border-radius:999px; padding:8px 14px; background:var(--chalk); }
-.live-section-nav a:hover,
-.live-section-nav a:focus-visible{ border-color:var(--gold); color:var(--court-bright); }
+.live-section-nav button{ appearance:none; cursor:pointer; font-family:var(--font-display); text-transform:uppercase; letter-spacing:.5px; font-weight:700; font-size:14px; color:var(--navy); border:1px solid rgba(18,24,31,.12); border-radius:999px; padding:8px 14px; background:var(--chalk); }
+.live-section-nav button:hover,
+.live-section-nav button:focus-visible{ border-color:var(--gold); color:var(--court-bright); }
 .live-compact-section{ padding-top:34px; padding-bottom:18px; scroll-margin-top:90px; }
 .live-details{ background:transparent; }
 .live-details summary{ list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
@@ -484,7 +484,7 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .main-nav{ visibility:hidden; }
   .main-nav.open{ visibility:visible; }
   .live-section-nav{ position:static; top:auto; justify-content:flex-start; overflow-x:auto; }
-  .live-section-nav a{ white-space:nowrap; }
+  .live-section-nav button{ white-space:nowrap; }
   .table-scroll::after{ display:block; }
   .schedule-table thead{ display:none; }
   .schedule-table,
@@ -500,4 +500,25 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .standings-group{ width:100%; }
   .result-row{ display:block; }
   .result-row .summary{ margin-top:4px; }
+}
+
+/* v15.2.4: Keep Live sub-nav visible while scrolling, directly below the sticky site header. */
+body .live-section-nav,
+body main .live-section-nav,
+body #app .live-section-nav {
+  position: sticky !important;
+  top: 65px !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 450 !important;
+  transform: none !important;
+  backdrop-filter: blur(12px);
+}
+@media (max-width: 860px){
+  body .live-section-nav,
+  body main .live-section-nav,
+  body #app .live-section-nav {
+    top: 62px !important;
+  }
 }

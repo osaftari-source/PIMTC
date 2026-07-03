@@ -1,4 +1,22 @@
+
+## v15.2.3 — Live Sub-nav Sticky Cache-Bust Fix
+
+- Added a stronger CSS override so the Live `Standings / Schedule / Updates` sub-nav behaves as normal page content and scrolls away with the page.
+- Added query-string cache busting to `index.html` for `css/style.css` and `js/app.js` so browsers/service workers do not keep serving older sticky CSS.
+- Bumped service worker cache to `pimtc-v15-2-3`.
+
 # Changelog
+
+## v15.2.4 — Live Sub-Nav Sticky Clarification Fix
+- Restored the Live Standings / Schedule / Updates controls as a sticky bar so the buttons stay visible and move with the user while scrolling.
+- Positioned the sticky Live sub-nav below the main site header on desktop and mobile.
+- Updated section-scroll offset so tapped sections are not hidden behind the header/sub-nav.
+- Bumped service worker cache to `pimtc-v15-2-4`.
+
+## v15.2.2 — Live Sub-Nav Scroll Action Fix
+- Changed the Live section navigation controls from same-route links to buttons so they no longer fight the hash-based router.
+- Added delegated click handling that is active immediately after page load, even while Live data is still fetching.
+- Added header-offset scrolling so Standings / Schedule / Updates moves the page to the correct section instead of appearing to do nothing behind the sticky main header.
 
 ## pimtc-v15.2.1
 
