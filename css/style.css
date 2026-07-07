@@ -778,6 +778,13 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   }
 }
 
+/* ---------- v16.5.1 Update feed desktop width polish ---------- */
+@media (min-width: 861px){
+  .update-caption{
+    max-width: 1040px;
+  }
+}
+
 
 /* ---------- v16.4.2 mobile navigation layering fix ---------- */
 /* The mobile drawer must sit above Live's floating sub-nav, and the page

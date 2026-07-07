@@ -1,5 +1,10 @@
 # Changelog
 
+## pimtc-v16.5.1 — Update Feed Width Polish
+- Expanded regular (non-latest) Live update captions on desktop so older updates use the available content width.
+- Kept mobile update layout unchanged.
+- Bumped footer version to `pimtc-v16.5.1` and service worker cache to `pimtc-v16-5-1`.
+
 ## pimtc-v16.5.0 — Social / WhatsApp Preview Polish
 - Added a branded 1200 × 630 social preview image at `media/social-preview.png`.
 - Updated Open Graph and Twitter Card metadata for clearer WhatsApp/social sharing.
