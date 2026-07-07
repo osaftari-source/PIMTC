@@ -1,5 +1,11 @@
 # Changelog
 
+## pimtc-v16.4.2 — Mobile Navigation Layering Fix
+- Improved mobile menu behavior by locking page scroll while the drawer is open.
+- Ensured the main mobile navigation drawer sits above the Live floating section nav.
+- Hid the Live section nav while the mobile drawer is open to prevent overlap.
+- Bumped footer version to `pimtc-v16.4.2` and service worker cache to `pimtc-v16-4-2`.
+
 ## pimtc-v16.4.1 — Desktop Width Polish
 
 - Expanded Home hero text width on desktop so the copy uses the available page width better.

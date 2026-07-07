@@ -777,3 +777,40 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
     max-width: none;
   }
 }
+
+
+/* ---------- v16.4.2 mobile navigation layering fix ---------- */
+/* The mobile drawer must sit above Live's floating sub-nav, and the page
+   behind it must not keep scrolling while the menu is open. */
+@media (max-width: 860px){
+  body.menu-open{
+    overflow:hidden;
+    touch-action:none;
+  }
+  .site-header{
+    z-index:1200;
+  }
+  .nav-toggle{
+    position:relative;
+    z-index:1202;
+  }
+  .main-nav{
+    position:fixed !important;
+    top:var(--pimtc-header-height, 62px) !important;
+    right:0 !important;
+    bottom:0 !important;
+    left:0 !important;
+    height:calc(100dvh - var(--pimtc-header-height, 62px)) !important;
+    max-height:calc(100dvh - var(--pimtc-header-height, 62px)) !important;
+    z-index:1201 !important;
+    background:var(--navy);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.menu-open .live-section-nav,
+  body.menu-open .live-section-nav.is-pinned{
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+}

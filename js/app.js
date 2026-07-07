@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.4.1",
+  VERSION: "pimtc-v16.4.2",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -1515,10 +1515,18 @@ function focusPageHeading() {
   heading.focus({ preventScroll: true });
 }
 
+function updateHeaderMetrics() {
+  const header = document.querySelector(".site-header");
+  const height = header ? Math.ceil(header.getBoundingClientRect().height || header.offsetHeight || 62) : 62;
+  document.documentElement.style.setProperty("--pimtc-header-height", `${height}px`);
+}
+
 function closeMenu() {
   const nav = document.getElementById("mainNav");
   const toggle = document.getElementById("navToggle");
+  if (!nav || !toggle) return;
   nav.classList.remove("open");
+  document.body.classList.remove("menu-open");
   toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-label", "Open menu");
 }
@@ -1541,8 +1549,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const toggle = document.getElementById("navToggle");
   const nav = document.getElementById("mainNav");
+  updateHeaderMetrics();
+  window.addEventListener("resize", updateHeaderMetrics);
+
   toggle.addEventListener("click", () => {
+    updateHeaderMetrics();
     const open = nav.classList.toggle("open");
+    document.body.classList.toggle("menu-open", open);
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     if (open) nav.querySelector("a")?.focus();
