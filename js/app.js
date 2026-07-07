@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.1.3",
+  VERSION: "pimtc-v16.4.0",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -338,9 +338,9 @@ function embedBlock(update) {
   return "";
 }
 
-function updateCard(u) {
+function updateCard(u, isLatest = false) {
   return `
-    <div class="update-card">
+    <div class="update-card ${isLatest ? "is-latest" : ""}">
       <div class="update-date">${esc(u.date || "")}</div>
       <div class="update-round">${esc(u.round || "")}</div>
       ${u.caption ? `<p class="update-caption">${esc(u.caption)}</p>` : ""}
@@ -484,7 +484,7 @@ async function renderHome() {
   document.getElementById("heroStats").innerHTML = `
     <div class="hero-stat"><div class="num">${men.length}</div><div class="lab">Men Ranked</div></div>
     <div class="hero-stat"><div class="num">${women.length}</div><div class="lab">Women Ranked</div></div>
-    <div class="hero-stat"><div class="num">2025</div><div class="lab">Season</div></div>
+    <div class="hero-stat"><div class="num">2026</div><div class="lab">Season</div></div>
   `;
 
   const teaserSection = document.getElementById("liveTeaserSection");
@@ -657,6 +657,53 @@ function scheduleTable(matches) {
     <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Court</th><th scope="col">Match</th></tr></thead>
     <tbody>${dated.map(row).join("")}${tbc.map(row).join("")}</tbody>
   </table></div>`;
+}
+
+
+function scheduleDateTimeValue(match) {
+  if (!match || !match.date) return Number.POSITIVE_INFINITY;
+  const time = String(match.time || "00:00").trim() || "00:00";
+  const parsed = Date.parse(`${match.date}T${time.length === 5 ? time : "00:00"}:00`);
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed;
+}
+
+function getSortedSchedule(matches = []) {
+  return [...(Array.isArray(matches) ? matches : [])].sort((a, b) => {
+    const av = scheduleDateTimeValue(a);
+    const bv = scheduleDateTimeValue(b);
+    if (av !== bv) return av - bv;
+    return String(a.time || "").localeCompare(String(b.time || ""));
+  });
+}
+
+function getNextMatch(matches = []) {
+  const now = Date.now();
+  const dated = getSortedSchedule(matches).filter((m) => Number.isFinite(scheduleDateTimeValue(m)));
+  return dated.find((m) => scheduleDateTimeValue(m) >= now) || dated[dated.length - 1] || (Array.isArray(matches) ? matches.find((m) => !m.date) : null);
+}
+
+function matchLabel(match) {
+  if (!match) return "";
+  return match.team2 ? `${match.team1} vs ${match.team2}` : (match.team1 || "Match TBC");
+}
+
+function nextMatchCard(match) {
+  if (!match) {
+    return `<div class="live-spotlight-card is-empty">
+      <span class="eyebrow">Next Match</span>
+      <h3>Schedule coming soon</h3>
+      <p>No upcoming match is posted yet.</p>
+    </div>`;
+  }
+  return `<div class="live-spotlight-card">
+    <div class="live-spotlight-kicker"><span class="live-dot"></span>Next Match</div>
+    <h3>${esc(matchLabel(match))}</h3>
+    <div class="live-spotlight-meta">
+      ${match.date ? `<span>${esc(match.date)}${match.day ? ` · ${esc(match.day)}` : ""}</span>` : `<span>Date TBC</span>`}
+      ${match.time ? `<span>${esc(match.time)}</span>` : ""}
+      ${match.court ? `<span>${esc(match.court)}</span>` : ""}
+    </div>
+  </div>`;
 }
 
 function catLabel(cat) {
@@ -838,6 +885,9 @@ async function renderLive() {
         <div class="live-meta" id="liveMeta"></div>
       </div>
     </section>
+    <section class="section live-spotlight-section" aria-label="Live tournament spotlight">
+      <div class="wrap" id="nextMatchBody"><div class="skeleton" style="height:110px"></div></div>
+    </section>
     <nav class="live-section-nav" aria-label="Live tournament sections">
       <button type="button" data-live-target="live-standings">Standings</button>
       <button type="button" data-live-target="live-schedule">Schedule</button>
@@ -921,6 +971,11 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
       : `<div class="state-msg">No matches scheduled yet.</div>`;
   }
 
+  const nextMatchBody = document.getElementById("nextMatchBody");
+  if (nextMatchBody) {
+    nextMatchBody.innerHTML = nextMatchCard(getNextMatch(schedule));
+  }
+
   const sorted = [...(Array.isArray(updates) ? updates : [])].sort((a, b) => {
     const d = String(b.date || "").localeCompare(String(a.date || ""));
     return d !== 0 ? d : (Number(a.order) || 0) - (Number(b.order) || 0);
@@ -935,14 +990,14 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
   } else {
     const visible = sorted.slice(0, VISIBLE_UPDATES);
     const rest = sorted.slice(VISIBLE_UPDATES);
-    feed.innerHTML = visible.map(updateCard).join("");
+    feed.innerHTML = visible.map((u, idx) => updateCard(u, idx === 0)).join("");
     if (visible.some((u) => (u.type || "").toLowerCase() === "instagram")) ensureInstagramEmbedScript();
     if (rest.length) {
       const moreBtn = document.createElement("button");
       moreBtn.className = "load-more-btn";
       moreBtn.textContent = `Show ${rest.length} Older Update${rest.length === 1 ? "" : "s"}`;
       moreBtn.addEventListener("click", () => {
-        moreBtn.insertAdjacentHTML("beforebegin", rest.map(updateCard).join(""));
+        moreBtn.insertAdjacentHTML("beforebegin", rest.map((u) => updateCard(u, false)).join(""));
         moreBtn.remove();
         if (rest.some((u) => (u.type || "").toLowerCase() === "instagram")) ensureInstagramEmbedScript();
       });

@@ -1,3 +1,14 @@
+# Changelog
+
+## pimtc-v16.4.0 — Live UX Polish + Tournament Stats Alignment
+
+- Added a public-friendly Next Match spotlight card on the Live page.
+- Highlighted the most recent Live update with a stronger card treatment and Latest badge.
+- Kept Live Google Sheet refresh behavior from v16.1.1 while keeping technical data source/timestamp hidden from the public Live page.
+- Changed Home page season stat from 2025 to 2026.
+- Centered tournament format stats so 1 Set / Games / Tiebreak align visually under the player count for both Men and Women tournament tabs.
+- Bumped footer version to `pimtc-v16.4.0` and service worker cache to `pimtc-v16-4-0`.
+
 
 ## v16.1.3 — Hide Live Refreshed Timestamp
 - Removed the visible `Data refreshed` timestamp from the public Live hero.
