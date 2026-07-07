@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.4.2",
+  VERSION: "pimtc-v16.4.4",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -631,32 +631,80 @@ function pairStandingsBlock(roundName, groups) {
     </div>`;
 }
 
-function scheduleTable(matches) {
-  const dated = matches.filter((m) => m.date).sort((a, b) => {
-    const d = a.date.localeCompare(b.date);
-    return d !== 0 ? d : String(a.time || "").localeCompare(String(b.time || ""));
+function isSameScheduleMatch(a, b) {
+  if (!a || !b) return false;
+  return ["date", "time", "court", "team1", "team2"].every((key) => String(a[key] || "") === String(b[key] || ""));
+}
+
+function splitSchedule(matches = []) {
+  const sorted = getSortedSchedule(matches);
+  const now = Date.now();
+  const upcoming = [];
+  const earlier = [];
+  const tbc = [];
+  sorted.forEach((match) => {
+    const value = scheduleDateTimeValue(match);
+    if (!Number.isFinite(value)) {
+      tbc.push(match);
+    } else if (value >= now) {
+      upcoming.push(match);
+    } else {
+      earlier.push(match);
+    }
   });
-  const tbc = matches.filter((m) => !m.date);
+  return { upcoming, earlier, tbc };
+}
+
+function scheduleTable(matches, { caption = "Match schedule", nextMatch = null, compact = false } = {}) {
+  const rows = Array.isArray(matches) ? matches : [];
+  if (!rows.length) return "";
 
   const matchCell = (m) => m.team2
     ? `<span class="schedule-match">${esc(m.team1)}<span class="vs">vs</span>${esc(m.team2)}</span>`
     : `<span class="schedule-match schedule-label">${esc(m.team1)}</span>`;
 
-  const row = (m) => `
-    <tr>
-      <td data-label="Date">${m.date
-        ? `<span class="schedule-date">${esc(m.date)}${m.day ? `<span class="day">${esc(m.day)}</span>` : ""}</span>`
-        : `<span class="schedule-tbc-label">Date TBC</span>`}</td>
-      <td data-label="Time">${m.time ? `<span class="schedule-time">${esc(m.time)}</span>` : ""}</td>
-      <td data-label="Court">${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : ""}</td>
-      <td data-label="Match">${matchCell(m)}</td>
-    </tr>`;
+  const row = (m) => {
+    const isNext = isSameScheduleMatch(m, nextMatch);
+    return `
+      <tr class="${isNext ? "is-next-match" : ""}">
+        <td data-label="Date">${m.date
+          ? `<span class="schedule-date">${esc(m.date)}${m.day ? `<span class="day">${esc(m.day)}</span>` : ""}</span>${isNext ? `<span class="schedule-row-badge">Next</span>` : ""}`
+          : `<span class="schedule-tbc-label">Date TBC</span>`}</td>
+        <td data-label="Time">${m.time ? `<span class="schedule-time">${esc(m.time)}</span>` : ""}</td>
+        <td data-label="Court">${m.court ? `<span class="schedule-court">${esc(m.court)}</span>` : `<span class="schedule-tbc-label">Court TBC</span>`}</td>
+        <td data-label="Match">${matchCell(m)}</td>
+      </tr>`;
+  };
 
-  return `<div class="table-scroll"><table class="schedule-table">
-    <caption>Upcoming match schedule</caption>
+  return `<div class="table-scroll ${compact ? "is-compact-schedule" : ""}"><table class="schedule-table">
+    <caption>${esc(caption)}</caption>
     <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Court</th><th scope="col">Match</th></tr></thead>
-    <tbody>${dated.map(row).join("")}${tbc.map(row).join("")}</tbody>
+    <tbody>${rows.map(row).join("")}</tbody>
   </table></div>`;
+}
+
+function schedulePanel(matches = []) {
+  const allMatches = Array.isArray(matches) ? matches : [];
+  if (!allMatches.length) return `<div class="state-msg">No matches scheduled yet.</div>`;
+
+  const next = getNextMatch(allMatches);
+  const { upcoming, earlier, tbc } = splitSchedule(allMatches);
+  const upcomingOrTbc = [...upcoming, ...tbc];
+  const upcomingHtml = upcomingOrTbc.length
+    ? scheduleTable(upcomingOrTbc, { caption: "Upcoming match schedule", nextMatch: next })
+    : `<div class="state-msg">No upcoming matches listed. Earlier scheduled matches are available below.</div>`;
+
+  const earlierHtml = earlier.length
+    ? `<details class="schedule-history">
+        <summary><span>Earlier schedule</span><small>${earlier.length} match${earlier.length === 1 ? "" : "es"}</small></summary>
+        ${scheduleTable(earlier.reverse(), { caption: "Earlier match schedule", compact: true })}
+      </details>`
+    : "";
+
+  return `<div class="schedule-panel">
+    ${upcomingHtml}
+    ${earlierHtml}
+  </div>`;
 }
 
 
@@ -678,8 +726,9 @@ function getSortedSchedule(matches = []) {
 
 function getNextMatch(matches = []) {
   const now = Date.now();
-  const dated = getSortedSchedule(matches).filter((m) => Number.isFinite(scheduleDateTimeValue(m)));
-  return dated.find((m) => scheduleDateTimeValue(m) >= now) || dated[dated.length - 1] || (Array.isArray(matches) ? matches.find((m) => !m.date) : null);
+  const sorted = getSortedSchedule(matches);
+  const future = sorted.find((m) => Number.isFinite(scheduleDateTimeValue(m)) && scheduleDateTimeValue(m) >= now);
+  return future || (Array.isArray(matches) ? matches.find((m) => !m.date) : null) || null;
 }
 
 function matchLabel(match) {
@@ -966,9 +1015,7 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
 
   const scheduleBody = document.getElementById("scheduleBody");
   if (scheduleBody) {
-    scheduleBody.innerHTML = Array.isArray(schedule) && schedule.length
-      ? scheduleTable(schedule)
-      : `<div class="state-msg">No matches scheduled yet.</div>`;
+    scheduleBody.innerHTML = schedulePanel(schedule);
   }
 
   const nextMatchBody = document.getElementById("nextMatchBody");

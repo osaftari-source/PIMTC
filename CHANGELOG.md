@@ -1,10 +1,18 @@
 # Changelog
 
-## pimtc-v16.4.2 — Mobile Navigation Layering Fix
-- Improved mobile menu behavior by locking page scroll while the drawer is open.
-- Ensured the main mobile navigation drawer sits above the Live floating section nav.
-- Hid the Live section nav while the mobile drawer is open to prevent overlap.
-- Bumped footer version to `pimtc-v16.4.2` and service worker cache to `pimtc-v16-4-2`.
+## pimtc-v16.4.4 — Remove Duplicate Schedule Focus
+- Removed the duplicate “Schedule Focus” summary card from the Live schedule section.
+- Kept the top Next Match spotlight and the NEXT badge in the schedule row as the primary next-match cues.
+- Bumped footer version to `pimtc-v16.4.4` and service worker cache to `pimtc-v16-4-4`.
+
+## pimtc-v16.4.3 — Live Schedule Polish
+
+- Improved the Live schedule section with a clearer schedule summary.
+- Highlighted the next upcoming match directly inside the schedule table.
+- Split schedule display into upcoming matches and a collapsed Earlier schedule section.
+- Added better empty state behavior when no upcoming match is listed.
+- Kept mobile schedule cards and Live sticky sub-nav behavior from v16.4.2.
+- Bumped footer version to `pimtc-v16.4.3` and service worker cache to `pimtc-v16-4-3`.
 
 ## pimtc-v16.4.1 — Desktop Width Polish
 
