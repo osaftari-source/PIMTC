@@ -1,5 +1,12 @@
 # Changelog
 
+## pimtc-v16.5.0 — Social / WhatsApp Preview Polish
+- Added a branded 1200 × 630 social preview image at `media/social-preview.png`.
+- Updated Open Graph and Twitter Card metadata for clearer WhatsApp/social sharing.
+- Changed Twitter card type to `summary_large_image` and added explicit OG image dimensions.
+- Updated static description text to emphasize live tournament updates, rankings, schedules, results, and gallery.
+- Bumped footer version to `pimtc-v16.5.0` and service worker cache to `pimtc-v16-5-0`.
+
 ## pimtc-v16.4.4 — Remove Duplicate Schedule Focus
 - Removed the duplicate “Schedule Focus” summary card from the Live schedule section.
 - Kept the top Next Match spotlight and the NEXT badge in the schedule row as the primary next-match cues.

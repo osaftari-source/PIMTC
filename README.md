@@ -248,3 +248,7 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 ### Webmaster health page
 
 Open `#/health` to check snapshot/API status and common Google Sheet data problems before public users notice them. This page is intentionally not linked in the main navigation.
+
+## v16.5 Social Preview Note
+
+The public link preview now uses `media/social-preview.png` as the Open Graph/Twitter image. When testing WhatsApp, Facebook, or other previews, remember that social platforms may cache old preview images for some time. If the old logo-only preview still appears, wait and retry or use the platform's preview/debug refresh tool where available.

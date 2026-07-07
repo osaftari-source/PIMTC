@@ -50,3 +50,8 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 - After deploy, open `#/live` and confirm the footer shows `Version pimtc-v16.1.2`.
 - Confirm the Live hero shows a data source note such as `Latest Google Sheet` after Apps Script responds.
 - Leave the Live page open and verify it refreshes Google Sheet data automatically during live updates.
+
+## v16.5 Social Preview Check
+- Upload `media/social-preview.png` together with `index.html`, `service-worker.js`, and versioned app files.
+- After deploy, open `https://osaftari-source.github.io/PIMTC/media/social-preview.png` and confirm the branded preview image loads.
+- Share the homepage link in WhatsApp to check the preview. WhatsApp may cache old previews, so allow time if the previous image still appears.

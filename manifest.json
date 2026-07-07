@@ -1,7 +1,7 @@
 {
   "name": "PIM Tennis Club",
   "short_name": "PIMTC",
-  "description": "Pupuk Iskandar Muda Tennis Club — rankings, tournaments, and results.",
+  "description": "Pupuk Iskandar Muda Tennis Club — live tournament updates, rankings, schedules, results, and gallery.",
   "start_url": "./index.html#/home",
   "scope": "./",
   "display": "standalone",
