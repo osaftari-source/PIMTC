@@ -1,5 +1,11 @@
 # Changelog
 
+## pimtc-v16.1.0 — Webmaster Health Page
+- Added hidden `#/health` route for webmaster data checks.
+- Checks static snapshot version/timestamp, Apps Script health endpoint, missing snapshot keys, required fields, invalid dates, media type/url problems, duplicate ranks, and schedule/update issues.
+- Bumped visible footer version and service worker cache to `pimtc-v16.1.0`.
+
+
 ## pimtc-v16.0.1 — Background Refresh Stability Fix
 - Prevented Apps Script background refresh from fully re-rendering the current page after static snapshot load.
 - Fixes the Live page flashing/jumping back to the dark-blue hero/background when Sheet data catches up.

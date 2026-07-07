@@ -14,7 +14,7 @@ const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.0.1",
+  VERSION: "pimtc-v16.1.0",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -1083,6 +1083,231 @@ function renderInquiry() {
     </section>`;
 }
 
+
+async function fetchAppsScriptHealth() {
+  if (!CONFIG.SHEETS_API_URL) return { ok: false, skipped: true, message: "Apps Script URL is not configured." };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch(`${CONFIG.SHEETS_API_URL}?action=health`, { cache: "no-store", signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return { ok: true, data };
+  } catch (error) {
+    clearTimeout(timeout);
+    return { ok: false, message: error?.name === "AbortError" ? "Apps Script health check timed out." : (error?.message || "Apps Script health check failed.") };
+  }
+}
+
+function normalizeBundle(raw) {
+  if (!raw || typeof raw !== "object") return {};
+  return raw.data && typeof raw.data === "object" ? raw.data : raw;
+}
+
+function isIsoDate(value) {
+  if (!value) return false;
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value).trim()) && !Number.isNaN(Date.parse(String(value).trim()));
+}
+
+function mediaUrlLooksDirect(type, url) {
+  const clean = String(url || "").trim();
+  if (!clean) return type === "text";
+  if (type === "photo") {
+    return /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(clean) || clean.includes("osaftari-source.github.io/PIMTC/media/");
+  }
+  if (type === "instagram") return /instagram\.com\/(p|reel|tv)\//i.test(clean);
+  if (type === "youtube") return /(youtube\.com|youtu\.be)/i.test(clean);
+  return true;
+}
+
+function addHealthIssue(issues, severity, area, message, detail = "") {
+  issues.push({ severity, area, message, detail });
+}
+
+function evaluateSiteHealth(snapshot, apiHealth) {
+  const data = normalizeBundle(snapshot);
+  const issues = [];
+  const expected = ["home", "men", "women", "tournaments", "results", "standings", "playoffs", "live", "updates", "liveStandings", "schedule", "gallery", "homeGallery"];
+
+  expected.forEach((key) => {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) addHealthIssue(issues, "error", "Snapshot", `Missing data key: ${key}`);
+  });
+
+  if (!snapshot?.version) addHealthIssue(issues, "warn", "Snapshot", "Snapshot version is missing.");
+  if (!snapshot?.publishedAt && !snapshot?.generatedAt) addHealthIssue(issues, "warn", "Snapshot", "Snapshot published/generated timestamp is missing.");
+
+  const home = data.home || {};
+  ["name", "tagline", "about"].forEach((field) => {
+    if (!String(home[field] || "").trim()) addHealthIssue(issues, "warn", "Home", `Home.${field} is blank.`);
+  });
+
+  const live = data.live || {};
+  if (!String(live.name || "").trim()) addHealthIssue(issues, "error", "Live", "Live tournament name is blank.");
+  const liveStatus = String(live.status || "").trim().toLowerCase();
+  if (liveStatus && !["ongoing", "completed"].includes(liveStatus)) addHealthIssue(issues, "warn", "Live", `Unknown live status: ${live.status}`, "Use ongoing or completed.");
+  if (live.startDate && !isIsoDate(live.startDate)) addHealthIssue(issues, "warn", "Live", `Live startDate is not YYYY-MM-DD: ${live.startDate}`);
+
+  const checkRankings = (key, rows) => {
+    if (!Array.isArray(rows)) {
+      addHealthIssue(issues, "error", key, `${key} data should be a list.`);
+      return;
+    }
+    const ranks = new Map();
+    rows.forEach((row, i) => {
+      const n = i + 1;
+      if (!String(row.name || "").trim()) addHealthIssue(issues, "error", key, `Row ${n} has blank player name.`);
+      if (row.rank === "" || row.rank === undefined || row.rank === null || Number.isNaN(Number(row.rank))) {
+        addHealthIssue(issues, "warn", key, `Row ${n} has invalid rank: ${row.rank ?? "blank"}`);
+      } else {
+        const rank = String(row.rank);
+        if (ranks.has(rank)) addHealthIssue(issues, "warn", key, `Duplicate rank ${rank}.`, `Rows ${ranks.get(rank)} and ${n}.`);
+        ranks.set(rank, n);
+      }
+      ["wins", "losses"].forEach((field) => {
+        if (row[field] !== "" && row[field] !== undefined && Number.isNaN(Number(row[field]))) addHealthIssue(issues, "warn", key, `Row ${n} has invalid ${field}: ${row[field]}`);
+      });
+    });
+  };
+  checkRankings("Men", data.men || []);
+  checkRankings("Women", data.women || []);
+
+  const allowedMedia = ["text", "photo", "instagram", "youtube"];
+  const checkMediaList = (area, rows) => {
+    if (!Array.isArray(rows)) {
+      addHealthIssue(issues, "error", area, `${area} data should be a list.`);
+      return;
+    }
+    rows.forEach((row, i) => {
+      const n = i + 1;
+      const type = String(row.type || "text").trim().toLowerCase();
+      if (!allowedMedia.includes(type)) addHealthIssue(issues, "error", area, `Row ${n} has invalid media type: ${row.type}`, "Use text, photo, instagram, or youtube.");
+      if (area === "Updates" && !isIsoDate(row.date)) addHealthIssue(issues, "warn", area, `Row ${n} has invalid date: ${row.date || "blank"}`, "Use YYYY-MM-DD.");
+      if (area === "Gallery" && row.date && !isIsoDate(row.date)) addHealthIssue(issues, "warn", area, `Row ${n} has invalid date: ${row.date}`, "Use YYYY-MM-DD or leave blank.");
+      if (type !== "text" && !String(row.url || "").trim()) addHealthIssue(issues, "error", area, `Row ${n} has ${type} type but blank URL.`);
+      if (!mediaUrlLooksDirect(type, row.url)) addHealthIssue(issues, "warn", area, `Row ${n} URL may not embed correctly.`, String(row.url || ""));
+      if (area === "Updates" && !String(row.caption || "").trim()) addHealthIssue(issues, "warn", area, `Row ${n} has blank caption.`);
+    });
+  };
+  checkMediaList("Updates", data.updates || []);
+  checkMediaList("Gallery", data.gallery || []);
+  checkMediaList("HomeGallery", data.homeGallery || []);
+
+  const schedule = data.schedule || [];
+  if (!Array.isArray(schedule)) {
+    addHealthIssue(issues, "error", "Schedule", "Schedule data should be a list.");
+  } else {
+    schedule.forEach((row, i) => {
+      const n = i + 1;
+      ["date", "time", "court", "team1", "team2"].forEach((field) => {
+        if (!String(row[field] || "").trim()) addHealthIssue(issues, "warn", "Schedule", `Row ${n} has blank ${field}.`);
+      });
+      if (row.date && !isIsoDate(row.date)) addHealthIssue(issues, "warn", "Schedule", `Row ${n} has invalid date: ${row.date}`, "Use YYYY-MM-DD.");
+    });
+  }
+
+  ["tournaments", "results", "standings", "playoffs", "liveStandings"].forEach((key) => {
+    const value = data[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      Object.keys(value).forEach((category) => {
+        if (!String(category || "").trim()) addHealthIssue(issues, "warn", key, `${key} contains a blank category name.`);
+      });
+    } else if (value !== undefined) {
+      addHealthIssue(issues, "warn", key, `${key} should be grouped by category/round.`);
+    }
+  });
+
+  if (apiHealth && !apiHealth.ok) addHealthIssue(issues, apiHealth.skipped ? "warn" : "error", "Apps Script", apiHealth.message || "Apps Script health check failed.");
+  if (apiHealth?.ok && apiHealth.data?.status && !["ok", "healthy"].includes(String(apiHealth.data.status).toLowerCase())) {
+    addHealthIssue(issues, "warn", "Apps Script", `Apps Script returned status: ${apiHealth.data.status}`);
+  }
+
+  const counts = {
+    errors: issues.filter((i) => i.severity === "error").length,
+    warnings: issues.filter((i) => i.severity === "warn").length,
+    ok: issues.length === 0
+  };
+  return { issues, counts, data };
+}
+
+function healthStatusClass(counts) {
+  if (counts.errors) return "bad";
+  if (counts.warnings) return "warn";
+  return "good";
+}
+
+function healthStatusText(counts) {
+  if (counts.errors) return "Needs Fix";
+  if (counts.warnings) return "Warnings";
+  return "OK";
+}
+
+function healthIssueHTML(issue) {
+  return `<div class="health-issue ${esc(issue.severity)}">
+    <div><strong>${esc(issue.area)}</strong><span>${esc(issue.message)}</span>${issue.detail ? `<small>${esc(issue.detail)}</small>` : ""}</div>
+  </div>`;
+}
+
+async function renderHealth() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <section class="section-dark section" style="padding-bottom:40px;">
+      <div class="wrap">
+        <span class="eyebrow on-dark">Webmaster Safety Check</span>
+        <h2>Site Health</h2>
+        <p style="max-width:680px; margin-top:12px;">Checks the GitHub snapshot, Apps Script connection, and common Google Sheet data issues before users notice them.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap" id="healthBody"><div class="skeleton" style="height:220px"></div></div>
+    </section>`;
+
+  const body = document.getElementById("healthBody");
+  const [snapshot, apiHealth] = await Promise.all([loadSnapshot(), fetchAppsScriptHealth()]);
+  const result = evaluateSiteHealth(snapshot || {}, apiHealth);
+  const statusClass = healthStatusClass(result.counts);
+  const statusText = healthStatusText(result.counts);
+  const snapshotVersion = snapshot?.version || "Unknown";
+  const snapshotTime = snapshot?.publishedAt || snapshot?.generatedAt || "Unknown";
+  const apiSummary = apiHealth?.ok ? "Reachable" : (apiHealth?.skipped ? "Skipped" : "Failed");
+
+  body.innerHTML = `
+    <div class="health-summary ${statusClass}">
+      <div>
+        <span class="eyebrow">Overall Status</span>
+        <h3>${esc(statusText)}</h3>
+        <p>${result.counts.errors} error${result.counts.errors === 1 ? "" : "s"}, ${result.counts.warnings} warning${result.counts.warnings === 1 ? "" : "s"}</p>
+      </div>
+      <div class="health-badge ${statusClass}">${esc(statusText)}</div>
+    </div>
+
+    <div class="health-grid">
+      <div class="health-card">
+        <span>Snapshot</span>
+        <strong>${esc(snapshotVersion)}</strong>
+        <small>Published: ${esc(snapshotTime)}</small>
+      </div>
+      <div class="health-card">
+        <span>Apps Script API</span>
+        <strong>${esc(apiSummary)}</strong>
+        <small>${esc(apiHealth?.message || apiHealth?.data?.message || "Health endpoint checked")}</small>
+      </div>
+      <div class="health-card">
+        <span>Data counts</span>
+        <strong>${(result.data.men || []).length} men / ${(result.data.women || []).length} women</strong>
+        <small>${(result.data.schedule || []).length} schedule rows, ${(result.data.updates || []).length} updates</small>
+      </div>
+    </div>
+
+    <div class="health-section">
+      <div class="health-section-head">
+        <h3>Findings</h3>
+        <p>Use these messages to correct the Google Sheet or snapshot file.</p>
+      </div>
+      ${result.issues.length ? `<div class="health-list">${result.issues.map(healthIssueHTML).join("")}</div>` : `<div class="state-msg">No issues found in the current snapshot/API check.</div>`}
+    </div>`;
+}
+
 /* --------- Router --------- */
 const routes = {
   home: renderHome,
@@ -1092,7 +1317,8 @@ const routes = {
   gallery: renderGallery,
   men: renderMen,
   women: renderWomen,
-  inquiry: renderInquiry
+  inquiry: renderInquiry,
+  health: renderHealth
 };
 
 function currentRoute() {
