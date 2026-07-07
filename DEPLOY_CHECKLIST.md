@@ -47,6 +47,6 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 
 
 ## v16.1.1 Live Data Check
-- After deploy, open `#/live` and confirm the footer shows `Version pimtc-v16.1.1`.
+- After deploy, open `#/live` and confirm the footer shows `Version pimtc-v16.1.2`.
 - Confirm the Live hero shows a data source note such as `Latest Google Sheet` after Apps Script responds.
 - Leave the Live page open and verify it refreshes Google Sheet data automatically during live updates.

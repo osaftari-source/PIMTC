@@ -1,4 +1,17 @@
+
+## v16.1.3 — Hide Live Refreshed Timestamp
+- Removed the visible `Data refreshed` timestamp from the public Live hero.
+- Kept Live's faster 30-second Google Sheet refresh behavior.
+- Moved the Live refreshed timestamp into `#/health` under the Live page data source card.
+- Bumped footer version to `pimtc-v16.1.3` and service worker cache to `pimtc-v16-1-3`.
+
 # Changelog
+
+## pimtc-v16.1.2 — Live Source Indicator Relocation
+- Hid the Live page data-source indicator from the public Live hero.
+- Moved Live page data-source visibility into the hidden `#/health` webmaster page.
+- `#/health` now checks the Live Google Sheet bundle and shows whether Live data is from Latest Google Sheet, Cached Google Sheet, GitHub snapshot, or local fallback.
+- Bumped visible app version to `pimtc-v16.1.2` and service worker cache to `pimtc-v16-1-2`.
 
 ## v16.1.1 — Live Google Sheet Refresh + Data Source Indicator
 - Live page now refreshes directly from Google Sheet immediately after the fast snapshot render.

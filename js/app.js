@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.1.1",
+  VERSION: "pimtc-v16.1.3",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -904,10 +904,6 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
   if (fmt.sets) metaParts.push(`<span><b>${esc(fmt.sets)}</b> Set</span>`);
   if (fmt.games) metaParts.push(`<span><b>${esc(fmt.games)}</b> Games</span>`);
   if (fmt.tiebreak) metaParts.push(`<span><b>${esc(fmt.tiebreak)}</b> Tiebreak</span>`);
-  const updated = lastUpdatedLabel(LIVE_KEYS);
-  if (updated) metaParts.push(`<span>Data refreshed <b>${esc(updated)}</b></span>`);
-  const source = dataSourceStatus(LIVE_KEYS, CONFIG.LIVE_REFRESH_TTL_MS * 4);
-  metaParts.push(`<span id="liveDataSourceNote" class="data-source-note ${source.isFreshSheet ? "is-live" : "is-cache"}">Data source <b>${esc(source.label)}</b>${source.detail ? ` · ${esc(source.detail)}` : ""}</span>`);
   meta.innerHTML = metaParts.join("");
 
   const standingsBody = document.getElementById("liveStandingsBody");
@@ -1337,6 +1333,29 @@ function healthIssueHTML(issue) {
   </div>`;
 }
 
+
+async function checkLiveDataSourceForHealth() {
+  const started = Date.now();
+  let networkOk = false;
+  let message = "Live data source check did not run.";
+
+  try {
+    await loadSnapshotItems(LIVE_ITEMS);
+    if (CONFIG.SHEETS_API_URL) {
+      await fetchBundleFromSheets(LIVE_ITEMS);
+      networkOk = true;
+      message = `Fresh Google Sheet bundle checked in ${Date.now() - started} ms.`;
+    } else {
+      message = "Apps Script URL is not configured; using snapshot/local data.";
+    }
+  } catch (error) {
+    message = error?.message || "Live Google Sheet bundle check failed.";
+  }
+
+  const status = dataSourceStatus(LIVE_KEYS, CONFIG.LIVE_REFRESH_TTL_MS * 4);
+  return { ...status, networkOk, message };
+}
+
 async function renderHealth() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -1352,7 +1371,7 @@ async function renderHealth() {
     </section>`;
 
   const body = document.getElementById("healthBody");
-  const [snapshot, apiHealth] = await Promise.all([loadSnapshot(), fetchAppsScriptHealth()]);
+  const [snapshot, apiHealth, liveSource] = await Promise.all([loadSnapshot(), fetchAppsScriptHealth(), checkLiveDataSourceForHealth()]);
   const result = evaluateSiteHealth(snapshot || {}, apiHealth);
   const statusClass = healthStatusClass(result.counts);
   const statusText = healthStatusText(result.counts);
@@ -1380,6 +1399,12 @@ async function renderHealth() {
         <span>Apps Script API</span>
         <strong>${esc(apiSummary)}</strong>
         <small>${esc(apiHealth?.message || apiHealth?.data?.message || "Health endpoint checked")}</small>
+      </div>
+      <div class="health-card ${liveSource?.isFreshSheet ? "good" : "warn"}">
+        <span>Live page data source</span>
+        <strong>${esc(liveSource?.label || "Unknown")}</strong>
+        <small>${esc(liveSource?.detail || liveSource?.message || "Live source checked")}</small>
+        <small>Data refreshed: ${esc(lastUpdatedLabel(LIVE_KEYS) || "Unknown")}</small>
       </div>
       <div class="health-card">
         <span>Data counts</span>
