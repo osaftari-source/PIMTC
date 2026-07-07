@@ -13,13 +13,22 @@
 const CONFIG = {
   SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbzWz5uKVyLOxxQPCpf9PKPW9Nj4JrrN7cUKxGeXl2v0H4I1_ScsULnsucwZ9Q6cJIACGA/exec",
   CACHE_TTL_MS: 5 * 60 * 1000,
+  LIVE_REFRESH_TTL_MS: 15 * 1000,
+  LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.1.0",
+  VERSION: "pimtc-v16.1.1",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
-const state = { cache: {}, snapshotPromise: null };
+const state = { cache: {}, snapshotPromise: null, liveAutoRefreshTimer: null };
 const PERSIST_PREFIX = "pimtc_cache_";
+const LIVE_ITEMS = [
+  { key: "live", local: "data/live.json" },
+  { key: "updates", local: "data/updates.json" },
+  { key: "liveStandings", local: "data/live-standings.json" },
+  { key: "schedule", local: "data/schedule.json" }
+];
+const LIVE_KEYS = LIVE_ITEMS.map((item) => item.key);
 
 function cacheFresh(entry) {
   return entry && Date.now() - entry.time < CONFIG.CACHE_TTL_MS;
@@ -71,6 +80,46 @@ function lastUpdatedLabel(keys) {
   if (!times.length) return "";
   const latest = Math.max(...times);
   return new Date(latest).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
+function dataSourceStatus(keys, freshnessMs = CONFIG.CACHE_TTL_MS) {
+  const entries = keys.map((key) => state.cache[key]).filter(Boolean);
+  if (!entries.length) return { label: "Loading", detail: "Waiting for data", isFreshSheet: false };
+  const now = Date.now();
+  const ages = entries.map((entry) => now - (entry.time || 0));
+  const newest = Math.min(...ages);
+  const oldest = Math.max(...ages);
+  const sources = new Set(entries.map((entry) => entry.source || "unknown"));
+  const checked = lastUpdatedLabel(keys);
+
+  if ([...sources].every((source) => source === "network") && oldest <= freshnessMs) {
+    return { label: "Latest Google Sheet", detail: checked ? `Checked ${checked}` : "Fresh API data", isFreshSheet: true };
+  }
+  if (sources.has("network")) {
+    return { label: "Cached Google Sheet", detail: checked ? `Last checked ${checked}` : "Browser cache", isFreshSheet: false };
+  }
+  if (sources.has("snapshot")) {
+    return { label: "GitHub snapshot", detail: checked ? `Published ${checked}` : "Static snapshot", isFreshSheet: false };
+  }
+  if ([...sources].some((source) => String(source).includes("local"))) {
+    return { label: "Local fallback", detail: "Bundled offline data", isFreshSheet: false };
+  }
+  return { label: "Cached data", detail: checked ? `Cached ${checked}` : "Browser cache", isFreshSheet: false };
+}
+
+function setLiveRefreshNote(status, checking = false) {
+  const el = document.getElementById("liveDataSourceNote");
+  if (!el || !status) return;
+  el.innerHTML = `Data source <b>${esc(status.label)}</b>${status.detail ? ` · ${esc(status.detail)}` : ""}${checking ? " · checking Google Sheet…" : ""}`;
+  el.classList.toggle("is-live", Boolean(status.isFreshSheet));
+  el.classList.toggle("is-cache", !status.isFreshSheet);
+}
+
+function clearLiveAutoRefresh() {
+  if (state.liveAutoRefreshTimer) {
+    clearInterval(state.liveAutoRefreshTimer);
+    state.liveAutoRefreshTimer = null;
+  }
 }
 
 async function loadSnapshot() {
@@ -821,16 +870,25 @@ async function renderLive() {
 
   setupLiveSectionNavStickiness();
 
-  const { live, updates, liveStandings, schedule } = await fetchBundle([
-    { key: "live", local: "data/live.json" },
-    { key: "updates", local: "data/updates.json" },
-    { key: "liveStandings", local: "data/live-standings.json" },
-    { key: "schedule", local: "data/schedule.json" }
-  ]);
+  const initialData = await fetchBundle(LIVE_ITEMS);
+  populateLivePage(initialData);
+  refreshLiveFromSheets({ visible: true });
+  startLiveAutoRefresh();
+}
 
-  document.getElementById("liveTitle").textContent = live.name || "Live Tournament";
-  document.getElementById("liveDesc").textContent = live.description || "";
+function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedule = [] } = {}) {
+  const title = document.getElementById("liveTitle");
+  const desc = document.getElementById("liveDesc");
+  const meta = document.getElementById("liveMeta");
   const badge = document.getElementById("liveStatusBadge");
+  if (!title || !desc || !meta || !badge) return;
+
+  title.textContent = live.name || "Live Tournament";
+  desc.textContent = live.description || "";
+  badge.innerHTML = `<span class="live-dot"></span>Live`;
+  badge.style.color = "";
+  badge.style.borderColor = "";
+  badge.style.background = "";
   if ((live.status || "").toLowerCase() !== "ongoing") {
     badge.innerHTML = `Completed`;
     badge.style.color = "var(--gold)";
@@ -846,40 +904,43 @@ async function renderLive() {
   if (fmt.sets) metaParts.push(`<span><b>${esc(fmt.sets)}</b> Set</span>`);
   if (fmt.games) metaParts.push(`<span><b>${esc(fmt.games)}</b> Games</span>`);
   if (fmt.tiebreak) metaParts.push(`<span><b>${esc(fmt.tiebreak)}</b> Tiebreak</span>`);
-  const updated = lastUpdatedLabel(["live", "updates", "liveStandings", "schedule"]);
+  const updated = lastUpdatedLabel(LIVE_KEYS);
   if (updated) metaParts.push(`<span>Data refreshed <b>${esc(updated)}</b></span>`);
-  document.getElementById("liveMeta").innerHTML = metaParts.join("");
+  const source = dataSourceStatus(LIVE_KEYS, CONFIG.LIVE_REFRESH_TTL_MS * 4);
+  metaParts.push(`<span id="liveDataSourceNote" class="data-source-note ${source.isFreshSheet ? "is-live" : "is-cache"}">Data source <b>${esc(source.label)}</b>${source.detail ? ` · ${esc(source.detail)}` : ""}</span>`);
+  meta.innerHTML = metaParts.join("");
 
   const standingsBody = document.getElementById("liveStandingsBody");
   const roundNames = Object.keys(liveStandings || {});
-  standingsBody.innerHTML = roundNames.length
-    ? roundNames.map((name) => pairStandingsBlock(name, liveStandings[name])).join("")
-    : `<div class="state-msg">Standings haven't been posted yet.</div>`;
+  if (standingsBody) {
+    standingsBody.innerHTML = roundNames.length
+      ? roundNames.map((name) => pairStandingsBlock(name, liveStandings[name])).join("")
+      : `<div class="state-msg">Standings haven't been posted yet.</div>`;
+  }
 
   const scheduleBody = document.getElementById("scheduleBody");
-  scheduleBody.innerHTML = schedule.length
-    ? scheduleTable(schedule)
-    : `<div class="state-msg">No matches scheduled yet.</div>`;
+  if (scheduleBody) {
+    scheduleBody.innerHTML = Array.isArray(schedule) && schedule.length
+      ? scheduleTable(schedule)
+      : `<div class="state-msg">No matches scheduled yet.</div>`;
+  }
 
-  // Most recent date first; within the same date, lower order number shows first
-  // (order = 1 is "first thing that happened/was posted that day").
-  const sorted = [...updates].sort((a, b) => {
+  const sorted = [...(Array.isArray(updates) ? updates : [])].sort((a, b) => {
     const d = String(b.date || "").localeCompare(String(a.date || ""));
     return d !== 0 ? d : (Number(a.order) || 0) - (Number(b.order) || 0);
   });
 
   const feed = document.getElementById("updateFeed");
   const VISIBLE_UPDATES = 5;
+  if (!feed) return;
 
   if (!sorted.length) {
     feed.innerHTML = `<div class="state-msg">No updates posted yet — check back soon.</div>`;
   } else {
     const visible = sorted.slice(0, VISIBLE_UPDATES);
     const rest = sorted.slice(VISIBLE_UPDATES);
-
     feed.innerHTML = visible.map(updateCard).join("");
     if (visible.some((u) => (u.type || "").toLowerCase() === "instagram")) ensureInstagramEmbedScript();
-
     if (rest.length) {
       const moreBtn = document.createElement("button");
       moreBtn.className = "load-more-btn";
@@ -892,7 +953,35 @@ async function renderLive() {
       feed.appendChild(moreBtn);
     }
   }
+}
 
+async function refreshLiveFromSheets({ visible = false } = {}) {
+  if (!CONFIG.SHEETS_API_URL) return false;
+  if (!location.hash.startsWith("#/live")) return false;
+  if (visible) setLiveRefreshNote(dataSourceStatus(LIVE_KEYS, CONFIG.LIVE_REFRESH_TTL_MS * 4), true);
+  try {
+    await fetchBundleFromSheets(LIVE_ITEMS);
+    if (!location.hash.startsWith("#/live")) return true;
+    const data = {};
+    LIVE_KEYS.forEach((key) => { data[key] = state.cache[key]?.data; });
+    populateLivePage(data);
+    return true;
+  } catch (e) {
+    console.warn("Live Google Sheet refresh failed.", e);
+    if (visible) setLiveRefreshNote(dataSourceStatus(LIVE_KEYS, CONFIG.LIVE_REFRESH_TTL_MS * 4), false);
+    return false;
+  }
+}
+
+function startLiveAutoRefresh() {
+  clearLiveAutoRefresh();
+  state.liveAutoRefreshTimer = setInterval(() => {
+    if (!location.hash.startsWith("#/live")) {
+      clearLiveAutoRefresh();
+      return;
+    }
+    refreshLiveFromSheets({ visible: false });
+  }, CONFIG.LIVE_BACKGROUND_REFRESH_MS);
 }
 
 let liveNavStickyCleanup = null;
@@ -1329,6 +1418,7 @@ function currentRoute() {
 async function router() {
   const route = currentRoute();
   if (liveNavStickyCleanup) { liveNavStickyCleanup(); liveNavStickyCleanup = null; }
+  if (route !== "live") clearLiveAutoRefresh();
   if (route !== "home" && carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
   document.querySelectorAll("[data-route]").forEach((a) => a.classList.toggle("active", a.dataset.route === route));
   closeMenu();
@@ -1355,11 +1445,8 @@ function closeMenu() {
 
 
 window.addEventListener("pimtc:background-refresh", (event) => {
-  // v16.0.1: do not re-render the full page when Apps Script catches up.
-  // In v16.0.0 the background refresh rebuilt the current route, which could
-  // momentarily clamp scroll position and flash the dark-blue Live hero section.
-  // The fresh Sheet data is still stored in cache and will be used on the next
-  // route visit/refresh, but the visible page remains stable while reading.
+  // General pages stay visually stable when background data catches up.
+  // Live page has its own soft refresh path because live scores/updates change often.
   console.info("PIMTC background data refreshed", event.detail?.keys || []);
 });
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## v16.1.1 — Live Google Sheet Refresh + Data Source Indicator
+- Live page now refreshes directly from Google Sheet immediately after the fast snapshot render.
+- Live page then checks Google Sheet again every 30 seconds while the user stays on Live.
+- Added a visible Live data source indicator: Latest Google Sheet, Cached Google Sheet, GitHub snapshot, or Local fallback.
+- Live refresh updates only the Live content areas, avoiding the blue-background full-page flash.
+- Bumped visible app version to `pimtc-v16.1.1` and service worker cache to `pimtc-v16-1-1`.
+
 ## pimtc-v16.1.0 — Webmaster Health Page
 - Added hidden `#/health` route for webmaster data checks.
 - Checks static snapshot version/timestamp, Apps Script health endpoint, missing snapshot keys, required fields, invalid dates, media type/url problems, duplicate ranks, and schedule/update issues.

@@ -44,3 +44,9 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 1. Open `https://osaftari-source.github.io/PIMTC/#/health`.
 2. Confirm the footer shows the expected version.
 3. Review any warning/error messages and correct the Google Sheet or snapshot file if needed.
+
+
+## v16.1.1 Live Data Check
+- After deploy, open `#/live` and confirm the footer shows `Version pimtc-v16.1.1`.
+- Confirm the Live hero shows a data source note such as `Latest Google Sheet` after Apps Script responds.
+- Leave the Live page open and verify it refreshes Google Sheet data automatically during live updates.
