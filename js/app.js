@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.4.0",
+  VERSION: "pimtc-v16.4.1",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 

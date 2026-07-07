@@ -760,3 +760,20 @@ p{ line-height:1.65; color: rgba(18,24,31,0.75); }
   .live-spotlight-meta{ gap:8px; }
   .update-card.is-latest{ margin-left:-10px; padding:14px 14px 16px; }
 }
+
+
+/* ---------- v16.4.1 Desktop text width polish ---------- */
+@media (min-width: 861px){
+  .hero .lede{
+    max-width: 820px;
+  }
+  #liveDesc{
+    max-width: 920px !important;
+  }
+  .update-card.is-latest .update-caption{
+    max-width: 980px;
+  }
+  .update-card.is-latest{
+    max-width: none;
+  }
+}

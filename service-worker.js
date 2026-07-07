@@ -1,4 +1,4 @@
-const CACHE_NAME = "pimtc-v16-4-0";
+const CACHE_NAME = "pimtc-v16-4-1";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,9 +6,9 @@ const APP_SHELL = [
   "./robots.txt",
   "./sitemap.xml",
   "./css/style.css",
-  "./css/style.css?v=16.4.0",
+  "./css/style.css?v=16.4.1",
   "./js/app.js",
-  "./js/app.js?v=16.4.0",
+  "./js/app.js?v=16.4.1",
   "./data/home.json",
   "./data/men.json",
   "./data/women.json",

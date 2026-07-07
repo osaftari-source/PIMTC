@@ -1,5 +1,12 @@
 # Changelog
 
+## pimtc-v16.4.1 — Desktop Width Polish
+
+- Expanded Home hero text width on desktop so the copy uses the available page width better.
+- Expanded Live hero description width on desktop while keeping mobile layout unchanged.
+- Expanded latest update caption width on desktop so long match summaries do not look unnecessarily narrow.
+- Bumped footer version to `pimtc-v16.4.1` and service worker cache to `pimtc-v16-4-1`.
+
 ## pimtc-v16.4.0 — Live UX Polish + Tournament Stats Alignment
 
 - Added a public-friendly Next Match spotlight card on the Live page.
