@@ -377,7 +377,10 @@ function getSchedule_() {
     time: text_(r.time),
     court: text_(r.court),
     team1: text_(r.team1),
-    team2: text_(r.team2)
+    team2: text_(r.team2),
+    round: text_(r.round),
+    score: text_(r.score),
+    winner: text_(r.winner)
   }));
 }
 

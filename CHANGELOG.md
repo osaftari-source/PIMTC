@@ -1,5 +1,14 @@
 # Changelog
 
+## pimtc-v16.6.0 — Live Knockout Stage
+- Added a dedicated **Bracket** phase to the Live page for two semifinals followed by the final.
+- Added a fourth sticky Live sub-navigation button: **Bracket**. It appears only when knockout matches exist.
+- Added backward-compatible optional `round`, `score`, and `winner` fields to the Schedule data model. Existing six-column Schedule sheets still load normally.
+- The bracket can infer `Semifinal` / `Final` from placeholder labels such as `Semifinal 1`, `Semifinal 2`, and `Final`, so it works immediately with the current tournament data.
+- Added winner and score presentation when those fields are populated.
+- Added a dynamic `Current Phase` indicator in the Live hero metadata.
+- Bumped footer version to `pimtc-v16.6.0` and service worker cache to `pimtc-v16-6-0`.
+
 ## pimtc-v16.5.1 — Update Feed Width Polish
 - Expanded regular (non-latest) Live update captions on desktop so older updates use the available content width.
 - Kept mobile update layout unchanged.

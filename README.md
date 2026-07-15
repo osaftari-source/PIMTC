@@ -252,3 +252,7 @@ Open `#/health` to check snapshot/API status and common Google Sheet data proble
 ## v16.5 Social Preview Note
 
 The public link preview now uses `media/social-preview.png` as the Open Graph/Twitter image. When testing WhatsApp, Facebook, or other previews, remember that social platforms may cache old preview images for some time. If the old logo-only preview still appears, wait and retry or use the platform's preview/debug refresh tool where available.
+
+
+### Live elimination round
+From `pimtc-v16.6.0`, the Live page can show a two-semifinal + final bracket. The `Schedule` sheet accepts optional `round`, `score`, and `winner` columns while remaining backward compatible with the original six-column layout.

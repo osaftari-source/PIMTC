@@ -1,6 +1,6 @@
 {
-  "version": "pimtc-v16.5.1",
-  "publishedAt": "2026-07-07T05:10:00Z",
+  "version": "pimtc-v16.6.0",
+  "publishedAt": "2026-07-14T12:31:57Z",
   "source": "Static snapshot generated from the attached PIMTC Backend workbook",
   "data": {
     "home": {
@@ -728,7 +728,10 @@
         "time": "17:00",
         "court": "Lapangan 1",
         "team1": "Fariz/Dian",
-        "team2": "Akbar/Syahrul"
+        "team2": "Akbar/Syahrul",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-06",
@@ -736,7 +739,10 @@
         "time": "17:00",
         "court": "Lapangan 1",
         "team1": "Gipa/Mursal",
-        "team2": "Dian/Fatur"
+        "team2": "Dian/Fatur",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-06",
@@ -744,7 +750,10 @@
         "time": "17:00",
         "court": "Lapangan 2",
         "team1": "Arief/Moeda",
-        "team2": "Osman/Ferdy"
+        "team2": "Osman/Ferdy",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-06",
@@ -752,7 +761,10 @@
         "time": "20:30",
         "court": "Lapangan 1",
         "team1": "Zes/Rahmat",
-        "team2": "Heri/Memed"
+        "team2": "Heri/Memed",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-07",
@@ -760,7 +772,10 @@
         "time": "17:00",
         "court": "Lapangan 1",
         "team1": "Arief/Moeda",
-        "team2": "Dian/Fatur"
+        "team2": "Dian/Fatur",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-07",
@@ -768,7 +783,10 @@
         "time": "17:00",
         "court": "Lapangan 2",
         "team1": "Gipa/Mursal",
-        "team2": "Osman/Ferdy"
+        "team2": "Osman/Ferdy",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-08",
@@ -776,7 +794,10 @@
         "time": "17:00",
         "court": "Lapangan 1",
         "team1": "Heri/Memed",
-        "team2": "Akbar/Syahrul"
+        "team2": "Akbar/Syahrul",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-08",
@@ -784,7 +805,10 @@
         "time": "18:00",
         "court": "Lapangan 1",
         "team1": "Akbar/Syahrul",
-        "team2": "Zes/Rahmat"
+        "team2": "Zes/Rahmat",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-08",
@@ -792,7 +816,10 @@
         "time": "20:30",
         "court": "Lapangan 1",
         "team1": "Gipa/Mursal",
-        "team2": "Arief/Moeda"
+        "team2": "Arief/Moeda",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-13",
@@ -800,7 +827,10 @@
         "time": "17:00",
         "court": "Lapangan 1",
         "team1": "Fariz/Dian",
-        "team2": "Zes/Rahmat"
+        "team2": "Zes/Rahmat",
+        "round": "Group Stage",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-14",
@@ -808,7 +838,10 @@
         "time": "17:00",
         "court": "",
         "team1": "Semifinal 1",
-        "team2": ""
+        "team2": "",
+        "round": "Semifinal",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-15",
@@ -816,7 +849,10 @@
         "time": "17:00",
         "court": "",
         "team1": "Semifinal 2",
-        "team2": ""
+        "team2": "",
+        "round": "Semifinal",
+        "score": "",
+        "winner": ""
       },
       {
         "date": "2026-07-16",
@@ -824,7 +860,10 @@
         "time": "17:00",
         "court": "",
         "team1": "Final",
-        "team2": ""
+        "team2": "",
+        "round": "Final",
+        "score": "",
+        "winner": ""
       }
     ],
     "gallery": [

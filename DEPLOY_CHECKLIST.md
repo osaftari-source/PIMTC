@@ -55,3 +55,10 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 - Upload `media/social-preview.png` together with `index.html`, `service-worker.js`, and versioned app files.
 - After deploy, open `https://osaftari-source.github.io/PIMTC/media/social-preview.png` and confirm the branded preview image loads.
 - Share the homepage link in WhatsApp to check the preview. WhatsApp may cache old previews, so allow time if the previous image still appears.
+
+
+### v16.6.0 knockout stage check
+- Confirm footer shows `Version pimtc-v16.6.0`.
+- Open `#/live` and confirm the **Bracket** button appears when semifinal/final schedule rows exist.
+- Confirm the bracket stacks vertically on mobile.
+- If you use the new `round`, `score`, or `winner` Schedule columns, update and redeploy `apps-script/Code.gs` once.

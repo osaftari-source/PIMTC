@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.5.1",
+  VERSION: "pimtc-v16.6.0",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -631,6 +631,70 @@ function pairStandingsBlock(roundName, groups) {
     </div>`;
 }
 
+function normalizeLiveRound(match) {
+  const explicit = String(match?.round || "").trim().toLowerCase();
+  const label = `${match?.team1 || ""} ${match?.team2 || ""}`.toLowerCase();
+  if (/semi\s*-?\s*final|semifinal/.test(explicit) || /semi\s*-?\s*final|semifinal/.test(label)) return "Semifinal";
+  if (/\bfinal\b/.test(explicit) || /\bfinal\b/.test(label)) return "Final";
+  return explicit ? String(match.round).trim() : "Group Stage";
+}
+
+function getKnockoutMatches(matches = []) {
+  return getSortedSchedule(matches).filter((match) => {
+    const round = normalizeLiveRound(match);
+    return round === "Semifinal" || round === "Final";
+  });
+}
+
+function getCurrentLivePhase(matches = []) {
+  const knockout = getKnockoutMatches(matches);
+  if (!knockout.length) return "Group Stage";
+  const earliestKnockout = Math.min(...knockout.map(scheduleDateTimeValue).filter(Number.isFinite));
+  if (Number.isFinite(earliestKnockout) && Date.now() >= earliestKnockout) return "Knockout Stage";
+  const groupStage = (Array.isArray(matches) ? matches : []).filter((m) => normalizeLiveRound(m) === "Group Stage");
+  const hasUpcomingGroup = groupStage.some((m) => Number.isFinite(scheduleDateTimeValue(m)) && scheduleDateTimeValue(m) >= Date.now());
+  return hasUpcomingGroup ? "Group Stage" : "Knockout Stage";
+}
+
+function knockoutMatchCard(match, index) {
+  if (!match) {
+    return `<article class="knockout-match-card is-tbc"><span class="knockout-stage-label">TBC</span><h4>Match to be confirmed</h4></article>`;
+  }
+  const round = normalizeLiveRound(match);
+  const stageLabel = round === "Semifinal" ? `Semifinal ${index + 1}` : "Final";
+  const placeholder = !match.team2 && /^semi\s*-?\s*final|^semifinal|^final$/i.test(String(match.team1 || "").trim());
+  const team1 = placeholder ? "Pair TBC" : (match.team1 || "Pair TBC");
+  const team2 = placeholder ? "Pair TBC" : (match.team2 || "Pair TBC");
+  const winner = String(match.winner || "").trim();
+  const score = String(match.score || "").trim();
+  const meta = [match.date, match.day, match.time, match.court].filter(Boolean).map(esc).join(" · ");
+  return `<article class="knockout-match-card ${winner ? "is-complete" : ""}">
+    <div class="knockout-match-head">
+      <span class="knockout-stage-label">${esc(stageLabel)}</span>
+      ${score ? `<span class="knockout-score">${esc(score)}</span>` : ""}
+    </div>
+    <div class="knockout-team ${winner && winner.toLowerCase() === String(team1).toLowerCase() ? "is-winner" : ""}"><span>${esc(team1)}</span>${winner && winner.toLowerCase() === String(team1).toLowerCase() ? `<span class="winner-mark">Winner</span>` : ""}</div>
+    <div class="knockout-team ${winner && winner.toLowerCase() === String(team2).toLowerCase() ? "is-winner" : ""}"><span>${esc(team2)}</span>${winner && winner.toLowerCase() === String(team2).toLowerCase() ? `<span class="winner-mark">Winner</span>` : ""}</div>
+    ${meta ? `<div class="knockout-match-meta">${meta}</div>` : ""}
+  </article>`;
+}
+
+function knockoutBracket(matches = []) {
+  const semifinals = matches.filter((m) => normalizeLiveRound(m) === "Semifinal").slice(0, 2);
+  const final = matches.find((m) => normalizeLiveRound(m) === "Final") || null;
+  return `<div class="live-knockout-bracket" role="group" aria-label="Semifinals and final bracket">
+    <div class="knockout-round knockout-semifinals">
+      <div class="knockout-round-title">Semifinals</div>
+      ${[0, 1].map((i) => knockoutMatchCard(semifinals[i] || null, i)).join("")}
+    </div>
+    <div class="knockout-connector" aria-hidden="true"></div>
+    <div class="knockout-round knockout-final">
+      <div class="knockout-round-title">Final</div>
+      ${knockoutMatchCard(final, 0)}
+    </div>
+  </div>`;
+}
+
 function isSameScheduleMatch(a, b) {
   if (!a || !b) return false;
   return ["date", "time", "court", "team1", "team2"].every((key) => String(a[key] || "") === String(b[key] || ""));
@@ -939,6 +1003,7 @@ async function renderLive() {
     </section>
     <nav class="live-section-nav" aria-label="Live tournament sections">
       <button type="button" data-live-target="live-standings">Standings</button>
+      <button type="button" data-live-target="live-knockout">Bracket</button>
       <button type="button" data-live-target="live-schedule">Schedule</button>
       <button type="button" data-live-target="live-updates">Updates</button>
     </nav>
@@ -947,6 +1012,14 @@ async function renderLive() {
         <details class="live-details" open>
           <summary><span><span class="eyebrow">Group Stage</span><strong>Standings</strong></span></summary>
           <div id="liveStandingsBody"><div class="skeleton" style="height:200px"></div></div>
+        </details>
+      </div>
+    </section>
+    <section class="section live-compact-section live-knockout-section" id="live-knockout" hidden>
+      <div class="wrap">
+        <details class="live-details" open>
+          <summary><span><span class="eyebrow">Elimination Round</span><strong>Semifinals & Final</strong></span></summary>
+          <div id="liveKnockoutBody"><div class="skeleton" style="height:220px"></div></div>
         </details>
       </div>
     </section>
@@ -1003,8 +1076,6 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
   if (fmt.sets) metaParts.push(`<span><b>${esc(fmt.sets)}</b> Set</span>`);
   if (fmt.games) metaParts.push(`<span><b>${esc(fmt.games)}</b> Games</span>`);
   if (fmt.tiebreak) metaParts.push(`<span><b>${esc(fmt.tiebreak)}</b> Tiebreak</span>`);
-  meta.innerHTML = metaParts.join("");
-
   const standingsBody = document.getElementById("liveStandingsBody");
   const roundNames = Object.keys(liveStandings || {});
   if (standingsBody) {
@@ -1012,6 +1083,24 @@ function populateLivePage({ live = {}, updates = [], liveStandings = {}, schedul
       ? roundNames.map((name) => pairStandingsBlock(name, liveStandings[name])).join("")
       : `<div class="state-msg">Standings haven't been posted yet.</div>`;
   }
+
+  const knockoutSection = document.getElementById("live-knockout");
+  const knockoutBody = document.getElementById("liveKnockoutBody");
+  const knockoutMatches = getKnockoutMatches(schedule);
+  if (knockoutSection && knockoutBody) {
+    const hasKnockout = knockoutMatches.length > 0;
+    knockoutSection.hidden = !hasKnockout;
+    knockoutBody.innerHTML = hasKnockout
+      ? knockoutBracket(knockoutMatches)
+      : `<div class="state-msg">Knockout bracket has not been posted yet.</div>`;
+  }
+
+  const bracketNavButton = document.querySelector('[data-live-target="live-knockout"]');
+  if (bracketNavButton) bracketNavButton.hidden = knockoutMatches.length === 0;
+
+  const currentPhase = getCurrentLivePhase(schedule);
+  if (currentPhase) metaParts.push(`<span class="live-phase-meta">Current Phase <b>${esc(currentPhase)}</b></span>`);
+  meta.innerHTML = metaParts.join("");
 
   const scheduleBody = document.getElementById("scheduleBody");
   if (scheduleBody) {

@@ -62,3 +62,14 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 ## Quick health check
 
 After editing the Sheet or uploading a new snapshot, open `#/health`. Correct rows flagged as invalid date, invalid media type, blank required field, bad photo URL, or duplicate rank.
+
+
+## Live knockout stage (v16.6.0)
+
+The `Schedule` tab supports three optional columns after `team2`:
+
+`round | score | winner`
+
+Recommended values for `round` are `Group Stage`, `Semifinal`, and `Final`. The Live page automatically shows a bracket when at least one semifinal or final row exists. For a completed knockout match, enter the displayed score in `score` and enter the winning pair exactly as written in `team1` or `team2` in `winner`.
+
+The older six-column Schedule layout remains supported. Placeholder names such as `Semifinal 1`, `Semifinal 2`, and `Final` are automatically recognized.
