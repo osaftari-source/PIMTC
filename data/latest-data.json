@@ -1,7 +1,6 @@
 {
-  "version": "pimtc-v16.6.0",
-  "publishedAt": "2026-07-14T12:31:57Z",
-  "source": "Static snapshot generated from the attached PIMTC Backend workbook",
+  "version": "pimtc-v16.7.1",
+  "publishedAt": "2026-07-21T13:21:59+07:00",
   "data": {
     "home": {
       "name": "Pupuk Iskandar Muda Tennis Club",
@@ -216,7 +215,286 @@
         "photo": ""
       }
     ],
+    "doubles": [
+      {
+        "rank": 1,
+        "name": "Arief",
+        "partner": "Moeda",
+        "pair": "Arief / Moeda",
+        "wins": 5,
+        "losses": 0,
+        "mp": 5,
+        "gw": 35,
+        "gl": 12,
+        "diff": 23,
+        "points": 15,
+        "result": "Champion",
+        "note": "Partner: Moeda · Champion"
+      },
+      {
+        "rank": 2,
+        "name": "Moeda",
+        "partner": "Arief",
+        "pair": "Arief / Moeda",
+        "wins": 5,
+        "losses": 0,
+        "mp": 5,
+        "gw": 35,
+        "gl": 12,
+        "diff": 23,
+        "points": 15,
+        "result": "Champion",
+        "note": "Partner: Arief · Champion"
+      },
+      {
+        "rank": 3,
+        "name": "Gipa",
+        "partner": "Mursal",
+        "pair": "Gipa / Mursal",
+        "wins": 3,
+        "losses": 2,
+        "mp": 5,
+        "gw": 28,
+        "gl": 21,
+        "diff": 7,
+        "points": 11,
+        "result": "Runner-up",
+        "note": "Partner: Mursal · Runner-up"
+      },
+      {
+        "rank": 4,
+        "name": "Mursal",
+        "partner": "Gipa",
+        "pair": "Gipa / Mursal",
+        "wins": 3,
+        "losses": 2,
+        "mp": 5,
+        "gw": 28,
+        "gl": 21,
+        "diff": 7,
+        "points": 11,
+        "result": "Runner-up",
+        "note": "Partner: Gipa · Runner-up"
+      },
+      {
+        "rank": 5,
+        "name": "Fariz",
+        "partner": "Dian",
+        "pair": "Fariz / Dian",
+        "wins": 3,
+        "losses": 1,
+        "mp": 4,
+        "gw": 22,
+        "gl": 17,
+        "diff": 5,
+        "points": 10,
+        "result": "Semifinalist",
+        "note": "Partner: Dian · Semifinalist"
+      },
+      {
+        "rank": 6,
+        "name": "Dian",
+        "partner": "Fariz",
+        "pair": "Fariz / Dian",
+        "wins": 3,
+        "losses": 1,
+        "mp": 4,
+        "gw": 22,
+        "gl": 17,
+        "diff": 5,
+        "points": 10,
+        "result": "Semifinalist",
+        "note": "Partner: Fariz · Semifinalist"
+      },
+      {
+        "rank": 7,
+        "name": "Memed",
+        "partner": "Heri",
+        "pair": "Memed / Heri",
+        "wins": 2,
+        "losses": 2,
+        "mp": 4,
+        "gw": 19,
+        "gl": 18,
+        "diff": 1,
+        "points": 8,
+        "result": "Semifinalist",
+        "note": "Partner: Heri · Semifinalist"
+      },
+      {
+        "rank": 8,
+        "name": "Heri",
+        "partner": "Memed",
+        "pair": "Memed / Heri",
+        "wins": 2,
+        "losses": 2,
+        "mp": 4,
+        "gw": 19,
+        "gl": 18,
+        "diff": 1,
+        "points": 8,
+        "result": "Semifinalist",
+        "note": "Partner: Memed · Semifinalist"
+      },
+      {
+        "rank": 9,
+        "name": "Osman",
+        "partner": "Ferdy",
+        "pair": "Osman / Ferdy",
+        "wins": 1,
+        "losses": 2,
+        "mp": 3,
+        "gw": 12,
+        "gl": 17,
+        "diff": -5,
+        "points": 5,
+        "result": "Group Stage",
+        "note": "Partner: Ferdy · Group Stage"
+      },
+      {
+        "rank": 10,
+        "name": "Ferdy",
+        "partner": "Osman",
+        "pair": "Osman / Ferdy",
+        "wins": 1,
+        "losses": 2,
+        "mp": 3,
+        "gw": 12,
+        "gl": 17,
+        "diff": -5,
+        "points": 5,
+        "result": "Group Stage",
+        "note": "Partner: Osman · Group Stage"
+      },
+      {
+        "rank": 11,
+        "name": "Akbar",
+        "partner": "Syahrul",
+        "pair": "Akbar / Syahrul",
+        "wins": 1,
+        "losses": 2,
+        "mp": 3,
+        "gw": 10,
+        "gl": 19,
+        "diff": -9,
+        "points": 5,
+        "result": "Group Stage",
+        "note": "Partner: Syahrul · Group Stage"
+      },
+      {
+        "rank": 12,
+        "name": "Syahrul",
+        "partner": "Akbar",
+        "pair": "Akbar / Syahrul",
+        "wins": 1,
+        "losses": 2,
+        "mp": 3,
+        "gw": 10,
+        "gl": 19,
+        "diff": -9,
+        "points": 5,
+        "result": "Group Stage",
+        "note": "Partner: Akbar · Group Stage"
+      },
+      {
+        "rank": 13,
+        "name": "Zes",
+        "partner": "Rahmat",
+        "pair": "Zes / Rahmat",
+        "wins": 0,
+        "losses": 3,
+        "mp": 3,
+        "gw": 13,
+        "gl": 21,
+        "diff": -8,
+        "points": 3,
+        "result": "Group Stage",
+        "note": "Partner: Rahmat · Group Stage"
+      },
+      {
+        "rank": 14,
+        "name": "Rahmat",
+        "partner": "Zes",
+        "pair": "Zes / Rahmat",
+        "wins": 0,
+        "losses": 3,
+        "mp": 3,
+        "gw": 13,
+        "gl": 21,
+        "diff": -8,
+        "points": 3,
+        "result": "Group Stage",
+        "note": "Partner: Zes · Group Stage"
+      },
+      {
+        "rank": 15,
+        "name": "Fatur",
+        "partner": "Dian",
+        "pair": "Fatur / Dian",
+        "wins": 0,
+        "losses": 3,
+        "mp": 3,
+        "gw": 7,
+        "gl": 21,
+        "diff": -14,
+        "points": 3,
+        "result": "Group Stage",
+        "note": "Partner: Dian · Group Stage"
+      },
+      {
+        "rank": 16,
+        "name": "Dian",
+        "partner": "Fatur",
+        "pair": "Fatur / Dian",
+        "wins": 0,
+        "losses": 3,
+        "mp": 3,
+        "gw": 7,
+        "gl": 21,
+        "diff": -14,
+        "points": 3,
+        "result": "Group Stage",
+        "note": "Partner: Fatur · Group Stage"
+      }
+    ],
     "tournaments": {
+      "title": "Singles Tennis Championship",
+      "venue": "PIM Tennis Arena",
+      "women": {
+        "format": {
+          "players": 5,
+          "sets": 1,
+          "games": 4,
+          "tiebreak": null
+        },
+        "rounds": []
+      },
+      "doubles": {
+        "format": {
+          "players": 16,
+          "teams": 8,
+          "sets": 1,
+          "games": 7,
+          "tiebreak": "7pt at 6-6"
+        },
+        "rounds": [
+          {
+            "name": "Group Stage",
+            "points": [
+              "8 pairs split into Group A and Group B.",
+              "Each pair played round-robin matches within its group.",
+              "The top pairs advanced to the elimination round."
+            ]
+          },
+          {
+            "name": "Elimination Round",
+            "points": [
+              "The knockout phase was played through Semifinals and Final.",
+              "Each player receives an individual doubles ranking based on their pair's tournament result."
+            ]
+          }
+        ]
+      },
       "men": {
         "format": {
           "players": 14,
@@ -242,15 +520,6 @@
             ]
           }
         ]
-      },
-      "women": {
-        "format": {
-          "players": 5,
-          "sets": 1,
-          "games": 4,
-          "tiebreak": null
-        },
-        "rounds": []
       }
     },
     "results": {
@@ -277,6 +546,20 @@
           "round": "Round Robin",
           "summary": "5-player round robin completed. Mauliza Arsita finished 1st (4-0), followed by Azwarni Islamiah, Noviana Putri, Fierda, and Lisa Zulmayeti."
         }
+      ],
+      "doubles": [
+        {
+          "round": "Group Stage",
+          "summary": "Group Stage completed across Group A and Group B. Arief / Moeda and Gipa / Mursal advanced from Group A; Fariz / Dian and Memed / Heri advanced from Group B."
+        },
+        {
+          "round": "Semifinals",
+          "summary": "Arief / Moeda defeated Memed / Heri 7-2. Gipa / Mursal defeated Fariz / Dian 7-1."
+        },
+        {
+          "round": "Final",
+          "summary": "Arief / Moeda defeated Gipa / Mursal 7-3 to win the PIMTC 500 men's doubles championship."
+        }
       ]
     },
     "standings": {
@@ -286,7 +569,6 @@
             {
               "ranking": 1,
               "player": "Mansurni",
-              "nickname": "",
               "mp": 6,
               "w": 6,
               "points": 18,
@@ -295,7 +577,6 @@
             {
               "ranking": 2,
               "player": "Hafizh Furqan",
-              "nickname": "",
               "mp": 6,
               "w": 4,
               "points": 14,
@@ -304,7 +585,6 @@
             {
               "ranking": 3,
               "player": "Giffari Almuzani",
-              "nickname": "",
               "mp": 6,
               "w": 4,
               "points": 14,
@@ -313,7 +593,6 @@
             {
               "ranking": 4,
               "player": "Fariz Ridha",
-              "nickname": "",
               "mp": 6,
               "w": 3,
               "points": 12,
@@ -322,7 +601,6 @@
             {
               "ranking": 5,
               "player": "Zulfajri Ery S.",
-              "nickname": "",
               "mp": 6,
               "w": 2,
               "points": 10,
@@ -331,7 +609,6 @@
             {
               "ranking": 6,
               "player": "Rahmat Sunarya",
-              "nickname": "",
               "mp": 6,
               "w": 1,
               "points": 8,
@@ -340,7 +617,6 @@
             {
               "ranking": 7,
               "player": "Ferdiyansyah",
-              "nickname": "",
               "mp": 6,
               "w": 1,
               "points": 8,
@@ -351,7 +627,6 @@
             {
               "ranking": 1,
               "player": "Aulia Moeda",
-              "nickname": "",
               "mp": 6,
               "w": 5,
               "points": 16,
@@ -360,7 +635,6 @@
             {
               "ranking": 2,
               "player": "Osman Saftari",
-              "nickname": "",
               "mp": 6,
               "w": 5,
               "points": 16,
@@ -369,7 +643,6 @@
             {
               "ranking": 3,
               "player": "Mursal Rajab",
-              "nickname": "",
               "mp": 6,
               "w": 4,
               "points": 14,
@@ -378,7 +651,6 @@
             {
               "ranking": 4,
               "player": "Arief Rahman",
-              "nickname": "",
               "mp": 6,
               "w": 3,
               "points": 12,
@@ -387,7 +659,6 @@
             {
               "ranking": 5,
               "player": "El Rivaldy",
-              "nickname": "",
               "mp": 6,
               "w": 3,
               "points": 12,
@@ -396,7 +667,6 @@
             {
               "ranking": 6,
               "player": "Dian Pratama",
-              "nickname": "",
               "mp": 6,
               "w": 1,
               "points": 8,
@@ -405,7 +675,6 @@
             {
               "ranking": 7,
               "player": "Fathurrahman",
-              "nickname": "",
               "mp": 6,
               "w": 0,
               "points": 6,
@@ -418,7 +687,6 @@
             {
               "ranking": 1,
               "player": "Mansurni",
-              "nickname": "",
               "mp": 2,
               "w": 2,
               "points": 6,
@@ -427,7 +695,6 @@
             {
               "ranking": 2,
               "player": "Osman Saftari",
-              "nickname": "",
               "mp": 2,
               "w": 1,
               "points": 4,
@@ -436,7 +703,6 @@
             {
               "ranking": 3,
               "player": "Giffari Almuzani",
-              "nickname": "",
               "mp": 2,
               "w": 1,
               "points": 4,
@@ -445,7 +711,6 @@
             {
               "ranking": 4,
               "player": "Arief Rahman",
-              "nickname": "",
               "mp": 2,
               "w": 0,
               "points": 2,
@@ -456,7 +721,6 @@
             {
               "ranking": 1,
               "player": "Aulia Moeda",
-              "nickname": "",
               "mp": 2,
               "w": 2,
               "points": 6,
@@ -465,7 +729,6 @@
             {
               "ranking": 2,
               "player": "Mursal Rajab",
-              "nickname": "",
               "mp": 2,
               "w": 2,
               "points": 6,
@@ -474,7 +737,6 @@
             {
               "ranking": 3,
               "player": "Hafizh Furqan",
-              "nickname": "",
               "mp": 2,
               "w": 0,
               "points": 2,
@@ -483,7 +745,6 @@
             {
               "ranking": 4,
               "player": "Fariz Ridha",
-              "nickname": "",
               "mp": 2,
               "w": 0,
               "points": 2,
@@ -493,86 +754,176 @@
         }
       },
       "women": {
-        "Round Robin": {
-          "Overall": [
+        "Round Robin": [
+          {
+            "ranking": 1,
+            "player": "Mauliza Arsita",
+            "mp": 4,
+            "w": 4,
+            "points": 12,
+            "nickname": "Dekta"
+          },
+          {
+            "ranking": 2,
+            "player": "Azwarni Islamiah",
+            "mp": 4,
+            "w": 3,
+            "points": 10,
+            "nickname": "Mia"
+          },
+          {
+            "ranking": 3,
+            "player": "Noviana Putri",
+            "mp": 4,
+            "w": 2,
+            "points": 8,
+            "nickname": "Novi"
+          },
+          {
+            "ranking": 4,
+            "player": "Fierda",
+            "mp": 4,
+            "w": 1,
+            "points": 6,
+            "nickname": "Pipi"
+          },
+          {
+            "ranking": 5,
+            "player": "Lisa Zulmayeti",
+            "mp": 4,
+            "w": 0,
+            "points": 4,
+            "nickname": "Lisa"
+          }
+        ]
+      },
+      "doubles": {
+        "Group Stage": {
+          "Group A": [
             {
               "ranking": 1,
-              "player": "Mauliza Arsita",
-              "nickname": "Dekta",
-              "mp": 4,
-              "w": 4,
-              "points": 12,
-              "qualified": null
+              "player": "Arief / Moeda",
+              "mp": 3,
+              "w": 3,
+              "points": 9,
+              "qualified": true
             },
             {
               "ranking": 2,
-              "player": "Azwarni Islamiah",
-              "nickname": "Mia",
-              "mp": 4,
-              "w": 3,
-              "points": 10,
-              "qualified": null
+              "player": "Gipa / Mursal",
+              "mp": 3,
+              "w": 2,
+              "points": 7,
+              "qualified": true
             },
             {
               "ranking": 3,
-              "player": "Noviana Putri",
-              "nickname": "Novi",
-              "mp": 4,
-              "w": 2,
-              "points": 8,
-              "qualified": null
+              "player": "Osman / Ferdy",
+              "mp": 3,
+              "w": 1,
+              "points": 5,
+              "qualified": false
             },
             {
               "ranking": 4,
-              "player": "Fierda",
-              "nickname": "Pipi",
-              "mp": 4,
-              "w": 1,
-              "points": 6,
-              "qualified": null
+              "player": "Fatur / Dian",
+              "mp": 3,
+              "w": 0,
+              "points": 3,
+              "qualified": false
+            }
+          ],
+          "Group B": [
+            {
+              "ranking": 1,
+              "player": "Fariz / Dian",
+              "mp": 3,
+              "w": 3,
+              "points": 9,
+              "qualified": true
             },
             {
-              "ranking": 5,
-              "player": "Lisa Zulmayeti",
-              "nickname": "Lisa",
-              "mp": 4,
+              "ranking": 2,
+              "player": "Memed / Heri",
+              "mp": 3,
+              "w": 2,
+              "points": 7,
+              "qualified": true
+            },
+            {
+              "ranking": 3,
+              "player": "Akbar / Syahrul",
+              "mp": 3,
+              "w": 1,
+              "points": 5,
+              "qualified": false
+            },
+            {
+              "ranking": 4,
+              "player": "Zes / Rahmat",
+              "mp": 3,
               "w": 0,
-              "points": 4,
-              "qualified": null
+              "points": 3,
+              "qualified": false
             }
           ]
         }
       }
     },
     "playoffs": {
-      "men": [
-        {
-          "stage": "Semifinal 1",
-          "p1": "Mansurni",
-          "p2": "Mursal Rajab",
-          "score": "6-2",
-          "winner": "Mansurni"
-        },
-        {
-          "stage": "Semifinal 2",
-          "p1": "Aulia Moeda",
-          "p2": "Osman Saftari",
-          "score": "6-2",
-          "winner": "Aulia Moeda"
-        },
-        {
-          "stage": "Final",
+      "men": {
+        "semifinals": [
+          {
+            "p1": "Mansurni",
+            "p2": "Mursal Rajab",
+            "score": "6-2",
+            "winner": "Mansurni"
+          },
+          {
+            "p1": "Aulia Moeda",
+            "p2": "Osman Saftari",
+            "score": "6-2",
+            "winner": "Aulia Moeda"
+          }
+        ],
+        "final": {
           "p1": "Mansurni",
           "p2": "Aulia Moeda",
           "score": "6-3",
           "winner": "Mansurni"
         }
-      ]
+      },
+      "doubles": {
+        "semifinals": [
+          {
+            "p1": "Arief / Moeda",
+            "p2": "Memed / Heri",
+            "score": "7-2",
+            "winner": "Arief / Moeda"
+          },
+          {
+            "p1": "Fariz / Dian",
+            "p2": "Gipa / Mursal",
+            "score": "7-1",
+            "winner": "Gipa / Mursal"
+          }
+        ],
+        "final": {
+          "p1": "Arief / Moeda",
+          "p2": "Gipa / Mursal",
+          "score": "7-3",
+          "winner": "Arief / Moeda"
+        }
+      },
+      "women": {
+        "semifinals": [],
+        "final": null
+      }
     },
     "live": {
       "id": "pimtc500-doubles-2026",
       "name": "Turnamen Tenis Ganda Pria PIMTC 500 2026",
-      "status": "ongoing",
+      "status": "completed",
       "venue": "PIM Tennis Arena",
       "startDate": "July 2026",
       "format": {
@@ -581,9 +932,73 @@
         "games": 7,
         "tiebreak": "7pt at 6-6"
       },
-      "description": "A random pairs-draw men's doubles tournament. 8 pairs split into Group A and Group B for round-robin group stage play, best of 1 set to 7 games with a 7-point tiebreak at 6-6."
+      "description": "The PIMTC 500 men's doubles tournament has completed. The full tournament archive and individual doubles player rankings are now available on the Tournaments, Results, and Doubles Rankings pages."
     },
     "updates": [
+      {
+        "date": "2026-07-16",
+        "order": 1,
+        "round": "Semifinal",
+        "caption": "Arief/Moeda win over Memed/Heri (7-2)",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-16",
+        "order": 2,
+        "round": "Group Stage",
+        "caption": "Group A: Giffa/Mursal win over Fathur/Dian (7-3)",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-14",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "Group A: Arief/Moeda win over Osman/Ferdi (7-2) |\nGroup B: Dian/Fariz win over Syakhrul/Akbar (7-1)",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-14",
+        "order": 2,
+        "round": "Group Stage",
+        "caption": "Decision Day!",
+        "type": "photo",
+        "url": "https://osaftari-source.github.io/PIMTC/media/df2dbf64-b854-4b70-90bb-d3f3be9ba507.png"
+      },
+      {
+        "date": "2026-07-13",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "Group A: Arief/Moeda win over Giffa/Mursal (7-4),  Giffa/Mursal win over Osman/Ferdi (7-3) |\nGroup B: Dian/Fariz win over Zes/Rahmat (7-6)",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-09",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "Memed/Heri earned a convincing 7-2 victory over Syakhrul/Akbar by dominating the return game, controlling errors, and producing a decisive five-game winning run after the score reached 2-2. Memed/Heri won 34 of the match's 53 points, captured 78% of receiving points, broke serve in all five of Syakhrul/Akbar's service games, and committed only eight unforced errors compared with eighteen from their opponents. Although the winner count was relatively close at 7-5, the ten-error advantage proved far more decisive and was reflected in the app-reported aggressive margins of +8 and -7. The main area for Memed/Heri to improve is service effectiveness: despite landing 85% of first serves, they won only 45% of first-serve points and held just two of four service games. Overall, the match was won through exceptional return pressure, superior rally stability, better decision-making, and much stronger error control",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-07",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "Group A: Arief/Moeda win over Dian/Fathur (7-1) |\nGroup B: Syahrul/Akbar win over Zes/Rahmat (7-5)",
+        "type": "text",
+        "url": ""
+      },
+      {
+        "date": "2026-07-06",
+        "order": 1,
+        "round": "Group Stage",
+        "caption": "Memed/Heri delivered a dominant performance, defeating Zes/Rahmat 7–2 in around 26 minutes. Although Zes/Rahmat had a slightly higher first-serve percentage at 80% compared to 76%, Memed/Heri were far more effective after the serve, winning 92% of first-serve points and 100% of second-serve points. They also controlled the return game, winning 60% of receiving points and converting 3 of 5 break points, while Zes/Rahmat created no break chances. Memed/Heri led clearly in total points won, 34–13, produced more winners, 8–3, and forced Zes/Rahmat into too many errors.",
+        "type": "text",
+        "url": ""
+      },
       {
         "date": "2026-06-30",
         "order": 1,
@@ -630,240 +1045,141 @@
         "Group A": [
           {
             "ranking": 1,
-            "pair": "Osman / Ferdy",
-            "mp": 1,
-            "w": 1,
+            "pair": "Arief / Moeda",
+            "mp": 3,
+            "w": 3,
             "l": 0,
-            "gw": 7,
-            "gl": 3,
-            "diff": 4,
-            "points": 3
+            "gw": 21,
+            "gl": 7,
+            "diff": 14,
+            "points": 9
           },
           {
             "ranking": 2,
-            "pair": "Fatur / Dian",
-            "mp": 1,
-            "w": 0,
+            "pair": "Gipa / Mursal",
+            "mp": 3,
+            "w": 2,
             "l": 1,
-            "gw": 3,
-            "gl": 7,
-            "diff": -4,
-            "points": 1
+            "gw": 18,
+            "gl": 13,
+            "diff": 5,
+            "points": 7
           },
           {
             "ranking": 3,
-            "pair": "Gipa / Mursal",
-            "mp": 0,
-            "w": 0,
-            "l": 0,
-            "gw": 0,
-            "gl": 0,
-            "diff": 0,
-            "points": 0
+            "pair": "Osman / Ferdy",
+            "mp": 3,
+            "w": 1,
+            "l": 2,
+            "gw": 12,
+            "gl": 17,
+            "diff": -5,
+            "points": 5
           },
           {
             "ranking": 4,
-            "pair": "Arief / Moeda",
-            "mp": 0,
+            "pair": "Fatur / Dian",
+            "mp": 3,
             "w": 0,
-            "l": 0,
-            "gw": 0,
-            "gl": 0,
-            "diff": 0,
-            "points": 0
+            "l": 3,
+            "gw": 7,
+            "gl": 21,
+            "diff": -14,
+            "points": 3
           }
         ],
         "Group B": [
           {
             "ranking": 1,
             "pair": "Fariz / Dian",
-            "mp": 1,
-            "w": 1,
+            "mp": 3,
+            "w": 3,
             "l": 0,
-            "gw": 7,
-            "gl": 3,
-            "diff": 4,
-            "points": 3
+            "gw": 21,
+            "gl": 10,
+            "diff": 11,
+            "points": 9
           },
           {
             "ranking": 2,
             "pair": "Memed / Heri",
-            "mp": 1,
-            "w": 0,
+            "mp": 3,
+            "w": 2,
             "l": 1,
-            "gw": 3,
-            "gl": 7,
-            "diff": -4,
-            "points": 1
+            "gw": 17,
+            "gl": 11,
+            "diff": 6,
+            "points": 7
           },
           {
             "ranking": 3,
             "pair": "Akbar / Syahrul",
-            "mp": 0,
-            "w": 0,
-            "l": 0,
-            "gw": 0,
-            "gl": 0,
-            "diff": 0,
-            "points": 0
+            "mp": 3,
+            "w": 1,
+            "l": 2,
+            "gw": 10,
+            "gl": 19,
+            "diff": -9,
+            "points": 5
           },
           {
             "ranking": 4,
             "pair": "Zes / Rahmat",
-            "mp": 0,
+            "mp": 3,
             "w": 0,
-            "l": 0,
-            "gw": 0,
-            "gl": 0,
-            "diff": 0,
-            "points": 0
+            "l": 3,
+            "gw": 13,
+            "gl": 21,
+            "diff": -8,
+            "points": 3
           }
         ]
       }
     },
     "schedule": [
       {
-        "date": "2026-07-02",
+        "date": "2026-07-16",
         "day": "Kamis",
         "time": "17:00",
         "court": "Lapangan 1",
-        "team1": "Fariz/Dian",
-        "team2": "Akbar/Syahrul",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-06",
-        "day": "Senin",
-        "time": "17:00",
-        "court": "Lapangan 1",
         "team1": "Gipa/Mursal",
         "team2": "Dian/Fatur",
         "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-06",
-        "day": "Senin",
-        "time": "17:00",
-        "court": "Lapangan 2",
-        "team1": "Arief/Moeda",
-        "team2": "Osman/Ferdy",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-06",
-        "day": "Senin",
-        "time": "20:30",
-        "court": "Lapangan 1",
-        "team1": "Zes/Rahmat",
-        "team2": "Heri/Memed",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-07",
-        "day": "Selasa",
-        "time": "17:00",
-        "court": "Lapangan 1",
-        "team1": "Arief/Moeda",
-        "team2": "Dian/Fatur",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-07",
-        "day": "Selasa",
-        "time": "17:00",
-        "court": "Lapangan 2",
-        "team1": "Gipa/Mursal",
-        "team2": "Osman/Ferdy",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-08",
-        "day": "Rabu",
-        "time": "17:00",
-        "court": "Lapangan 1",
-        "team1": "Heri/Memed",
-        "team2": "Akbar/Syahrul",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-08",
-        "day": "Rabu",
-        "time": "18:00",
-        "court": "Lapangan 1",
-        "team1": "Akbar/Syahrul",
-        "team2": "Zes/Rahmat",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-08",
-        "day": "Rabu",
-        "time": "20:30",
-        "court": "Lapangan 1",
-        "team1": "Gipa/Mursal",
-        "team2": "Arief/Moeda",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-13",
-        "day": "Senin",
-        "time": "17:00",
-        "court": "Lapangan 1",
-        "team1": "Fariz/Dian",
-        "team2": "Zes/Rahmat",
-        "round": "Group Stage",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-14",
-        "day": "Selasa",
-        "time": "17:00",
-        "court": "",
-        "team1": "Semifinal 1",
-        "team2": "",
-        "round": "Semifinal",
-        "score": "",
-        "winner": ""
-      },
-      {
-        "date": "2026-07-15",
-        "day": "Rabu",
-        "time": "17:00",
-        "court": "",
-        "team1": "Semifinal 2",
-        "team2": "",
-        "round": "Semifinal",
-        "score": "",
-        "winner": ""
+        "score": "7-3",
+        "winner": "Gipa/Mursal"
       },
       {
         "date": "2026-07-16",
         "day": "Kamis",
         "time": "17:00",
-        "court": "",
-        "team1": "Final",
-        "team2": "",
+        "court": "Lapangan 1",
+        "team1": "Arief/Moeda",
+        "team2": "Memed/Heri",
+        "round": "Semifinal",
+        "score": "7-2",
+        "winner": "Arief/Moeda"
+      },
+      {
+        "date": "2026-07-20",
+        "day": "Senin",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Fariz/Dian",
+        "team2": "Gipa/Mursal",
+        "round": "Semifinal",
+        "score": "7-1",
+        "winner": "Gipa/Mursal"
+      },
+      {
+        "date": "2026-07-21",
+        "day": "Selasa",
+        "time": "17:00",
+        "court": "Lapangan 1",
+        "team1": "Arief/Moeda",
+        "team2": "Gipa/Mursal",
         "round": "Final",
-        "score": "",
-        "winner": ""
+        "score": "7-3",
+        "winner": "Arief/Moeda"
       }
     ],
     "gallery": [

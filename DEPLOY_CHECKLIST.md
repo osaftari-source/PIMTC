@@ -62,3 +62,13 @@ For v16.0 manual deployment, upload `data/latest-data.json` together with the up
 - Open `#/live` and confirm the **Bracket** button appears when semifinal/final schedule rows exist.
 - Confirm the bracket stacks vertically on mobile.
 - If you use the new `round`, `score`, or `winner` Schedule columns, update and redeploy `apps-script/Code.gs` once.
+
+
+### v16.7.1 extra checks
+
+- Confirm footer shows `Version pimtc-v16.7.1`.
+- Confirm Live page says there is no active live tournament.
+- Confirm `#/tournaments` has a Doubles Tournament tab.
+- Confirm `#/results` has a Doubles Tournament tab.
+- Confirm `#/doubles` shows separate individual doubles player rankings.
+- If using Google Sheets, upload/import the updated workbook or add the new `Doubles` sheet manually, then update/redeploy `apps-script/Code.gs`.

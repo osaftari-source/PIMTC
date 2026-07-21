@@ -1,16 +1,96 @@
 {
   "Group Stage": {
     "Group A": [
-      { "ranking": 1, "pair": "Osman / Ferdy", "mp": 1, "w": 1, "l": 0, "gw": 7, "gl": 3, "diff": 4, "points": 3 },
-      { "ranking": 2, "pair": "Fatur / Dian", "mp": 1, "w": 0, "l": 1, "gw": 3, "gl": 7, "diff": -4, "points": 1 },
-      { "ranking": 3, "pair": "Gipa / Mursal", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
-      { "ranking": 4, "pair": "Arief / Moeda", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 }
+      {
+        "ranking": 1,
+        "pair": "Arief / Moeda",
+        "mp": 3,
+        "w": 3,
+        "l": 0,
+        "gw": 21,
+        "gl": 7,
+        "diff": 14,
+        "points": 9
+      },
+      {
+        "ranking": 2,
+        "pair": "Gipa / Mursal",
+        "mp": 3,
+        "w": 2,
+        "l": 1,
+        "gw": 18,
+        "gl": 13,
+        "diff": 5,
+        "points": 7
+      },
+      {
+        "ranking": 3,
+        "pair": "Osman / Ferdy",
+        "mp": 3,
+        "w": 1,
+        "l": 2,
+        "gw": 12,
+        "gl": 17,
+        "diff": -5,
+        "points": 5
+      },
+      {
+        "ranking": 4,
+        "pair": "Fatur / Dian",
+        "mp": 3,
+        "w": 0,
+        "l": 3,
+        "gw": 7,
+        "gl": 21,
+        "diff": -14,
+        "points": 3
+      }
     ],
     "Group B": [
-      { "ranking": 1, "pair": "Fariz / Dian", "mp": 1, "w": 1, "l": 0, "gw": 7, "gl": 3, "diff": 4, "points": 3 },
-      { "ranking": 2, "pair": "Memed / Heri", "mp": 1, "w": 0, "l": 1, "gw": 3, "gl": 7, "diff": -4, "points": 1 },
-      { "ranking": 3, "pair": "Akbar / Syahrul", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 },
-      { "ranking": 4, "pair": "Zes / Rahmat", "mp": 0, "w": 0, "l": 0, "gw": 0, "gl": 0, "diff": 0, "points": 0 }
+      {
+        "ranking": 1,
+        "pair": "Fariz / Dian",
+        "mp": 3,
+        "w": 3,
+        "l": 0,
+        "gw": 21,
+        "gl": 10,
+        "diff": 11,
+        "points": 9
+      },
+      {
+        "ranking": 2,
+        "pair": "Memed / Heri",
+        "mp": 3,
+        "w": 2,
+        "l": 1,
+        "gw": 17,
+        "gl": 11,
+        "diff": 6,
+        "points": 7
+      },
+      {
+        "ranking": 3,
+        "pair": "Akbar / Syahrul",
+        "mp": 3,
+        "w": 1,
+        "l": 2,
+        "gw": 10,
+        "gl": 19,
+        "diff": -9,
+        "points": 5
+      },
+      {
+        "ranking": 4,
+        "pair": "Zes / Rahmat",
+        "mp": 3,
+        "w": 0,
+        "l": 3,
+        "gw": 13,
+        "gl": 21,
+        "diff": -8,
+        "points": 3
+      }
     ]
   }
 }

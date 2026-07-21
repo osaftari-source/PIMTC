@@ -1,10 +1,47 @@
 {
   "men": {
     "semifinals": [
-      { "p1": "Mansurni", "p2": "Mursal Rajab", "score": "6-2", "winner": "Mansurni" },
-      { "p1": "Aulia Moeda", "p2": "Osman Saftari", "score": "6-2", "winner": "Aulia Moeda" }
+      {
+        "p1": "Mansurni",
+        "p2": "Mursal Rajab",
+        "score": "6-2",
+        "winner": "Mansurni"
+      },
+      {
+        "p1": "Aulia Moeda",
+        "p2": "Osman Saftari",
+        "score": "6-2",
+        "winner": "Aulia Moeda"
+      }
     ],
-    "final": { "p1": "Mansurni", "p2": "Aulia Moeda", "score": "6-3", "winner": "Mansurni" }
+    "final": {
+      "p1": "Mansurni",
+      "p2": "Aulia Moeda",
+      "score": "6-3",
+      "winner": "Mansurni"
+    }
+  },
+  "doubles": {
+    "semifinals": [
+      {
+        "p1": "Arief / Moeda",
+        "p2": "Memed / Heri",
+        "score": "7-2",
+        "winner": "Arief / Moeda"
+      },
+      {
+        "p1": "Fariz / Dian",
+        "p2": "Gipa / Mursal",
+        "score": "7-1",
+        "winner": "Gipa / Mursal"
+      }
+    ],
+    "final": {
+      "p1": "Arief / Moeda",
+      "p2": "Gipa / Mursal",
+      "score": "7-3",
+      "winner": "Arief / Moeda"
+    }
   },
   "women": {
     "semifinals": [],

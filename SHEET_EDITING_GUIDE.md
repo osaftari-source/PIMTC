@@ -73,3 +73,14 @@ The `Schedule` tab supports three optional columns after `team2`:
 Recommended values for `round` are `Group Stage`, `Semifinal`, and `Final`. The Live page automatically shows a bracket when at least one semifinal or final row exists. For a completed knockout match, enter the displayed score in `score` and enter the winning pair exactly as written in `team1` or `team2` in `winner`.
 
 The older six-column Schedule layout remains supported. Placeholder names such as `Semifinal 1`, `Semifinal 2`, and `Final` are automatically recognized.
+
+
+## Doubles rankings
+
+Use the `Doubles` sheet for individual doubles player rankings. This keeps doubles ranking separate from the Men/Women singles ranking sheets. Required headers:
+
+```text
+rank | name | partner | pair | wins | losses | mp | gw | gl | diff | points | result | note | photo
+```
+
+When a live tournament is completed, set `Live.status` to `completed`, then copy the tournament structure/results into `TournamentRounds`, `Format`, `Standings`, `Playoffs`, and `Results` using category `doubles`.

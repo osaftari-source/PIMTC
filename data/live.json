@@ -1,9 +1,14 @@
 {
   "id": "pimtc500-doubles-2026",
   "name": "Turnamen Tenis Ganda Pria PIMTC 500 2026",
-  "status": "ongoing",
+  "status": "completed",
   "venue": "PIM Tennis Arena",
   "startDate": "July 2026",
-  "format": { "teams": 8, "sets": 1, "games": 7, "tiebreak": "7pt at 6-6" },
-  "description": "A random pairs-draw men's doubles tournament. 8 pairs split into Group A and Group B for round-robin group stage play, best of 1 set to 7 games with a 7-point tiebreak at 6-6."
+  "format": {
+    "teams": 8,
+    "sets": 1,
+    "games": 7,
+    "tiebreak": "7pt at 6-6"
+  },
+  "description": "The PIMTC 500 men's doubles tournament has completed. The full tournament archive and individual doubles player rankings are now available on the Tournaments, Results, and Doubles Rankings pages."
 }

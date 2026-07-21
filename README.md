@@ -256,3 +256,8 @@ The public link preview now uses `media/social-preview.png` as the Open Graph/Tw
 
 ### Live elimination round
 From `pimtc-v16.6.0`, the Live page can show a two-semifinal + final bracket. The `Schedule` sheet accepts optional `round`, `score`, and `winner` columns while remaining backward compatible with the original six-column layout.
+
+
+### v16.7.1 Completed Doubles Archive
+
+The completed PIMTC 500 men's doubles tournament is no longer treated as an active Live event. It is now represented in the permanent Tournaments/Results archive and has a dedicated `#/doubles` rankings page. Maintain individual doubles player rankings through the `Doubles` sheet with headers: `rank | name | partner | pair | wins | losses | mp | gw | gl | diff | points | result | note | photo`.

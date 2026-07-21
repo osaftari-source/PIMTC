@@ -1,4 +1,16 @@
 [
-  { "event": "The Team", "date": "", "caption": "", "type": "photo", "url": "https://osaftari-source.github.io/PIMTC/media/RPsPPb0.jpg" },
-  { "event": "The Team", "date": "", "caption": "", "type": "photo", "url": "https://osaftari-source.github.io/PIMTC/media/ZddSRle.jpg" }
+  {
+    "event": "The Team",
+    "date": "",
+    "caption": "",
+    "type": "photo",
+    "url": "https://osaftari-source.github.io/PIMTC/media/RPsPPb0.jpg"
+  },
+  {
+    "event": "The Team",
+    "date": "",
+    "caption": "",
+    "type": "photo",
+    "url": "https://osaftari-source.github.io/PIMTC/media/ZddSRle.jpg"
+  }
 ]

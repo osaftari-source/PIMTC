@@ -1,7 +1,57 @@
 [
-  {"rank":1,"name":"Mauliza Arsita","age":31,"plays":"Right-handed, Double-handed backhand","wins":4,"losses":0,"racket":"Wilson","dept":"Researcher Calibration & Inventory","photo":""},
-  {"rank":2,"name":"Azwarni Islamiah","age":24,"plays":"Right-handed, Double-handed backhand","wins":3,"losses":1,"racket":"Babolat","dept":"Marketing & Sales","photo":""},
-  {"rank":3,"name":"Noviana Putri","age":30,"plays":"Right-handed, Double-handed backhand","wins":2,"losses":2,"racket":"Yonex Ezone","dept":"Finance","photo":""},
-  {"rank":4,"name":"Fierda","age":31,"plays":"Right-handed, Double-handed backhand","wins":1,"losses":3,"racket":"Yonex Ezone","dept":"Dentist (PIKA)","photo":""},
-  {"rank":5,"name":"Lisa Zulmayeti","age":29,"plays":"Right-handed, Double-handed backhand","wins":0,"losses":4,"racket":"Babolat Boost","dept":"Production Planning","photo":""}
+  {
+    "rank": 1,
+    "name": "Mauliza Arsita",
+    "age": 31,
+    "plays": "Right-handed, Double-handed backhand",
+    "wins": 4,
+    "losses": 0,
+    "racket": "Wilson",
+    "dept": "Researcher Calibration & Inventory",
+    "photo": ""
+  },
+  {
+    "rank": 2,
+    "name": "Azwarni Islamiah",
+    "age": 24,
+    "plays": "Right-handed, Double-handed backhand",
+    "wins": 3,
+    "losses": 1,
+    "racket": "Babolat",
+    "dept": "Marketing & Sales",
+    "photo": ""
+  },
+  {
+    "rank": 3,
+    "name": "Noviana Putri",
+    "age": 30,
+    "plays": "Right-handed, Double-handed backhand",
+    "wins": 2,
+    "losses": 2,
+    "racket": "Yonex Ezone",
+    "dept": "Finance",
+    "photo": ""
+  },
+  {
+    "rank": 4,
+    "name": "Fierda",
+    "age": 31,
+    "plays": "Right-handed, Double-handed backhand",
+    "wins": 1,
+    "losses": 3,
+    "racket": "Yonex Ezone",
+    "dept": "Dentist (PIKA)",
+    "photo": ""
+  },
+  {
+    "rank": 5,
+    "name": "Lisa Zulmayeti",
+    "age": 29,
+    "plays": "Right-handed, Double-handed backhand",
+    "wins": 0,
+    "losses": 4,
+    "racket": "Babolat Boost",
+    "dept": "Production Planning",
+    "photo": ""
+  }
 ]

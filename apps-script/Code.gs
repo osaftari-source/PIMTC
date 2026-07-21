@@ -6,13 +6,14 @@
  *
  *    Men            | rank | name | age | plays | wins | losses | racket | dept | photo |
  *    Women          | rank | name | age | plays | wins | losses | racket | dept | photo |
+ *    Doubles        | rank | name | partner | pair | wins | losses | mp | gw | gl | diff | points | result | note | photo |
  *    Home           | name | tagline | about | photo | mediaType | instagram | mapEmbed | lat | lng |
  *                     (single data row; photo is a URL — for a plain picture, use a direct
  *                      image link and leave mediaType blank/"photo". To embed an Instagram
  *                      post/reel or YouTube video instead, put that URL in photo and set
  *                      mediaType to "instagram" or "youtube".)
  *    TournamentRounds | category | roundOrder | roundName | point |
- *                     (one row per bullet point; category = "men" or "women")
+ *                     (one row per bullet point; category = "men", "women", or "doubles")
  *    Format         | category | players | sets | games | tiebreak |
  *                     (one row per category; tiebreak e.g. "7pt at 5-5", leave blank if none)
  *    Standings      | category | round | group | ranking | player | nickname | mp | w | points | qualified |
@@ -22,7 +23,7 @@
  *    Playoffs       | category | stage | p1 | p2 | score | winner |
  *                     (stage = "Semifinal 1", "Semifinal 2", "Final", in that order)
  *    Results        | category | round | summary |
- *                     (category = "men" or "women")
+ *                     (category = "men", "women", or "doubles")
  *    Live           | id | name | status | venue | startDate | teams | sets | games | tiebreak | description |
  *                     (single data row for the current ongoing/most-recent live tournament;
  *                      status = "ongoing" or "completed")
@@ -67,6 +68,7 @@
 const ACTIONS_ = {
   men: function () { return getPlayers_("Men"); },
   women: function () { return getPlayers_("Women"); },
+  doubles: getDoubles_,
   home: getHome_,
   tournaments: getTournaments_,
   results: getResults_,
@@ -152,6 +154,199 @@ function getPlayers_(tabName) {
     dept: text_(r.dept),
     photo: text_(r.photo)
   }));
+}
+
+
+function getDoubles_() {
+  const manualRows = sheetRows_("Doubles");
+  if (manualRows.length) {
+    // Preferred v16.7.1 structure: one row per player.
+    const hasIndividualColumns = Object.prototype.hasOwnProperty.call(manualRows[0], "name") || Object.prototype.hasOwnProperty.call(manualRows[0], "partner");
+    if (hasIndividualColumns) {
+      return manualRows.map((r) => ({
+        rank: number_(r.rank, null),
+        name: text_(r.name || r.player),
+        partner: text_(r.partner),
+        pair: normalizePair_(r.pair),
+        wins: number_(r.wins, 0),
+        losses: number_(r.losses, 0),
+        mp: number_(r.mp, number_(r.wins, 0) + number_(r.losses, 0)),
+        gw: number_(r.gw, 0),
+        gl: number_(r.gl, 0),
+        diff: number_(r.diff, 0),
+        points: number_(r.points, 0),
+        result: text_(r.result),
+        note: text_(r.note),
+        photo: text_(r.photo)
+      })).filter((r) => r.name || r.pair);
+    }
+
+    // Backward compatibility for old pair-based Doubles sheet.
+    return expandPairsToPlayers_(manualRows.map((r) => ({
+      pair: normalizePair_(r.pair || r.name),
+      wins: number_(r.wins, 0),
+      losses: number_(r.losses, 0),
+      mp: number_(r.mp, number_(r.wins, 0) + number_(r.losses, 0)),
+      gw: number_(r.gw, 0),
+      gl: number_(r.gl, 0),
+      diff: number_(r.diff, 0),
+      points: number_(r.points, 0),
+      result: text_(r.result || r.note),
+      note: text_(r.note)
+    })).filter((r) => r.pair));
+  }
+
+  // Fallback: derive individual doubles rankings from completed LiveStandings + Schedule.
+  return deriveDoublesPlayers_();
+}
+
+function deriveDoublesPlayers_() {
+  const stats = {};
+  const standings = sheetRows_("LiveStandings");
+  standings.forEach((r) => {
+    const pair = normalizePair_(r.pair);
+    if (!pair) return;
+    stats[pair] = {
+      pair: pair,
+      mp: number_(r.mp, 0),
+      wins: number_(r.w, 0),
+      losses: number_(r.l, 0),
+      gw: number_(r.gw, 0),
+      gl: number_(r.gl, 0),
+      diff: number_(r.diff, 0),
+      points: number_(r.points, 0),
+      result: "Group Stage",
+      stageOrder: 3
+    };
+  });
+
+  const canonical = {};
+  Object.keys(stats).forEach((p) => canonical[pairKey_(p)] = p);
+
+  let finalWinner = "";
+  let finalLoser = "";
+  const semifinalLosers = [];
+
+  sheetRows_("Schedule").forEach((r) => {
+    const round = lowerText_(r.round);
+    if (!round || round.indexOf("group") >= 0) return;
+
+    const team1 = canonical[pairKey_(r.team1)] || normalizePair_(r.team1);
+    const team2 = canonical[pairKey_(r.team2)] || normalizePair_(r.team2);
+    const winner = canonical[pairKey_(r.winner)] || normalizePair_(r.winner);
+    const score = parseScore_(r.score);
+    if (!team1 || !team2 || !winner || !score) return;
+
+    const loser = pairKey_(winner) === pairKey_(team1) ? team2 : team1;
+    if (!stats[winner]) stats[winner] = emptyPairStats_(winner);
+    if (!stats[loser]) stats[loser] = emptyPairStats_(loser);
+
+    applyMatch_(stats[winner], true, score[0], score[1]);
+    applyMatch_(stats[loser], false, score[1], score[0]);
+
+    if (round === "final") {
+      finalWinner = winner;
+      finalLoser = loser;
+    } else if (round.indexOf("semi") >= 0) {
+      semifinalLosers.push(loser);
+    }
+  });
+
+  if (finalWinner && stats[finalWinner]) {
+    stats[finalWinner].result = "Champion";
+    stats[finalWinner].stageOrder = 0;
+  }
+  if (finalLoser && stats[finalLoser]) {
+    stats[finalLoser].result = "Runner-up";
+    stats[finalLoser].stageOrder = 1;
+  }
+  semifinalLosers.forEach((p) => {
+    if (stats[p]) {
+      stats[p].result = "Semifinalist";
+      stats[p].stageOrder = 2;
+    }
+  });
+
+  const pairs = Object.keys(stats).map((k) => stats[k]).sort((a, b) => (
+    a.stageOrder - b.stageOrder ||
+    b.points - a.points ||
+    b.wins - a.wins ||
+    b.diff - a.diff ||
+    b.gw - a.gw ||
+    a.pair.localeCompare(b.pair)
+  ));
+
+  return expandPairsToPlayers_(pairs);
+}
+
+function emptyPairStats_(pair) {
+  return { pair: pair, mp: 0, wins: 0, losses: 0, gw: 0, gl: 0, diff: 0, points: 0, result: "Group Stage", stageOrder: 3 };
+}
+
+function applyMatch_(row, won, gw, gl) {
+  row.mp += 1;
+  if (won) {
+    row.wins += 1;
+    row.points += 3;
+  } else {
+    row.losses += 1;
+    row.points += 1;
+  }
+  row.gw += gw;
+  row.gl += gl;
+  row.diff = row.gw - row.gl;
+}
+
+function expandPairsToPlayers_(pairs) {
+  const out = [];
+  let rank = 1;
+  pairs.forEach((pairRow) => {
+    const names = splitPair_(pairRow.pair);
+    names.forEach((name) => {
+      const partner = names.filter((n) => n !== name).join(" / ");
+      out.push({
+        rank: rank++,
+        name: name,
+        partner: partner,
+        pair: pairRow.pair,
+        wins: number_(pairRow.wins, 0),
+        losses: number_(pairRow.losses, 0),
+        mp: number_(pairRow.mp, number_(pairRow.wins, 0) + number_(pairRow.losses, 0)),
+        gw: number_(pairRow.gw, 0),
+        gl: number_(pairRow.gl, 0),
+        diff: number_(pairRow.diff, 0),
+        points: number_(pairRow.points, 0),
+        result: text_(pairRow.result || pairRow.note),
+        note: partner ? "Partner: " + partner + " · " + text_(pairRow.result || pairRow.note, "Doubles player") : text_(pairRow.result || pairRow.note),
+        photo: text_(pairRow.photo)
+      });
+    });
+  });
+  return out;
+}
+
+function normalizePair_(value) {
+  return text_(value).replace(/\s*\/\s*/g, " / ");
+}
+
+function splitPair_(pair) {
+  return normalizePair_(pair).split("/").map((p) => text_(p)).filter(Boolean);
+}
+
+function pairKey_(pair) {
+  return splitPair_(pair).map((p) => p.toLowerCase()).sort().join("|");
+}
+
+function scoreText_(value) {
+  const v = text_(value);
+  const m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (m) return Number(m[2]) + "-" + Number(m[3]); // Google Sheets may convert "7-3" into a date.
+  return v;
+}
+
+function parseScore_(value) {
+  const m = scoreText_(value).match(/(\d+)\s*[-–]\s*(\d+)/);
+  return m ? [Number(m[1]), Number(m[2])] : null;
 }
 
 function getHome_() {
@@ -418,6 +613,7 @@ function getHealth_() {
   const expected = {
     Men:["rank","name","age","plays","wins","losses","racket","dept","photo"],
     Women:["rank","name","age","plays","wins","losses","racket","dept","photo"],
+    Doubles:["rank","pair","wins","losses","gw","gl","diff","points","note","photo"],
     Home:["name","tagline","about","photo","mediaType","instagram","mapEmbed","lat","lng"],
     TournamentRounds:["category","roundOrder","roundName","point"],
     Format:["category","players","sets","games","tiebreak"],
@@ -427,7 +623,7 @@ function getHealth_() {
     Live:["id","name","status","venue","startDate","teams","sets","games","tiebreak","description"],
     Updates:["date","order","round","caption","type","url"],
     LiveStandings:["round","group","ranking","pair","mp","w","l","gw","gl","diff","points"],
-    Schedule:["date","day","time","court","team1","team2"],
+    Schedule:["date","day","time","court","team1","team2","round","score","winner"],
     Gallery:["event","date","caption","type","url"],
     HomeGallery:["order","url","caption"]
   };

@@ -1,11 +1,40 @@
 {
   "men": [
-    { "round": "Round 1", "summary": "Group A and Group B pool play completed. Top 4 advanced from each group: Mansurni, Hafizh Furqan, Giffari Almuzani and Fariz Ridha from Group A; Aulia Moeda, Osman Saftari, Mursal Rajab and Arief Rahman from Group B." },
-    { "round": "Round 2", "summary": "Cross-group stage completed. Top 2 from each group advanced to the Semifinals: Mansurni and Osman Saftari from Group A; Aulia Moeda and Mursal Rajab from Group B." },
-    { "round": "Semifinals", "summary": "Mansurni defeated Mursal Rajab 6-2. Aulia Moeda defeated Osman Saftari 6-2." },
-    { "round": "Final", "summary": "Mansurni defeated Aulia Moeda 6-3 to win the championship." }
+    {
+      "round": "Round 1",
+      "summary": "Group A and Group B pool play completed. Top 4 advanced from each group: Mansurni, Hafizh Furqan, Giffari Almuzani and Fariz Ridha from Group A; Aulia Moeda, Osman Saftari, Mursal Rajab and Arief Rahman from Group B."
+    },
+    {
+      "round": "Round 2",
+      "summary": "Cross-group stage completed. Top 2 from each group advanced to the Semifinals: Mansurni and Osman Saftari from Group A; Aulia Moeda and Mursal Rajab from Group B."
+    },
+    {
+      "round": "Semifinals",
+      "summary": "Mansurni defeated Mursal Rajab 6-2. Aulia Moeda defeated Osman Saftari 6-2."
+    },
+    {
+      "round": "Final",
+      "summary": "Mansurni defeated Aulia Moeda 6-3 to win the championship."
+    }
   ],
   "women": [
-    { "round": "Round Robin", "summary": "5-player round robin completed. Mauliza Arsita finished 1st (4-0), followed by Azwarni Islamiah, Noviana Putri, Fierda, and Lisa Zulmayeti." }
+    {
+      "round": "Round Robin",
+      "summary": "5-player round robin completed. Mauliza Arsita finished 1st (4-0), followed by Azwarni Islamiah, Noviana Putri, Fierda, and Lisa Zulmayeti."
+    }
+  ],
+  "doubles": [
+    {
+      "round": "Group Stage",
+      "summary": "Group Stage completed across Group A and Group B. Arief / Moeda and Gipa / Mursal advanced from Group A; Fariz / Dian and Memed / Heri advanced from Group B."
+    },
+    {
+      "round": "Semifinals",
+      "summary": "Arief / Moeda defeated Memed / Heri 7-2. Gipa / Mursal defeated Fariz / Dian 7-1."
+    },
+    {
+      "round": "Final",
+      "summary": "Arief / Moeda defeated Gipa / Mursal 7-3 to win the PIMTC 500 men's doubles championship."
+    }
   ]
 }

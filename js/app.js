@@ -16,7 +16,7 @@ const CONFIG = {
   LIVE_REFRESH_TTL_MS: 15 * 1000,
   LIVE_BACKGROUND_REFRESH_MS: 30 * 1000,
   DATA_FALLBACK_DELAY_MS: 1600,
-  VERSION: "pimtc-v16.6.0",
+  VERSION: "pimtc-v16.7.1",
   SNAPSHOT_URL: "data/latest-data.json"
 };
 
@@ -53,6 +53,10 @@ function readPersistentCache(key) {
 }
 
 function rememberData(key, data, source = "network", publishedAt = null) {
+  if (data && typeof data === "object" && data.error) {
+    console.warn(`Ignoring ${source} data for ${key}: ${data.error}`);
+    return state.cache[key]?.data ?? data;
+  }
   const entry = {
     data,
     time: Date.now(),
@@ -272,6 +276,7 @@ async function fetchBundle(items) {
 const getHome = () => fetchJSON("data/home.json", "home");
 const getMen = () => fetchJSON("data/men.json", "men");
 const getWomen = () => fetchJSON("data/women.json", "women");
+const getDoubles = () => fetchJSON("data/doubles.json", "doubles");
 const getTournaments = () => fetchJSON("data/tournaments.json", "tournaments");
 const getResults = () => fetchJSON("data/results.json", "results");
 const getStandings = () => fetchJSON("data/standings.json", "standings");
@@ -453,10 +458,11 @@ async function renderHome() {
     </section>
   `;
 
-  const { home, men, women, live, updates, homeGallery } = await fetchBundle([
+  const { home, men, women, doubles, live, updates, homeGallery } = await fetchBundle([
     { key: "home", local: "data/home.json" },
     { key: "men", local: "data/men.json" },
     { key: "women", local: "data/women.json" },
+    { key: "doubles", local: "data/doubles.json" },
     { key: "live", local: "data/live.json" },
     { key: "updates", local: "data/updates.json" },
     { key: "homeGallery", local: "data/home-gallery.json" }
@@ -484,6 +490,7 @@ async function renderHome() {
   document.getElementById("heroStats").innerHTML = `
     <div class="hero-stat"><div class="num">${men.length}</div><div class="lab">Men Ranked</div></div>
     <div class="hero-stat"><div class="num">${women.length}</div><div class="lab">Women Ranked</div></div>
+    <div class="hero-stat"><div class="num">${Array.isArray(doubles) ? doubles.length : 0}</div><div class="lab">Doubles Players</div></div>
     <div class="hero-stat"><div class="num">2026</div><div class="lab">Season</div></div>
   `;
 
@@ -539,6 +546,42 @@ async function renderWomen() {
     : `<div class="state-msg">No player data yet.</div>`;
 }
 
+function doublesRankRow(p) {
+  const wins = p.wins ?? 0, losses = p.losses ?? 0;
+  const total = wins + losses;
+  const pct = total ? Math.round((wins / total) * 100) : 0;
+  const leader = p.rank === 1;
+  const result = p.result || p.note || "Doubles player";
+  const partnerLine = p.partner ? `Partner: ${esc(p.partner)}` : (p.pair ? `Pair: ${esc(p.pair)}` : "");
+  return `
+  <div class="rank-row doubles-rank-row ${leader ? "is-leader" : ""}">
+    <div class="rank-badge">${p.rank ?? "-"}</div>
+    <div class="rank-main">
+      <div class="rank-name">${esc(p.name || p.player || p.pair)}</div>
+      <div class="rank-dept">${partnerLine}${partnerLine && result ? " · " : ""}${esc(result)}</div>
+      <div class="rank-meta">
+        ${p.pair ? `<span>${esc(p.pair)}</span>` : ""}
+        <span>${wins}W &ndash; ${losses}L</span>
+        ${p.points !== undefined ? `<span>${esc(p.points)} pts</span>` : ""}
+        ${p.diff !== undefined ? `<span>${Number(p.diff) > 0 ? "+" : ""}${esc(p.diff)} game diff</span>` : ""}
+      </div>
+    </div>
+    <div class="rank-record">
+      <div class="wl"><span class="w">${wins}W</span> &ndash; <span class="l">${losses}L</span></div>
+      <div class="wl-bar"><i style="width:${pct}%"></i></div>
+    </div>
+  </div>`;
+}
+
+async function renderDoubles() {
+  document.getElementById("app").innerHTML = playersSection("Doubles Rankings", "Individual Player Rankings");
+  const doubles = await getDoubles();
+  const sorted = [...(Array.isArray(doubles) ? doubles : [])].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+  document.getElementById("rankList").innerHTML = sorted.length
+    ? sorted.map(doublesRankRow).join("")
+    : `<div class="state-msg">No doubles ranking data yet. Add rows to the Doubles sheet or keep completed tournament standings available.</div>`;
+}
+
 function initials(name) {
   return String(name || "")
     .split(/\s+/)
@@ -549,10 +592,10 @@ function initials(name) {
     .toUpperCase();
 }
 
-function formatStats(fmt) {
+function formatStats(fmt, cat = "") {
   if (!fmt) return "";
   const blocks = [
-    { num: fmt.players, label: "Players", lead: true },
+    { num: cat === "doubles" ? (fmt.teams ?? fmt.players) : fmt.players, label: cat === "doubles" ? "Pairs" : "Players", lead: true },
     { num: fmt.sets, label: "Set" },
     { num: fmt.games, label: "Game" }
   ];
@@ -567,22 +610,23 @@ function formatStats(fmt) {
   </div>`;
 }
 
-function standingsTable(rows, caption = "Tournament standings") {
+function standingsTable(rows, caption = "Tournament standings", entityLabel = "Player") {
   return `<div class="table-scroll"><table class="standings-table">
     <caption>${esc(caption)}</caption>
-    <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">MP</th><th scope="col">W</th><th scope="col">Pts</th></tr></thead>
+    <thead><tr><th scope="col">#</th><th scope="col">${esc(entityLabel)}</th><th scope="col">MP</th><th scope="col">W</th><th scope="col">Pts</th></tr></thead>
     <tbody>
       ${rows.map((r) => `
         <tr class="${r.qualified ? "qualified" : r.qualified === false ? "eliminated" : ""}">
           <td data-label="#">${r.ranking}</td>
-          <td data-label="Player" class="p-name">${esc(r.player)}${r.nickname ? ` <span style="color:rgba(18,24,31,0.4); font-weight:400;">(${esc(r.nickname)})</span>` : ""}</td>
+          <td data-label="${esc(entityLabel)}" class="p-name">${esc(r.player)}${r.nickname ? ` <span style="color:rgba(18,24,31,0.4); font-weight:400;">(${esc(r.nickname)})</span>` : ""}</td>
           <td data-label="MP">${r.mp}</td><td data-label="W">${r.w}</td><td data-label="Pts">${r.points}</td>
         </tr>`).join("")}
     </tbody>
   </table></div>`;
 }
 
-function standingsBlock(roundName, roundData) {
+function standingsBlock(roundName, roundData, cat = "") {
+  const entityLabel = cat === "doubles" ? "Pair" : "Player";
   const isGrouped = !Array.isArray(roundData);
   return `
     <div class="round-block">
@@ -592,11 +636,11 @@ function standingsBlock(roundName, roundData) {
             ${Object.entries(roundData).map(([group, rows]) => `
               <div class="standings-group">
                 <h4>${esc(group)}</h4>
-                ${standingsTable(rows, `${group} standings`)}
+                ${standingsTable(rows, `${group} standings`, entityLabel)}
               </div>`).join("")}
           </div>
           <div class="standings-note"><span class="q">Advanced</span><span class="e">Eliminated</span></div>`
-        : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData, `${roundName} standings`)}</div>`
+        : `<div style="max-width:520px; margin-top:14px;">${standingsTable(roundData, `${roundName} standings`, entityLabel)}</div>`
       }
     </div>`;
 }
@@ -822,11 +866,12 @@ function nextMatchCard(match) {
 function catLabel(cat) {
   if (cat === "men") return "Men's Tournament";
   if (cat === "women") return "Women's Tournament";
+  if (cat === "doubles") return "Doubles Tournament";
   return cat.charAt(0).toUpperCase() + cat.slice(1) + " Tournament";
 }
 
 function orderCats(cats) {
-  const priority = { men: 0, women: 1 };
+  const priority = { men: 0, women: 1, doubles: 2 };
   return [...cats].sort((a, b) => (priority[a] ?? 2) - (priority[b] ?? 2) || a.localeCompare(b));
 }
 
@@ -905,9 +950,9 @@ async function renderTournaments() {
       </div>
     `).join("");
 
-    const standingsHtml = Object.entries(catStandings).map(([roundName, roundData]) => standingsBlock(roundName, roundData)).join("");
+    const standingsHtml = Object.entries(catStandings).map(([roundName, roundData]) => standingsBlock(roundName, roundData, cat)).join("");
 
-    body.innerHTML = formatStats(fmt) + rulesHtml + standingsHtml;
+    body.innerHTML = formatStats(fmt, cat) + rulesHtml + standingsHtml;
   }
 
   if (cats.length) draw(cats[0]);
@@ -985,6 +1030,27 @@ async function renderResults() {
   bindTabButtons(draw);
 }
 
+function completedLiveArchivePage(live = {}) {
+  return `
+    <section class="section-dark section" style="padding-bottom:44px;">
+      <div class="wrap">
+        <div class="live-header"><span class="live-badge is-completed">Completed</span></div>
+        <h2 style="margin-top:12px;">No Active Live Tournament</h2>
+        <p style="max-width:760px; margin-top:10px;">${esc(live.name || "The latest tournament")} has finished. The doubles tournament has been moved into the permanent archive and separated from singles rankings.</p>
+        <div class="hero-actions" style="margin-top:22px;">
+          <a href="#/tournaments" class="btn btn-gold">View Tournament Archive</a>
+          <a href="#/results" class="btn btn-outline">View Results</a>
+          <a href="#/doubles" class="btn btn-outline">View Doubles Rankings</a>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap">
+        <div class="state-msg">The Live page will be used again when the next tournament starts.</div>
+      </div>
+    </section>`;
+}
+
 async function renderLive() {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -1040,9 +1106,13 @@ async function renderLive() {
       </div>
     </section>`;
 
-  setupLiveSectionNavStickiness();
-
   const initialData = await fetchBundle(LIVE_ITEMS);
+  if ((initialData.live?.status || "").toLowerCase() !== "ongoing") {
+    app.innerHTML = completedLiveArchivePage(initialData.live || {});
+    return;
+  }
+
+  setupLiveSectionNavStickiness();
   populateLivePage(initialData);
   refreshLiveFromSheets({ visible: true });
   startLiveAutoRefresh();
@@ -1404,7 +1474,7 @@ function addHealthIssue(issues, severity, area, message, detail = "") {
 function evaluateSiteHealth(snapshot, apiHealth) {
   const data = normalizeBundle(snapshot);
   const issues = [];
-  const expected = ["home", "men", "women", "tournaments", "results", "standings", "playoffs", "live", "updates", "liveStandings", "schedule", "gallery", "homeGallery"];
+  const expected = ["home", "men", "women", "doubles", "tournaments", "results", "standings", "playoffs", "live", "updates", "liveStandings", "schedule", "gallery", "homeGallery"];
 
   expected.forEach((key) => {
     if (!Object.prototype.hasOwnProperty.call(data, key)) addHealthIssue(issues, "error", "Snapshot", `Missing data key: ${key}`);
@@ -1447,6 +1517,8 @@ function evaluateSiteHealth(snapshot, apiHealth) {
   };
   checkRankings("Men", data.men || []);
   checkRankings("Women", data.women || []);
+  // Doubles rankings are individual players, with pair/partner kept as context.
+  checkRankings("Doubles", (data.doubles || []).map((row) => ({ ...row, name: row.name || row.player || row.pair })));
 
   const allowedMedia = ["text", "photo", "instagram", "youtube"];
   const checkMediaList = (area, rows) => {
@@ -1599,7 +1671,7 @@ async function renderHealth() {
       </div>
       <div class="health-card">
         <span>Data counts</span>
-        <strong>${(result.data.men || []).length} men / ${(result.data.women || []).length} women</strong>
+        <strong>${(result.data.men || []).length} men / ${(result.data.women || []).length} women / ${(result.data.doubles || []).length} doubles</strong>
         <small>${(result.data.schedule || []).length} schedule rows, ${(result.data.updates || []).length} updates</small>
       </div>
     </div>
@@ -1622,6 +1694,7 @@ const routes = {
   gallery: renderGallery,
   men: renderMen,
   women: renderWomen,
+  doubles: renderDoubles,
   inquiry: renderInquiry,
   health: renderHealth
 };

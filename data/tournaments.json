@@ -1,8 +1,48 @@
 {
   "title": "Singles Tennis Championship",
   "venue": "PIM Tennis Arena",
+  "women": {
+    "format": {
+      "players": 5,
+      "sets": 1,
+      "games": 4,
+      "tiebreak": null
+    },
+    "rounds": []
+  },
+  "doubles": {
+    "format": {
+      "players": 16,
+      "teams": 8,
+      "sets": 1,
+      "games": 7,
+      "tiebreak": "7pt at 6-6"
+    },
+    "rounds": [
+      {
+        "name": "Group Stage",
+        "points": [
+          "8 pairs split into Group A and Group B.",
+          "Each pair played round-robin matches within its group.",
+          "The top pairs advanced to the elimination round."
+        ]
+      },
+      {
+        "name": "Elimination Round",
+        "points": [
+          "The knockout phase was played through Semifinals and Final.",
+          "Each player receives an individual doubles ranking based on their pair's tournament result."
+        ]
+      }
+    ]
+  },
   "men": {
-    "format": { "players": 14, "sets": 1, "games": 6, "tiebreak": "7pt at 5-5" },
+    "format": {
+      "players": 14,
+      "sets": 1,
+      "games": 6,
+      "tiebreak": "7pt at 5-5"
+    },
     "rounds": [
       {
         "name": "Round 1",
@@ -21,9 +61,5 @@
         ]
       }
     ]
-  },
-  "women": {
-    "format": { "players": 5, "sets": 1, "games": 4, "tiebreak": null },
-    "rounds": []
   }
 }

@@ -1,7 +1,106 @@
 [
-  { "date": "2026-06-30", "order": 5, "round": "Group Stage", "caption": "First results are in from Group A: Osman/Ferdi with a 7-3 win over Dian/Fathur.", "type": "text", "url": "" },
-  { "date": "2026-06-29", "order": 4, "round": "Group Stage", "caption": "1st match on Group A", "type": "photo", "url": "https://osaftari-source.github.io/PIMTC/media/GtjaBpC.jpg" },
-  { "date": "2026-06-25", "order": 3, "round": "Group Stage", "caption": "First results are in from Group B: Fariz/Dian opened with a 7-3 win over Memed/Heri.", "type": "text", "url": "" },
-  { "date": "2026-06-25", "order": 2, "round": "Group Stage", "caption": "1st match on Group B", "type": "photo", "url": "https://osaftari-source.github.io/PIMTC/media/Q3zga5E.jpg" },
-  { "date": "2026-06-20", "order": 1, "round": "Group Stage Draw", "caption": "Random pairs draw complete — 8 pairs split into Group A and Group B for round-robin group play.", "type": "text", "url": "" }
+  {
+    "date": "2026-07-16",
+    "order": 1,
+    "round": "Semifinal",
+    "caption": "Arief/Moeda win over Memed/Heri (7-2)",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-16",
+    "order": 2,
+    "round": "Group Stage",
+    "caption": "Group A: Giffa/Mursal win over Fathur/Dian (7-3)",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-14",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "Group A: Arief/Moeda win over Osman/Ferdi (7-2) |\nGroup B: Dian/Fariz win over Syakhrul/Akbar (7-1)",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-14",
+    "order": 2,
+    "round": "Group Stage",
+    "caption": "Decision Day!",
+    "type": "photo",
+    "url": "https://osaftari-source.github.io/PIMTC/media/df2dbf64-b854-4b70-90bb-d3f3be9ba507.png"
+  },
+  {
+    "date": "2026-07-13",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "Group A: Arief/Moeda win over Giffa/Mursal (7-4),  Giffa/Mursal win over Osman/Ferdi (7-3) |\nGroup B: Dian/Fariz win over Zes/Rahmat (7-6)",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-09",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "Memed/Heri earned a convincing 7-2 victory over Syakhrul/Akbar by dominating the return game, controlling errors, and producing a decisive five-game winning run after the score reached 2-2. Memed/Heri won 34 of the match's 53 points, captured 78% of receiving points, broke serve in all five of Syakhrul/Akbar's service games, and committed only eight unforced errors compared with eighteen from their opponents. Although the winner count was relatively close at 7-5, the ten-error advantage proved far more decisive and was reflected in the app-reported aggressive margins of +8 and -7. The main area for Memed/Heri to improve is service effectiveness: despite landing 85% of first serves, they won only 45% of first-serve points and held just two of four service games. Overall, the match was won through exceptional return pressure, superior rally stability, better decision-making, and much stronger error control",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-07",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "Group A: Arief/Moeda win over Dian/Fathur (7-1) |\nGroup B: Syahrul/Akbar win over Zes/Rahmat (7-5)",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-07-06",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "Memed/Heri delivered a dominant performance, defeating Zes/Rahmat 7–2 in around 26 minutes. Although Zes/Rahmat had a slightly higher first-serve percentage at 80% compared to 76%, Memed/Heri were far more effective after the serve, winning 92% of first-serve points and 100% of second-serve points. They also controlled the return game, winning 60% of receiving points and converting 3 of 5 break points, while Zes/Rahmat created no break chances. Memed/Heri led clearly in total points won, 34–13, produced more winners, 8–3, and forced Zes/Rahmat into too many errors.",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-06-30",
+    "order": 1,
+    "round": "Group Stage",
+    "caption": "First results are in from Group A: Osman/Ferdi with a 7-3 win over Dian/Fathur.",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-06-29",
+    "order": 2,
+    "round": "Group Stage",
+    "caption": "1st match on Group A",
+    "type": "photo",
+    "url": "https://osaftari-source.github.io/PIMTC/media/GtjaBpC.jpg"
+  },
+  {
+    "date": "2026-06-25",
+    "order": 3,
+    "round": "Group Stage",
+    "caption": "First results are in from Group B: Fariz/Dian opened with a 7-3 win over Memed/Heri.",
+    "type": "text",
+    "url": ""
+  },
+  {
+    "date": "2026-06-25",
+    "order": 4,
+    "round": "Group Stage",
+    "caption": "1st match on Group B",
+    "type": "photo",
+    "url": "https://osaftari-source.github.io/PIMTC/media/Q3zga5E.jpg"
+  },
+  {
+    "date": "2026-06-20",
+    "order": 5,
+    "round": "Group Stage Draw",
+    "caption": "Random pairs draw complete — 8 pairs split into Group A and Group B for round-robin group play.",
+    "type": "text",
+    "url": ""
+  }
 ]

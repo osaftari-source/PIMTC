@@ -1,5 +1,22 @@
 # Changelog
 
+## pimtc-v16.7.1 — Individual Doubles Player Rankings
+- Changed Doubles Rankings from pair-based ranking to individual player ranking.
+- Each doubles player is listed separately, with partner/pair context retained.
+- Rankings are generated from the completed doubles tournament results, including group stage, semifinals, and final.
+- Updated local JSON snapshot and static fallback data from the latest backend workbook.
+- Bumped footer version to `pimtc-v16.7.1` and service worker cache to `pimtc-v16-7-1`.
+
+## pimtc-v16.7.0 — Completed Doubles Tournament Archive
+
+- Marked the Live tournament as completed so the public Live page no longer shows the finished doubles event as active.
+- Added an inactive Live state with links to Tournament Archive, Results, and Doubles Rankings.
+- Added a separate Doubles Rankings page (`#/doubles`) so pair ranking is kept separate from Men/Women singles rankings.
+- Added a Doubles category to Tournaments and Results archive data.
+- Added static `data/doubles.json` and included it in the snapshot/service worker cache.
+- Updated Apps Script backend to support a new `Doubles` sheet/action.
+- Added Doubles to the main navigation and footer.
+
 ## pimtc-v16.6.0 — Live Knockout Stage
 - Added a dedicated **Bracket** phase to the Live page for two semifinals followed by the final.
 - Added a fourth sticky Live sub-navigation button: **Bracket**. It appears only when knockout matches exist.
